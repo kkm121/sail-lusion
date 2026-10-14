@@ -110,12 +110,21 @@ const PANE_V = `varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectio
 const PANE_F = `uniform float uTime; uniform vec2 uCorner; varying vec2 vUv;
 void main(){
   float edge = min(min(vUv.x, 1. - vUv.x), min(vUv.y, 1. - vUv.y));
-  float line = 1. - smoothstep(0., 0.028, edge);
+  float line = 1. - smoothstep(0., 0.032, edge);
   float g = clamp(dot(vUv - .5, uCorner) + .5, 0., 1.);
-  float sheen = smoothstep(0.42, 1., sin((vUv.x + vUv.y) * 5.2 - uTime * 0.45));
-  vec3 gold = vec3(1.0, 0.88, 0.42); // 24k radiant gold
-  float a = 0.03 + g * g * 0.22 + sheen * 0.16 * g + line * 0.65 * (0.45 + g);
-  gl_FragColor = vec4(gold * 3.4, a);
+  float sheen = smoothstep(0.36, 1., sin((vUv.x + vUv.y) * 5.6 - uTime * 0.5));
+  float pulse = 0.92 + 0.08 * sin(uTime * 1.6 + vUv.x * 2.8);
+
+  // Multi-spectral 24k molten gold palette
+  vec3 amber = vec3(1.0, 0.62, 0.14);
+  vec3 gold = vec3(1.0, 0.86, 0.36);
+  vec3 core = vec3(1.0, 0.98, 0.82);
+
+  vec3 col = mix(amber, gold, g);
+  col = mix(col, core, line * 0.72 + sheen * 0.4);
+
+  float a = 0.04 + g * g * 0.28 + sheen * 0.22 * g + line * 0.88 * (0.5 + g);
+  gl_FragColor = vec4(col * 4.2 * pulse, a);
 }`;
 
 function GoldCorner() {
@@ -153,9 +162,13 @@ function GoldCorner() {
           <mesh material={mats[1]} position={[W - 1.25, W - 0.08, z]} rotation={[Math.PI / 2, 0, 0]} frustumCulled={false}>
             <planeGeometry args={[3.0, 11]} />
           </mesh>
-          <sprite position={[W - 0.5, W - 0.5, z]} scale={14}>
-            <spriteMaterial map={tex} color="#ffd469" transparent opacity={0.72} depthWrite={false} blending={THREE.AdditiveBlending} toneMapped={false} />
+          <sprite position={[W - 0.5, W - 0.5, z]} scale={16}>
+            <spriteMaterial map={tex} color="#ffcf60" transparent opacity={0.82} depthWrite={false} blending={THREE.AdditiveBlending} toneMapped={false} />
           </sprite>
+          <sprite position={[-W + 0.5, -W + 0.5, z]} scale={10}>
+            <spriteMaterial map={tex} color="#ffa826" transparent opacity={0.45} depthWrite={false} blending={THREE.AdditiveBlending} toneMapped={false} />
+          </sprite>
+          <pointLight position={[W - 0.9, W - 0.9, z]} color="#ffd266" intensity={14} distance={10} decay={2} />
         </group>
       ))}
     </group>
@@ -271,14 +284,24 @@ export default function CageClassic({ tone, touch }) {
       <GoldCorner />
       <Glitch tone={tone} />
       <Bubbles />
+      {/* Dual-layer golden atmospheric embers & star-dust */}
       <Sparkles
-        count={touch ? 160 : 420}
+        count={touch ? 160 : 380}
         scale={[W * 1.8, W * 1.8, 105]}
         position={[0, 0, -55]}
-        color="#ffd56b"
-        size={touch ? 3.5 : 5.5}
-        speed={0.45}
-        opacity={0.88}
+        color="#ffc84d"
+        size={touch ? 4 : 6.5}
+        speed={0.4}
+        opacity={0.92}
+      />
+      <Sparkles
+        count={touch ? 110 : 260}
+        scale={[W * 1.6, W * 1.6, 105]}
+        position={[0, 0, -55]}
+        color="#fff4b8"
+        size={touch ? 2.2 : 3.6}
+        speed={0.65}
+        opacity={0.82}
       />
     </group>
   );

@@ -603,7 +603,7 @@ function Navigator({ sp }) {
 }
 
 const TONES = {
-  cage: { a: '#ffe699', b: '#f5c84b', key: '#ffd566', fog: '#060502' },
+  cage: { a: '#ffeaa0', b: '#ffc13b', key: '#ffe070', fog: '#070502' },
   lattice: { a: '#7c5cff', b: '#00f5d4', key: '#a98bff', fog: '#05030a' },
   room: { a: '#ffffff', b: '#bffcf3', key: '#7fe8ff', fog: '#030a0d' },
 };
@@ -665,9 +665,9 @@ function Rig({ progress, sp, ca, bloomRef, tone, lights, fogRef }) {
       kA.color.set(TONES.cage.key).lerp(scratch.set(TONES.lattice.key), latK + roomK).lerp(scratch.set('#ffffff'), roomK);
       kB.color.set('#ffb833').lerp(scratch.set('#00f5d4'), latK + roomK);
       kC.color.set('#f5c84b').lerp(scratch.set('#8b5cf6'), latK).lerp(scratch.set('#ffffff'), roomK);
-      kA.intensity = lerp(42, 26, latK) * (1 - roomK * 0.1) + lerp(0, 36, roomK);
+      kA.intensity = lerp(52, 28, latK) * (1 - roomK * 0.1) + lerp(0, 36, roomK);
     }
-    if (bloomRef.current) bloomRef.current.intensity = lerp(0.72, 1.1, latK) * (1 - roomK * 0.2);
+    if (bloomRef.current) bloomRef.current.intensity = lerp(1.02, 1.18, latK) * (1 - roomK * 0.2);
   }, -1);
   return null;
 }
