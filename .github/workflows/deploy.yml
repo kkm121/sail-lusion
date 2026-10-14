@@ -14,14 +14,10 @@ concurrency:
   group: deploy-production
   cancel-in-progress: false
 
-env:
-  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-
 jobs:
   vercel:
     name: Deploy to Vercel (production)
-    if: ${{ (github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success') && secrets.VERCEL_TOKEN != '' }}
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -35,14 +31,31 @@ jobs:
           cache: "npm"
           cache-dependency-path: package-lock.json
 
+      - name: Check Vercel Token
+        id: token_check
+        run: |
+          if [ -n "${{ secrets.VERCEL_TOKEN }}" ] && [ -n "${{ secrets.VERCEL_ORG_ID }}" ] && [ -n "${{ secrets.VERCEL_PROJECT_ID }}" ]; then
+            echo "configured=true" >> $GITHUB_ENV
+          else
+            echo "configured=false" >> $GITHUB_ENV
+            echo "Vercel credentials not found in secrets. Skipping manual CLI deploy; native Vercel GitHub App handles deployment."
+          fi
+
       - name: Install Vercel CLI
+        if: env.configured == 'true'
         run: npm install --global vercel@latest
 
       - name: Pull Vercel environment
+        if: env.configured == 'true'
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
         run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
 
       - name: Build
+        if: env.configured == 'true'
         run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
 
       - name: Deploy
+        if: env.configured == 'true'
         run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
