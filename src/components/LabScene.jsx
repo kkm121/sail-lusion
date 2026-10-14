@@ -459,35 +459,50 @@ function Navigator({ sp }) {
         o.frustumCulled = false;
         o.castShadow = true;
         o.receiveShadow = true;
+        if (o.geometry) {
+          o.geometry.computeVertexNormals();
+        }
         const matName = (o.material?.name || '').toLowerCase();
         if (matName.includes('main')) {
+          // Ultra-luxurious nano-ceramic armor plating
           o.material = new THREE.MeshPhysicalMaterial({
-            color: new THREE.Color('#f4f6fa'),
-            roughness: 0.16,
-            metalness: 0.08,
-            clearcoat: 1.0,
-            clearcoatRoughness: 0.08,
-            envMapIntensity: 2.2,
-          });
-        } else if (matName.includes('grey') || matName.includes('gray')) {
-          o.material = new THREE.MeshStandardMaterial({
-            color: new THREE.Color('#222831'),
-            roughness: 0.28,
-            metalness: 0.92,
-            envMapIntensity: 1.8,
-          });
-        } else if (matName.includes('black')) {
-          o.material = new THREE.MeshPhysicalMaterial({
-            color: new THREE.Color('#03070d'),
-            roughness: 0.04,
-            metalness: 0.95,
+            color: new THREE.Color('#f5f7fc'),
+            roughness: 0.12,
+            metalness: 0.14,
             clearcoat: 1.0,
             clearcoatRoughness: 0.04,
-            envMapIntensity: 2.6,
+            ior: 1.52,
+            reflectivity: 0.88,
+            sheen: 0.75,
+            sheenColor: new THREE.Color('#9beaff'),
+            sheenRoughness: 0.25,
+            envMapIntensity: 3.2,
+          });
+        } else if (matName.includes('grey') || matName.includes('gray')) {
+          // Brushed aerospace titanium skeleton and joints
+          o.material = new THREE.MeshPhysicalMaterial({
+            color: new THREE.Color('#141820'),
+            roughness: 0.2,
+            metalness: 0.95,
+            clearcoat: 0.6,
+            clearcoatRoughness: 0.1,
+            envMapIntensity: 2.8,
+          });
+        } else if (matName.includes('black')) {
+          // Deep obsidian mirror visor with cybernetic optical glow
+          o.material = new THREE.MeshPhysicalMaterial({
+            color: new THREE.Color('#030508'),
+            roughness: 0.08,
+            metalness: 0.88,
+            clearcoat: 1.0,
+            clearcoatRoughness: 0.04,
+            emissive: new THREE.Color('#00f5d4'),
+            emissiveIntensity: 0.35,
+            envMapIntensity: 3.8,
           });
         } else if (o.material) {
-          o.material.envMapIntensity = 1.6;
-          o.material.roughness = Math.min(o.material.roughness ?? 0.5, 0.4);
+          o.material.envMapIntensity = 2.4;
+          o.material.roughness = Math.min(o.material.roughness ?? 0.4, 0.25);
         }
       }
     });
@@ -497,14 +512,15 @@ function Navigator({ sp }) {
   const { camera } = useThree();
 
   const clip = useRef('');
-  const spin = useRef(0);
   useEffect(() => {
     clip.current = '';
     return () => Object.values(actions).forEach((a) => a?.stop());
   }, [actions]);
 
-  const rot = useRef({ x: 0, y: -0.25, z: 0 });
+  const rot = useRef({ x: 0, y: -0.22, z: 0 });
   const pos = useRef({ x: -2.2, y: -0.3, rel: 7.2, s: 1.35 });
+  const lastP = useRef(0);
+  const velP = useRef(0);
 
   useFrame((s, dt) => {
     const g = group.current;
@@ -515,41 +531,52 @@ function Navigator({ sp }) {
     const ax = THREE.MathUtils.clamp(camera.aspect / 1.6, 0.34, 1);
     const d = Math.min(dt, 0.05);
 
-    // Lusion Organic Zero-G Floating Levitation
-    const floatY = Math.sin(t * 1.1) * 0.12;
-    const floatX = Math.cos(t * 0.8) * 0.08;
-    const floatRoll = Math.sin(t * 0.7) * 0.04;
-    const floatPitch = Math.cos(t * 0.9) * 0.03;
+    // Dynamic Scroll Momentum & Aerodynamic Inertia
+    const scrollVel = (p - lastP.current) / Math.max(d, 0.001);
+    lastP.current = p;
+    velP.current += (scrollVel - velP.current) * (1 - Math.exp(-6.0 * d));
+    const inertiaPitch = THREE.MathUtils.clamp(velP.current * 0.35, -0.45, 0.45);
+    const inertiaDragZ = THREE.MathUtils.clamp(-velP.current * 0.9, -1.6, 1.6);
 
-    // Interactive pointer parallax tilt (Lusion signature)
+    // Organic Zero-G Harmonic Levitation (Lusion signature floating physics)
+    const hoverY = Math.sin(t * 1.25) * 0.14 + Math.sin(t * 2.5) * 0.03;
+    const hoverX = Math.cos(t * 0.95) * 0.10 + Math.sin(t * 1.9) * 0.025;
+    const hoverRoll = Math.sin(t * 0.8) * 0.035;
+    const hoverPitch = Math.cos(t * 1.05) * 0.025;
+
+    // Interactive pointer spring parallax (poised forward orientation)
     const px = s.pointer.x;
     const py = s.pointer.y;
-    const mouseTiltY = px * 0.35;
-    const mouseTiltX = -py * 0.25;
+    const mouseTiltY = px * 0.52 - 0.22;
+    const mouseTiltX = -py * 0.32 + 0.04;
+    const mouseBankZ = -px * 0.18;
 
-    // Weightless tumble: slow drifting spin on a tilted axis, settling face-on for the ending
+    // Vortex banking in Chapter II (Lattice)
+    const zc = camera.position.z;
+    const vortexK = seg(zc, -120, -190);
+    const vortexBank = Math.sin(zc * 0.08) * 0.32 * vortexK;
+
     const ci = inTunnel ? chapterAt(p) : -1;
-    const calm = inTunnel ? seg(p, 0.955, 0.985) : 0;
-    const amp = (inTunnel ? 1 : 0.5) * (1 - calm);
-    spin.current += d * (inTunnel ? 0.8 : 0.3) * amp;
-    const wrapped = Math.round((spin.current - 0.32) / (Math.PI * 2)) * Math.PI * 2 + 0.32;
-    const targetRy = lerp(spin.current - 0.32, wrapped, calm) + mouseTiltY * 0.6;
-    const targetRx = 0.04 + Math.sin(t * 0.62) * 0.95 * amp + mouseTiltX + floatPitch;
-    const targetRz = (Math.sin(t * 0.5 + 1.2) * 0.72 + Math.sin(t * 1.15) * 0.22) * amp + floatRoll + px * 0.08;
+    const end = seg(p, 0.955, 0.985);
+
+    // Target rotation: maintains confident hero forward pose with physical banking
+    const targetRx = mouseTiltX + hoverPitch + inertiaPitch * (1 - end);
+    const targetRy = lerp(mouseTiltY, 0, end);
+    const targetRz = mouseBankZ + hoverRoll + vortexBank * (1 - end);
 
     const R = rot.current;
-    const kr = 1 - Math.exp(-3.4 * d);
+    const kr = 1 - Math.exp(-5.5 * d);
     R.x += (targetRx - R.x) * kr;
     R.y += (targetRy - R.y) * kr;
     R.z += (targetRz - R.z) * kr;
 
-    // Per-chapter body language, cross-faded so limbs never snap
-    const want = ['Idle', 'Idle', 'Dance', 'Yes', 'Wave'][ci] || 'Idle';
+    // Per-chapter body language, smoothly cross-faded
+    const want = ['Idle', 'WalkJump', 'Dance', 'Yes', 'Wave'][ci] || 'Idle';
     if (clip.current !== want && actions[want]) {
       const next = actions[want];
-      next.reset().setEffectiveWeight(1).fadeIn(0.8).play();
-      next.timeScale = want === 'Dance' ? 0.4 : want === 'Idle' ? 0.5 : want === 'Wave' ? 0.95 : 0.6;
-      if (clip.current) actions[clip.current]?.fadeOut(0.8);
+      next.reset().setEffectiveWeight(1).fadeIn(0.6).play();
+      next.timeScale = want === 'Dance' ? 0.35 : want === 'Idle' ? 0.45 : want === 'Wave' ? 0.85 : 0.4;
+      if (clip.current) actions[clip.current]?.fadeOut(0.6);
       clip.current = want;
     }
 
@@ -557,8 +584,6 @@ function Navigator({ sp }) {
     g.rotation.set(R.x, R.y, R.z);
 
     // Spatial positioning along scroll
-    // Nav is placed by its distance in front of the camera, never by world depth, so fast
-    // scrolling cannot let the camera catch up and swell the robot over the view.
     let tx = 0;
     let ty = 0;
     let tr = REL;
@@ -569,23 +594,26 @@ function Navigator({ sp }) {
       tx = lerp(-1.4 * ax, 0, burst);
       ty = lerp(-0.4, 0, burst);
       tr = lerp(camera.position.z - 0.6, REL, burst);
-      ts = lerp(1.5, 1.05, burst);
+      ts = lerp(1.5, 1.1, burst);
     } else {
-      const end = seg(p, 0.955, 0.985);
       tx = camera.position.x + lerp(-1.1 * ax, 0, end);
       ty = camera.position.y + lerp(-0.32, 0.12, end);
-      ts = lerp(1.25, 1.5, end);
+      ts = lerp(1.3, 1.55, end);
     }
 
     const P = pos.current;
-    const kp = 1 - Math.exp(-4.5 * d);
+    const kp = 1 - Math.exp(-5.0 * d);
     P.x += (tx - P.x) * kp;
     P.y += (ty - P.y) * kp;
     P.rel += (tr - P.rel) * kp;
     P.s += (ts - P.s) * kp;
 
-    g.position.set(P.x + floatX + Math.sin(t * 0.55 + 0.8) * 1.15 * ax * amp, P.y + floatY + Math.sin(t * 0.83 + 1.7) * 0.38 * amp, camera.position.z - P.rel + Math.sin(t * 0.41) * 0.9 * amp);
-    g.scale.setScalar(P.s * THREE.MathUtils.clamp(camera.aspect * 1.25, 0.42, 1));
+    g.position.set(
+      P.x + hoverX,
+      P.y + hoverY,
+      camera.position.z - P.rel + inertiaDragZ
+    );
+    g.scale.setScalar(P.s * THREE.MathUtils.clamp(camera.aspect * 1.25, 0.45, 1));
   });
 
   return (
@@ -597,7 +625,11 @@ function Navigator({ sp }) {
           </group>
         </group>
       </group>
-      <pointLight color="#00f5d4" intensity={2.6} distance={3.4} decay={2} position={[0, -0.6, 0]} />
+      {/* Dedicated High-End Character Studio Lighting */}
+      <directionalLight position={[-3, 4, 5]} intensity={2.0} color="#ffffff" />
+      <pointLight position={[3, 2, -2.5]} intensity={14} color="#00f5d4" distance={9} decay={2} />
+      <pointLight position={[-3, -1.5, 2]} intensity={10} color="#ffdf88" distance={9} decay={2} />
+      <pointLight position={[0, 0.1, 0.35]} intensity={2.2} color="#00f5d4" distance={2.5} decay={2} />
     </group>
   );
 }
@@ -682,9 +714,9 @@ function Tunnel({ sp, tone, touch }) {
     const p = sp.current;
     const zc = state.camera.position.z;
 
-    // Chapter I: CageClassic - active from START until camera passes CAGE_END
+    // Chapter I: CageClassic - active from tunnel entry until camera passes CAGE_END
     if (cageGroup.current) {
-      cageGroup.current.visible = p >= 0.52 && zc > CAGE_END - 5;
+      cageGroup.current.visible = zc <= Z0 + 4 && zc > CAGE_END - 5;
     }
 
     // Chapter II: Lattice - emerges ONLY when approaching end of Cage (zc <= -88)
@@ -729,27 +761,37 @@ function Tunnel({ sp, tone, touch }) {
 export default function LabScene({ progress, visible = true }) {
   const touch = useRef(isTouch()).current;
   const sp = useRef(0);
-  const ca = useMemo(() => new THREE.Vector2(0.0004, 0.0003), []);
+  const ca = useMemo(() => new THREE.Vector2(0.00008, 0.00006), []);
   const bloomRef = useRef();
   const lights = useRef();
   const fogRef = useRef();
   const tone = useRef({ a: '#ffd875', b: '#f5c84b' });
 
   return (
-    <Canvas camera={{ position: [0, 0, 7.8], fov: 46, near: 0.1, far: 520 }} dpr={touch ? 1 : [1, 1.5]} gl={{ antialias: false, powerPreference: 'high-performance' }} frameloop={visible ? 'always' : 'never'}>
+    <Canvas
+      camera={{ position: [0, 0, 7.8], fov: 46, near: 0.1, far: 520 }}
+      dpr={touch ? [1.5, 2] : [1.5, 2]}
+      gl={{
+        antialias: true,
+        powerPreference: 'high-performance',
+        toneMapping: THREE.ACESFilmicToneMapping,
+        toneMappingExposure: 1.1,
+      }}
+      frameloop={visible ? 'always' : 'never'}
+    >
       <color attach="background" args={['#030407']} />
       <fog ref={fogRef} attach="fog" args={['#030407', 14, 150]} />
-      <ambientLight intensity={0.28} />
+      <ambientLight intensity={0.32} />
       <group ref={lights}>
         <pointLight intensity={34} distance={28} decay={2} position={[0, 1, 0]} />
         <pointLight intensity={30} distance={26} decay={2} position={[2, -1, 4]} />
         <pointLight intensity={28} distance={26} decay={2} position={[-2.5, 1, -2]} />
       </group>
-      <directionalLight position={[8, 10, 6]} intensity={1.2} />
+      <directionalLight position={[8, 10, 6]} intensity={1.3} />
 
       <ErrorBoundary fallback={null}>
         <Suspense fallback={null}>
-          <Environment resolution={256} environmentIntensity={0.6}>
+          <Environment resolution={256} environmentIntensity={0.65}>
             <Lightformer form="rect" intensity={2.6} color="#ffe599" position={[0, 6, -6]} scale={[14, 1.2, 1]} />
             <Lightformer form="rect" intensity={1.8} color="#f5c84b" position={[-7, 0, -4]} rotation-y={Math.PI / 2} scale={[10, 2, 1]} />
             <Lightformer form="rect" intensity={1.6} color="#00f5d4" position={[7, 0, -4]} rotation-y={-Math.PI / 2} scale={[10, 2, 1]} />
@@ -758,7 +800,7 @@ export default function LabScene({ progress, visible = true }) {
         </Suspense>
       </ErrorBoundary>
 
-      <FollowStars count={touch ? 1200 : 2800} />
+      <FollowStars count={touch ? 1400 : 3200} />
       {HAVE.navigator && (
         <ErrorBoundary fallback={null}>
           <Suspense fallback={null}>
@@ -771,10 +813,9 @@ export default function LabScene({ progress, visible = true }) {
 
       {!touch && (
         <EffectComposer disableNormalPass multisampling={4}>
-          <Bloom ref={bloomRef} luminanceThreshold={0.82} luminanceSmoothing={0.3} intensity={0.7} radius={0.7} mipmapBlur />
+          <Bloom ref={bloomRef} luminanceThreshold={0.84} luminanceSmoothing={0.35} intensity={0.78} radius={0.68} mipmapBlur />
           <ChromaticAberration offset={ca} radialModulation={false} modulationOffset={0} />
-          <Noise opacity={0.04} />
-          <Vignette offset={0.3} darkness={0.55} />
+          <Vignette offset={0.32} darkness={0.48} />
         </EffectComposer>
       )}
     </Canvas>
