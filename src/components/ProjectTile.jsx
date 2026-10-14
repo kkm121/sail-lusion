@@ -1,0 +1,45 @@
+import { useRef } from 'react';
+import TransitionLink from './TransitionLink';
+import GLMedia from './GLMedia';
+import { artUrl } from '../data/projects';
+
+export default function ProjectTile({ p }) {
+  const box = useRef(null);
+
+  const onMove = (e) => {
+    const el = box.current;
+    if (!el || e.pointerType === 'touch') return;
+    const r = el.getBoundingClientRect();
+    el.style.setProperty('--mx', String(((e.clientX - r.left) / r.width - 0.5) * 2));
+    el.style.setProperty('--my', String(((e.clientY - r.top) / r.height - 0.5) * 2));
+  };
+  const onLeave = () => {
+    box.current?.style.setProperty('--mx', '0');
+    box.current?.style.setProperty('--my', '0');
+  };
+
+  return (
+    <TransitionLink className="sl-project" href={`/projects/${p.id}`} color={p.bg} text={p.text} label={p.name} data-cursor="VIEW" onPointerMove={onMove} onPointerLeave={onLeave} style={{ '--dc': p.color }}>
+      <GLMedia boxRef={box} className="sl-project-img" src={artUrl(p)} alt={p.name} radius={16} data-tint="0.55" data-tint-hover="1">
+        <span className="sl-project-sheen" aria-hidden="true" />
+      </GLMedia>
+      <div className="sl-project-meta">
+        <span className="dom">
+          <i /> {p.domainName}
+        </span>
+        <span className="st">{p.status}</span>
+      </div>
+      <div className="sl-project-tags">{p.tags}</div>
+      <div className="sl-project-name" aria-label={p.name}>
+        <span aria-hidden="true" className="roll">
+          {[...p.name].map((c, i) => (
+            <span className="rc" key={i} style={{ '--i': i }}>
+              <span>{c === ' ' ? ' ' : c}</span>
+              <span>{c === ' ' ? ' ' : c}</span>
+            </span>
+          ))}
+        </span>
+      </div>
+    </TransitionLink>
+  );
+}
