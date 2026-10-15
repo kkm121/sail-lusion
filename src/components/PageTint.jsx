@@ -1,4 +1,6 @@
 import { useEffect } from 'react';
+import { onTick } from '../lib/ticker';
+import { scrollState } from '../lib/scroll';
 
 const STOPS = [
   [0, [253, 243, 214]],
@@ -24,17 +26,14 @@ export default function PageTint() {
   useEffect(() => {
     const root = document.querySelector('.sail');
     if (!root) return undefined;
-    const update = () => {
-      const max = Math.max(document.documentElement.scrollHeight - window.innerHeight, 1);
-      root.style.setProperty('--bg', `rgb(${sample(Math.min(1, Math.max(0, window.scrollY / max))).join(',')})`);
-    };
-    update();
-    window.addEventListener('scroll', update, { passive: true });
-    window.addEventListener('resize', update);
-    return () => {
-      window.removeEventListener('scroll', update);
-      window.removeEventListener('resize', update);
-    };
+    let last = '';
+    return onTick(() => {
+      const css = `rgb(${sample(scrollState.progress).join(',')})`;
+      if (css !== last) {
+        last = css;
+        root.style.setProperty('--bg', css);
+      }
+    }, 6);
   }, []);
   return null;
 }

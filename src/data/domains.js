@@ -16,7 +16,7 @@ export const domains = [
     shortName: 'Technical Core',
     tagline: 'Embodied Robotics, Distributed Swarms & GPU Acceleration',
     description:
-      'The engineering backbone of SAIL. We architect real-time robotic locomotion engines, high-throughput message brokers, neuromorphic hardware pipelines, and 60fps WebGL spatial simulations.',
+      'The engineering backbone of FireFly. We architect real-time robotic locomotion engines, high-throughput message brokers, neuromorphic hardware pipelines, and 60fps WebGL spatial simulations.',
     team: 'technical',
     teamNote: 'The Technical Team, which also carries the R&D domain.',
     technologies: ['ROS2 Humble', 'PyTorch 2.3', 'Next.js 15', 'CUDA C++', 'Rust', 'Three.js / WebGL2', 'PostgreSQL', 'Docker'],
@@ -35,7 +35,7 @@ export const domains = [
     id: 'research-development',
     code: '02',
     name: 'Research & Advanced Computing',
-    shortName: 'R&D Lab',
+    shortName: 'R&D',
     tagline: 'Neuromorphic Silicon, Quantum Information & ML Publications',
     description:
       'Frontier computing laboratory exploring bio-inspired silicon event vision, quantum tensor contraction algorithms, and peer-reviewed deep learning architectures targeting IEEE, CVPR, and NeurIPS conferences.',
@@ -70,8 +70,8 @@ export const domains = [
       'Grant vault': '$50,000+ Annual Project Funding',
     },
     achievements: [
-      { id: 'autonomous-summit-2026', name: 'SAIL Autonomous Summit 2026', title: 'SAIL Autonomous Summit 2026', desc: '3-Day National AI & Robotics Conclave featuring 50+ industry speakers, 2000+ delegates, and $25,000 in hackathon grants.', status: 'Registration Active', metric: '2,000+ Delegates' },
-      { id: 'industry-immersion-fellowship', name: 'Industry Immersion Fellowship', title: 'Industry Immersion Fellowship', desc: 'Direct pipeline connecting SAIL researchers with paid research internships at premier Silicon Valley & Indian AI labs.', status: 'Cohort 3 Active', metric: '100% Placement' },
+      { id: 'autonomous-summit-2026', name: 'FireFly Autonomous Summit 2026', title: 'FireFly Autonomous Summit 2026', desc: '3-Day National AI & Robotics Conclave featuring 50+ industry speakers, 2000+ delegates, and $25,000 in hackathon grants.', status: 'Registration Active', metric: '2,000+ Delegates' },
+      { id: 'industry-immersion-fellowship', name: 'Industry Immersion Fellowship', title: 'Industry Immersion Fellowship', desc: 'Direct pipeline connecting FireFly researchers with paid research internships at premier Silicon Valley & Indian AI teams.', status: 'Cohort 3 Active', metric: '100% Placement' },
     ],
     ...THEMES.corporate,
   },
@@ -92,7 +92,7 @@ export const domains = [
       Rendering: 'Real-time GLSL Raymarching & Refractive Caustics',
     },
     achievements: [
-      { id: 'spatial-web-world', name: 'SAIL Spatial Web World', title: 'SAIL Spatial Web World', desc: 'Awwwards Site-of-the-Day caliber interactive WebGL 3D crystal core and dynamic fluid kinematics.', status: 'Live Production', metric: '60 FPS @ 4K' },
+      { id: 'spatial-web-world', name: 'FireFly Spatial Web World', title: 'FireFly Spatial Web World', desc: 'Awwwards Site-of-the-Day caliber interactive WebGL 3D crystal core and dynamic fluid kinematics.', status: 'Live Production', metric: '60 FPS @ 4K' },
       { id: 'binaural-haptic-audio', name: 'Binaural Haptic Audio Engine', title: 'Binaural Haptic Audio Engine', desc: 'Procedural Web Audio API synthesizer generating responsive cyber soundscapes mapped to cursor velocity.', status: 'V1.0 Deployed', metric: '24-bit Lossless' },
     ],
     ...THEMES.creatives,
@@ -114,8 +114,8 @@ export const domains = [
       Standards: 'IEEE 830 / ISO Software Documentation Rigor',
     },
     achievements: [
-      { id: 'technical-review', name: 'The SAIL Technical Review', title: 'The SAIL Technical Review (Quarterly)', desc: 'Comprehensive 60-page peer-reviewed engineering journal covering cutting-edge robotics and neuromorphic AI.', status: 'Issue 04 in Print', metric: '15,000+ Readers' },
-      { id: 'engineering-handbook', name: 'SAIL Engineering Handbook', title: 'Open Source SAIL Engineering Handbook', desc: 'Standard operating procedures, code standards, hardware schematics, and machine learning tutorials for fellows.', status: 'Public GitBook', metric: 'ISO Rigor' },
+      { id: 'technical-review', name: 'The FireFly Technical Review', title: 'The FireFly Technical Review (Quarterly)', desc: 'Comprehensive 60-page peer-reviewed engineering journal covering cutting-edge robotics and neuromorphic AI.', status: 'Issue 04 in Print', metric: '15,000+ Readers' },
+      { id: 'engineering-handbook', name: 'FireFly Engineering Handbook', title: 'Open Source FireFly Engineering Handbook', desc: 'Standard operating procedures, code standards, hardware schematics, and machine learning tutorials for fellows.', status: 'Public GitBook', metric: 'ISO Rigor' },
     ],
     ...THEMES.operations,
   },

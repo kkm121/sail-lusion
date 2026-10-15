@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { onTick } from '../lib/ticker';
 import { scrollState } from '../lib/scroll';
-import { glSupported } from '../lib/glmedia';
+import { canGL } from '../lib/device';
 
 const VS = 'varying vec2 vUv;void main(){vUv=uv;gl_Position=vec4(position,1.);}';
 
@@ -75,7 +75,7 @@ export default function LiquidOverlay() {
 
   useEffect(() => {
     const canvas = ref.current;
-    if (!canvas || !glSupported() || window.matchMedia('(max-width: 767px)').matches) return undefined;
+    if (!canvas || !canGL() || window.matchMedia('(max-width: 767px)').matches) return undefined;
 
     const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: false, premultipliedAlpha: true, powerPreference: 'high-performance' });
     renderer.setPixelRatio(1);

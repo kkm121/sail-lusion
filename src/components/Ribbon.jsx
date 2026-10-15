@@ -1,4 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
+import { onTick } from '../lib/ticker';
+import { scrollState } from '../lib/scroll';
+import { useDocRect } from '../lib/measure';
 
 const PATHS = {
   intro: (p) =>
@@ -25,6 +28,7 @@ export default function Ribbon({ section, track, variant = 'intro', stops = ['#0
   const glow = useRef(null);
   const region = useRef({ top: 0, height: 1 });
   const gid = useRef(`sl-rg-${variant}`).current;
+  const secRect = useDocRect(section);
 
   useEffect(() => {
     const sec = section.current;
@@ -42,7 +46,6 @@ export default function Ribbon({ section, track, variant = 'intro', stops = ['#0
     const ro = new ResizeObserver(measure);
     ro.observe(sec);
 
-    let raf = 0;
     const apply = (p) => {
       for (const el of [main.current, shine.current, glow.current]) {
         if (!el) continue;
@@ -54,22 +57,18 @@ export default function Ribbon({ section, track, variant = 'intro', stops = ['#0
       drawRef.current = apply;
       return () => ro.disconnect();
     }
-    const draw = () => {
-      const r = sec.getBoundingClientRect();
-      apply(Math.min(1, Math.max(0, (window.innerHeight * 0.8 - r.top) / (region.current.height + window.innerHeight * 0.1))));
-    };
-    const onScroll = () => {
-      cancelAnimationFrame(raf);
-      raf = requestAnimationFrame(draw);
-    };
-    draw();
-    window.addEventListener('scroll', onScroll, { passive: true });
-    window.addEventListener('resize', onScroll);
+    let lastP = -1;
+    const stop = onTick(() => {
+      const top = secRect.top - scrollState.y;
+      const p = Math.min(1, Math.max(0, (scrollState.vh * 0.8 - top) / (region.current.height + scrollState.vh * 0.1)));
+      if (Math.abs(p - lastP) > 0.0004) {
+        lastP = p;
+        apply(p);
+      }
+    }, 6);
     return () => {
       ro.disconnect();
-      cancelAnimationFrame(raf);
-      window.removeEventListener('scroll', onScroll);
-      window.removeEventListener('resize', onScroll);
+      stop();
     };
   }, [section, track, variant, span, drawRef]);
 

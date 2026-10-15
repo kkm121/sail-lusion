@@ -1,8 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
 import Ribbon from './Ribbon';
 import TransitionLink from './TransitionLink';
-import GLMedia from './GLMedia';
+import ReelCard from './ReelCard';
 import { HAVE, MEDIA } from '../data/media';
+import { scrollState } from '../lib/scroll';
+import { useDocRect } from '../lib/measure';
+import { useTick } from '../lib/useTick';
+import { canGL } from '../lib/device';
 
 const isMobile = () => typeof window !== 'undefined' && window.matchMedia('(max-width: 767px)').matches;
 const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
@@ -29,117 +33,129 @@ function Slideshow({ tintRef }) {
   }, []);
 
   return (
-    <div className="sl-duo" ref={tintRef} role="img" aria-label="SAIL work in progress">
+    <div className="sl-duo" ref={tintRef} role="img" aria-label="FireFly work in progress">
       {SLIDES.map((src, k) => (
-        <img key={src} src={src} alt="" loading="lazy" className={k === i ? 'is-on' : k === prev ? 'is-prev' : ''} />
+        <img key={src} src={src} alt="" loading="lazy" decoding="async" className={k === i ? 'is-on' : k === prev ? 'is-prev' : ''} />
       ))}
       <span className="tint" />
     </div>
   );
 }
 
+const Crosses = ({ side }) => (
+  <div className={`sl-reel-cross ${side}`} aria-hidden="true">
+    {[0, 1, 2, 3, 4].map((k) => (
+      <span key={k}>+</span>
+    ))}
+  </div>
+);
+
+const PlayLabel = ({ playRef }) => (
+  <div className="sl-reel-play" ref={playRef}>
+    <span>PLAY</span>
+    <span className="btn" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="currentColor">
+        <path d="M7 4.5v15l13-7.5z" />
+      </svg>
+    </span>
+    <span>REEL</span>
+  </div>
+);
+
 export default function Reel() {
   const sectionRef = useRef(null);
   const track = useRef(null);
-  const stage = useRef(null);
+  const title = useRef(null);
+  const ln1Box = useRef(null);
+  const ln1 = useRef(null);
+  const ln2Box = useRef(null);
+  const ln2 = useRef(null);
+  const descBox = useRef(null);
+  const descMove = useRef(null);
+  const descIn = useRef(null);
+  const ctaBox = useRef(null);
+  const cta = useRef(null);
+  const duo = useRef(null);
   const card = useRef(null);
   const play = useRef(null);
-  const duo = useRef(null);
   const modalVideo = useRef(null);
-  const title = useRef(null);
-  const ln1 = useRef(null);
-  const ln2 = useRef(null);
-  const desc = useRef(null);
-  const descIn = useRef(null);
-  const cta = useRef(null);
+  const warp = useRef({ x: 0, y: 0, rot: 0, scale: 1, skew: 0, bend: 0, tint: 1, lum: 1 });
+  const fontPx = useRef({ vw: 0, px: 120 });
   const [open, setOpen] = useState(false);
+
+  const rTrack = useDocRect(track);
+  const rLn1 = useDocRect(ln1Box);
+  const rLn2 = useDocRect(ln2Box);
+  const rDesc = useDocRect(descBox);
+  const rCta = useDocRect(ctaBox);
+  const rDuo = useDocRect(duo);
 
   const [reelSrc] = useState(() => {
     const m = isMobile();
     if (HAVE.reel) return m ? MEDIA.reel.mobile : MEDIA.reel.desktop;
     return m ? MEDIA.reel.fallbackMobile : MEDIA.reel.fallbackDesktop;
   });
+  const gl = canGL();
 
-  useEffect(() => {
-    const trackEl = track.current;
-    if (!trackEl) return undefined;
-    let raf = 0;
-    const update = () => {
-      const vh = window.innerHeight;
-      const vw = window.innerWidth;
-      const mobile = vw < 768;
-      const r = trackEl.getBoundingClientRect();
-      // The card is never pinned: it rises with the page and straightens as it reaches the middle of the screen.
-      const c = (r.top + r.height / 2 - vh / 2) / vh;
-      const warp = Math.pow(clamp(c / 0.62), 1.1);
-      const colour = clamp(warp * 1.2);
+  useTick(() => {
+    if (!rTrack.ready) return;
+    const { y, vh, vw } = scrollState;
+    const mobile = vw < 768;
+    const rel = (r) => (r.top - y) / vh;
 
-      const g = {
-        x: warp * vw * (mobile ? 0.05 : 0.11),
-        y: warp * vh * -0.0,
-        rot: -0.22 * warp,
-        scale: 1 - 0.36 * warp,
-        skew: 0.62 * warp,
-        bend: 0.42 * warp,
-        blur: 0,
-        desat: 0,
-        lift: 0,
-      };
-      if (card.current) {
-        card.current.__gl = g;
-        card.current.dataset.tint = String(clamp(warp * 1.1 + colour * 0.3, 0, 1));
-      }
-      if (play.current) {
-        play.current.style.transform = `translate3d(${g.x}px, 0, 0) rotate(${g.rot}rad) scale(${g.scale})`;
-        play.current.style.opacity = String(clamp(1 - warp * 1.3));
-      }
-      // Text motion measured from lusion.co: the two title lines scissor in (one rises from below while
-      // sliding in from the left, the other drops from above), the copy fades up 30px with 0.13 parallax.
-      const fs = parseFloat(getComputedStyle(title.current).fontSize) || 120;
-      const rel = (el) => el.getBoundingClientRect().top / vh;
-      const par = mobile ? 0 : 0.13;
-      if (ln1.current) {
-        const t = rel(ln1.current.parentElement);
-        const ty = (1 - sm(clamp((1.13 - t) / 0.36))) * fs * 1.07;
-        const tx = -(1 - sm(clamp((0.9 - t) / 0.34))) * fs * 1.64 * (mobile ? 0.5 : 1);
-        ln1.current.style.transform = `translate3d(${tx}px, ${ty}px, 0)`;
-      }
-      if (ln2.current) {
-        const t = rel(ln2.current.parentElement);
-        ln2.current.style.transform = `translate3d(0, ${-(1 - sm(clamp((1.13 - t) / 0.3))) * fs * 1.07}px, 0)`;
-      }
-      if (desc.current) {
-        const t = rel(desc.current);
-        const p = clamp((1.12 - t) / 0.42);
-        desc.current.style.transform = `translate3d(0, ${par * vh * (t - 1)}px, 0)`;
-        descIn.current.style.opacity = String(sm(clamp(p * 1.25)));
-        descIn.current.style.transform = `translate3d(0, ${30 * (1 - sm(clamp(p * 1.3)))}px, 0)`;
-      }
-      if (cta.current) {
-        const t = rel(cta.current);
-        const p = clamp((1.1 - t) / 0.26);
-        cta.current.style.opacity = String(0.6 + 0.4 * sm(p));
-        cta.current.style.transform = `translate3d(0, ${par * vh * (t - 1) + 24 * (1 - sm(p))}px, 0) skewY(${3.4 * (1 - sm(p))}deg)`;
-      }
-      if (duo.current) {
-        const pr = duo.current.getBoundingClientRect();
-        const t = clamp((pr.top - vh * 0.1) / (vh * 0.75));
-        duo.current.style.setProperty('--tint', String(0.15 + t * 0.85));
-      }
-    };
-    const onScroll = () => {
-      cancelAnimationFrame(raf);
-      raf = requestAnimationFrame(update);
-    };
-    update();
-    window.addEventListener('scroll', onScroll, { passive: true });
-    window.addEventListener('resize', onScroll);
-    return () => {
-      cancelAnimationFrame(raf);
-      window.removeEventListener('scroll', onScroll);
-      window.removeEventListener('resize', onScroll);
-    };
-  }, []);
+    // The card is never pinned: it rises with the page and straightens as it reaches the middle of the screen.
+    const c = (rTrack.top + rTrack.height / 2 - y - vh / 2) / vh;
+    const w = clamp(c / 0.62) ** 1.1;
+    const g = warp.current;
+    g.x = w * vw * (mobile ? 0.05 : 0.11);
+    g.rot = -0.22 * w;
+    g.scale = 1 - 0.36 * w;
+    g.skew = 0.62 * w;
+    g.bend = 0.42 * w;
+    g.tint = clamp(w * 1.1 + (1 - w) * 0.02, 0, 1);
+    if (play.current) {
+      play.current.style.transform = `translate3d(${g.x}px, 0, 0) rotate(${g.rot}rad) scale(${g.scale})`;
+      play.current.style.opacity = String(clamp(1 - w * 1.3));
+    }
+    if (!gl && card.current) {
+      card.current.style.transform = `perspective(1500px) translate3d(${g.x}px,0,0) rotate(${g.rot}rad) rotateX(${w * 14}deg) scale(${g.scale})`;
+      card.current.style.opacity = String(1 - w * 0.12);
+    }
+
+    // Text motion measured from lusion.co: title lines scissor in, the copy fades up with 0.15 parallax.
+    if (fontPx.current.vw !== vw && title.current) {
+      fontPx.current = { vw, px: parseFloat(getComputedStyle(title.current).fontSize) || 120 };
+    }
+    const fs = fontPx.current.px;
+    if (ln1.current) {
+      const t = rel(rLn1);
+      const ty = (1 - sm(clamp((1.13 - t) / 0.36))) * fs * 1.07;
+      const tx = -(1 - sm(clamp((0.9 - t) / 0.34))) * fs * 1.64 * (mobile ? 0.45 : 1);
+      ln1.current.style.transform = `translate3d(${tx.toFixed(2)}px, ${ty.toFixed(2)}px, 0)`;
+    }
+    if (ln2.current) {
+      const t = rel(rLn2);
+      ln2.current.style.transform = `translate3d(0, ${(-(1 - sm(clamp((1.13 - t) / 0.3))) * fs * 1.07).toFixed(2)}px, 0)`;
+    }
+    const par = mobile ? 0 : 0.15;
+    if (descMove.current) {
+      const t = rel(rDesc);
+      const p = clamp((1.12 - t) / 0.42);
+      descMove.current.style.transform = `translate3d(0, ${(par * vh * (t - 1)).toFixed(2)}px, 0)`;
+      descIn.current.style.opacity = sm(clamp(p * 1.25)).toFixed(3);
+      descIn.current.style.transform = `translate3d(0, ${(30 * (1 - sm(clamp(p * 1.3)))).toFixed(2)}px, 0)`;
+    }
+    if (cta.current) {
+      const t = rel(rCta);
+      const p = clamp((1.1 - t) / 0.26);
+      cta.current.style.opacity = (0.6 + 0.4 * sm(p)).toFixed(3);
+      cta.current.style.transform = `translate3d(0, ${(par * vh * (t - 1) + 24 * (1 - sm(p))).toFixed(2)}px, 0) skewY(${(3.4 * (1 - sm(p))).toFixed(2)}deg)`;
+    }
+    if (duo.current) {
+      const t = clamp((rel(rDuo) - 0.1) / 0.75);
+      duo.current.style.setProperty('--tint', (0.15 + t * 0.85).toFixed(3));
+    }
+  }, 5);
 
   useEffect(() => {
     if (!open) return undefined;
@@ -158,14 +174,22 @@ export default function Reel() {
     };
   }, [open]);
 
+  const openProps = {
+    role: 'button',
+    tabIndex: 0,
+    'aria-label': 'Play reel',
+    onClick: () => setOpen(true),
+    onKeyDown: (e) => (e.key === 'Enter' || e.key === ' ') && setOpen(true),
+  };
+
   return (
     <section className="sl-reel" id="reel" ref={sectionRef}>
       <Ribbon section={sectionRef} track={track} />
       <h2 className="sl-reel-title" ref={title}>
-        <span className="ln">
+        <span className="ln" ref={ln1Box}>
           <span ref={ln1}>Bold ideas,</span>
         </span>
-        <span className="ln">
+        <span className="ln" ref={ln2Box}>
           <span ref={ln2}>built to think</span>
         </span>
       </h2>
@@ -173,48 +197,39 @@ export default function Reel() {
       <div className="sl-reel-row">
         <Slideshow tintRef={duo} />
         <div className="sl-reel-content">
-          <div ref={desc}>
-            <p ref={descIn}>It starts with a question. We are the SRM Artificial Intelligence Lab: students who build, research and ship intelligent systems together, from computer vision and language models to robotics and interactive 3D.</p>
+          <div className="sl-reel-desc" ref={descBox}>
+            <div ref={descMove}>
+              <p ref={descIn}>It starts with a question. We are the FireFly Club: students who build, research and ship intelligent systems together, from computer vision and language models to robotics and interactive 3D.</p>
+            </div>
           </div>
-          <div className="sl-reel-cta" ref={cta}>
-            <TransitionLink className="sl-pill sl-pill--white" href="/about" label="About us" data-magnetic>
-              <i /> Meet the crew
-            </TransitionLink>
+          <div className="sl-reel-ctabox" ref={ctaBox}>
+            <div className="sl-reel-cta" ref={cta}>
+              <TransitionLink className="sl-pill sl-pill--white" href="/about" label="About us" data-magnetic>
+                <i /> Meet the crew
+              </TransitionLink>
+            </div>
           </div>
         </div>
       </div>
 
       <div className="sl-reel-track" ref={track}>
-        <div className="sl-reel-stage" ref={stage}>
-          <GLMedia
-            boxRef={card}
-            video
-            className="sl-reel-card"
-            src={reelSrc}
-            fallback={isMobile() ? MEDIA.reel.fallbackMobile : MEDIA.reel.fallbackDesktop}
-            poster={MEDIA.reel.poster}
-            radius={22}
-            role="button"
-            tabIndex={0}
-            aria-label="Play reel"
-            data-tint="1"
-            onClick={() => setOpen(true)}
-            onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && setOpen(true)}
-          >
-            <div className="sl-reel-play" ref={play}>
-              <span>PLAY</span>
-              <span className="btn" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M7 4.5v15l13-7.5z" />
-                </svg>
-              </span>
-              <span>REEL</span>
+        <Crosses side="top" />
+        <div className="sl-reel-stage">
+          {gl ? (
+            <ReelCard warp={warp} src={reelSrc} fallback={isMobile() ? MEDIA.reel.fallbackMobile : MEDIA.reel.fallbackDesktop} poster={MEDIA.reel.poster} {...openProps}>
+              <PlayLabel playRef={play} />
+            </ReelCard>
+          ) : (
+            <div className="sl-reel-card sl-reel-card--flat" ref={card} {...openProps}>
+              <video className="sl-reel-vid is-flat" src={reelSrc} poster={MEDIA.reel.poster} muted loop autoPlay playsInline preload="auto" />
+              <PlayLabel playRef={play} />
             </div>
-          </GLMedia>
+          )}
         </div>
+        <Crosses side="bottom" />
       </div>
 
-      <div className={`sl-overlay ${open ? 'is-open' : ''}`} role="dialog" aria-modal="true" aria-label="SAIL reel" onClick={() => setOpen(false)}>
+      <div className={`sl-overlay ${open ? 'is-open' : ''}`} role="dialog" aria-modal="true" aria-label="FireFly reel" onClick={() => setOpen(false)}>
         <button type="button" className="sl-overlay-close" onClick={() => setOpen(false)}>
           Close
         </button>

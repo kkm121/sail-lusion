@@ -1,5 +1,6 @@
 export const isTouch = () => typeof window !== 'undefined' && window.matchMedia('(hover: none), (pointer: coarse)').matches;
 export const isFinePointer = () => typeof window !== 'undefined' && window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+export const canGL = () => !isTouch() && hasWebGL();
 export const isMobileWidth = () => typeof window !== 'undefined' && window.matchMedia('(max-width: 767px)').matches;
 
 let webgl;

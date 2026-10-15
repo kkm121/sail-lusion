@@ -1,17 +1,16 @@
 import { useRef } from 'react';
 import TransitionLink from './TransitionLink';
-import GLMedia from './GLMedia';
 import { artUrl } from '../data/projects';
 
-export default function ProjectTile({ p }) {
+export default function ProjectTile({ p, priority = false }) {
   const box = useRef(null);
 
   const onMove = (e) => {
     const el = box.current;
     if (!el || e.pointerType === 'touch') return;
     const r = el.getBoundingClientRect();
-    el.style.setProperty('--mx', String(((e.clientX - r.left) / r.width - 0.5) * 2));
-    el.style.setProperty('--my', String(((e.clientY - r.top) / r.height - 0.5) * 2));
+    el.style.setProperty('--mx', (((e.clientX - r.left) / r.width - 0.5) * 2).toFixed(3));
+    el.style.setProperty('--my', (((e.clientY - r.top) / r.height - 0.5) * 2).toFixed(3));
   };
   const onLeave = () => {
     box.current?.style.setProperty('--mx', '0');
@@ -20,9 +19,11 @@ export default function ProjectTile({ p }) {
 
   return (
     <TransitionLink className="sl-project" href={`/projects/${p.id}`} color={p.bg} text={p.text} label={p.name} data-cursor="VIEW" onPointerMove={onMove} onPointerLeave={onLeave} style={{ '--dc': p.color }}>
-      <GLMedia boxRef={box} className="sl-project-img" src={artUrl(p)} alt={p.name} radius={16} data-tint="0.55" data-tint-hover="1">
+      <div className="sl-project-img" ref={box}>
+        <img src={artUrl(p)} alt={p.name} loading={priority ? 'eager' : 'lazy'} decoding="async" draggable="false" />
+        <span className="sl-project-tint" aria-hidden="true" />
         <span className="sl-project-sheen" aria-hidden="true" />
-      </GLMedia>
+      </div>
       <div className="sl-project-meta">
         <span className="dom">
           <i /> {p.domainName}

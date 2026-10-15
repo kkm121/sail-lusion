@@ -6,7 +6,7 @@ const PEOPLE = {
   Aarya: {
     area: 'All domains',
     tag: 'President',
-    about: 'Works across every domain of the lab, helping teams stay connected, projects moving and the community welcoming to new members.',
+    about: 'Works across every domain of the club, helping teams stay connected, projects moving and the community welcoming to new members.',
   },
   'Bedabrata Bhattacharjee': {
     area: 'All domains · Report Team',
@@ -21,7 +21,7 @@ const PEOPLE = {
   [CREATOR]: {
     area: 'Technical Team',
     tag: CREATOR_TAG,
-    about: 'Designed and built this website, and works with the Technical Team on registration pages, databases and the infrastructure behind the lab projects.',
+    about: 'Designed and built this website, and works with the Technical Team on registration pages, databases and the infrastructure behind the club projects.',
   },
   Harshini: {
     area: 'Creatives',
@@ -30,7 +30,7 @@ const PEOPLE = {
   Tharun: {
     area: 'Technical Team',
     tag: 'Head',
-    about: 'Works on the club website, event registration pages and databases, and on the technical projects the lab takes up through the year.',
+    about: 'Works on the club website, event registration pages and databases, and on the technical projects the club takes up through the year.',
   },
   'Akash Priyan G': {
     area: 'Report Team',
@@ -39,7 +39,7 @@ const PEOPLE = {
   },
   Monisha: {
     area: 'Creatives',
-    about: 'Works on promotion and visibility, shaping the posts, posters and stories that carry the lab work out to the community.',
+    about: 'Works on promotion and visibility, shaping the posts, posters and stories that carry the club work out to the community.',
   },
   Esakkimadan: {
     area: 'Creatives · Report Team',
@@ -48,23 +48,23 @@ const PEOPLE = {
   },
   Krithika: {
     area: 'Creatives',
-    about: 'Covers event photography and media content, and helps promote everything the lab runs so it reaches the whole campus.',
+    about: 'Covers event photography and media content, and helps promote everything the club runs so it reaches the whole campus.',
   },
   Dharun: {
     area: 'Technical Team',
-    about: 'Builds and maintains the lab technical projects and the tools behind its events, from registration pages to the data underneath.',
+    about: 'Builds and maintains the club technical projects and the tools behind its events, from registration pages to the data underneath.',
   },
   Prithviraj: {
     area: 'Creatives',
-    about: 'Creates visuals and content that give the lab events and projects a recognisable look, from campaigns to event media.',
+    about: 'Creates visuals and content that give the club events and projects a recognisable look, from campaigns to event media.',
   },
   Amrita: {
     area: 'Report Team',
-    about: 'Supports compliance paperwork and event documentation so every activity the lab runs is properly recorded.',
+    about: 'Supports compliance paperwork and event documentation so every activity the club runs is properly recorded.',
   },
   Kiruthika: {
     area: 'Report Team',
-    about: 'Records meetings and events accurately, helping the lab keep a clear and dependable history of what it has done.',
+    about: 'Records meetings and events accurately, helping the club keep a clear and dependable history of what it has done.',
   },
   Tamilselvan: {
     area: 'Report Team',
@@ -72,12 +72,12 @@ const PEOPLE = {
   },
   Nethra: {
     area: 'Corporate Team',
-    about: 'Plans sponsorships and outreach, building the connections with companies and founders that help support the lab events.',
+    about: 'Plans sponsorships and outreach, building the connections with companies and founders that help support the club events.',
   },
   Harish: {
     area: 'Corporate Team',
     tag: 'Mentor',
-    about: 'Guides the Corporate Team on sponsorships, partnerships and outreach to the companies and founders the lab works with.',
+    about: 'Guides the Corporate Team on sponsorships, partnerships and outreach to the companies and founders the club works with.',
   },
 };
 

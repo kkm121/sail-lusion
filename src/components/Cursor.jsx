@@ -1,5 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { isFinePointer, isTouch } from '../lib/device';
+import { onTick } from '../lib/ticker';
+import { scrollState } from '../lib/scroll';
 
 export default function Cursor() {
   const dot = useRef(null);
@@ -16,10 +18,10 @@ export default function Cursor() {
     let y = window.innerHeight / 2;
     let cx = x;
     let cy = y;
-    let raf = 0;
     let magnet = null;
     let currentIsLight = false;
     let lastTarget = null;
+    const lightCache = new WeakMap();
 
     const updateLuminance = (clientX, clientY) => {
       const target = document.elementFromPoint(clientX, clientY);
@@ -27,24 +29,8 @@ export default function Cursor() {
       if (target === lastTarget) return;
       lastTarget = target;
 
-      // 1. Dark landmark checks (3D canvas, visual stage, dark modal, dark cards, etc.)
-      const isDarkLandmark = !!target.closest(
-        '.sl-lab-stage, .sl-lab-screen, .sl-lab-device, .sl-lab-canvas, .sl-hero-visual, .sl-end, .sl-overlay, .sl-modal, .sl-cli, .sl-menu-labs, .sl-pill--dark, .sl-reel-card, [data-theme="dark"], .sl-dark, canvas'
-      );
-
-      if (isDarkLandmark) {
-        if (currentIsLight) {
-          currentIsLight = false;
-          el.classList.remove('is-on-light');
-        }
-        return;
-      }
-
-      // 2. Light landmark checks (Footer, Featured, Subpages, light cards)
-      const isLightLandmark = !!target.closest(
-        '.sl-footer, .sl-featured, .sl-sub, .sl-about-hero, .sl-about-block, .sl-projects-head, .sl-pd-meta, .sl-menu-links, .sl-menu-news, .sl-core-card, .sl-pill--white, [data-theme="light"], .sl-light'
-      );
-
+      // 1. Parts that are always light, even though they sit inside a dark page (footer, white pills, menus)
+      const isLightLandmark = !!target.closest('.sl-footer, .sl-menu-links, .sl-menu-news, .sl-pill--white, [data-theme="light"], .sl-light');
       if (isLightLandmark) {
         if (!currentIsLight) {
           currentIsLight = true;
@@ -53,7 +39,36 @@ export default function Cursor() {
         return;
       }
 
+      // 2. Dark landmarks: the 3D stages, dark modals and every inner page (they are all dark now)
+      const isDarkLandmark = !!target.closest(
+        '.sl-lab-stage, .sl-lab-screen, .sl-lab-device, .sl-lab-canvas, .sl-hero-visual, .sl-end, .sl-overlay, .sl-modal, .sl-cli, .sl-menu-labs, .sl-pill--dark, .sl-reel-card, .sl-sub, [data-theme="dark"], .sl-dark, canvas'
+      );
+      if (isDarkLandmark) {
+        if (currentIsLight) {
+          currentIsLight = false;
+          el.classList.remove('is-on-light');
+        }
+        return;
+      }
+
+      // 2b. The light featured section on the home page
+      if (target.closest('.sl-featured')) {
+        if (!currentIsLight) {
+          currentIsLight = true;
+          el.classList.add('is-on-light');
+        }
+        return;
+      }
+
       // 3. Fallback: inspect computed background color of target or ancestors
+      if (lightCache.has(target)) {
+        const cached = lightCache.get(target);
+        if (cached !== currentIsLight) {
+          currentIsLight = cached;
+          el.classList.toggle('is-on-light', cached);
+        }
+        return;
+      }
       let isLight = true;
       let curr = target;
       while (curr && curr !== document.documentElement && curr !== document.body) {
@@ -75,37 +90,40 @@ export default function Cursor() {
         curr = curr.parentElement;
       }
 
+      lightCache.set(target, isLight);
       if (isLight !== currentIsLight) {
         currentIsLight = isLight;
         el.classList.toggle('is-on-light', isLight);
       }
     };
 
-    const render = () => {
-      cx += (x - cx) * 0.2;
-      cy += (y - cy) * 0.2;
-      el.style.transform = `translate3d(${cx}px, ${cy}px, 0)`;
-      raf = requestAnimationFrame(render);
-    };
-    raf = requestAnimationFrame(render);
+    // One loop, and the page is probed for light or dark under the pointer a few times a second,
+    // not on every scroll event.
+    let needProbe = false;
+    let lastProbe = 0;
+    const stopTick = onTick((time, dt) => {
+      const k = 1 - Math.exp(-13 * dt);
+      cx += (x - cx) * k;
+      cy += (y - cy) * k;
+      el.style.transform = `translate3d(${cx.toFixed(2)}px, ${cy.toFixed(2)}px, 0)`;
+      if ((needProbe || scrollState.velocity !== 0) && time - lastProbe > 120) {
+        lastProbe = time;
+        needProbe = false;
+        lastTarget = null;
+        if (el.classList.contains('is-visible')) updateLuminance(x, y);
+      }
+    }, 30);
 
     const onMove = (e) => {
       if (e.pointerType === 'touch' || e.pointerType === 'pen') return;
       x = e.clientX;
       y = e.clientY;
       el.classList.add('is-visible');
-      updateLuminance(x, y);
+      needProbe = true;
 
       if (magnet) {
         const r = magnet.getBoundingClientRect();
         magnet.style.transform = `translate(${(e.clientX - r.left - r.width / 2) * 0.22}px, ${(e.clientY - r.top - r.height / 2) * 0.28}px)`;
-      }
-    };
-
-    const onScroll = () => {
-      if (el.classList.contains('is-visible')) {
-        lastTarget = null;
-        updateLuminance(x, y);
       }
     };
 
@@ -145,16 +163,14 @@ export default function Cursor() {
     const onLeave = () => el.classList.remove('is-visible');
 
     window.addEventListener('pointermove', onMove, { passive: true });
-    window.addEventListener('scroll', onScroll, { passive: true });
     document.addEventListener('pointerover', onOver);
     document.addEventListener('pointerout', onOut);
     document.documentElement.addEventListener('pointerleave', onLeave);
 
     return () => {
       document.documentElement.classList.remove('sl-has-cursor');
-      cancelAnimationFrame(raf);
+      stopTick();
       window.removeEventListener('pointermove', onMove);
-      window.removeEventListener('scroll', onScroll);
       document.removeEventListener('pointerover', onOver);
       document.removeEventListener('pointerout', onOut);
       document.documentElement.removeEventListener('pointerleave', onLeave);

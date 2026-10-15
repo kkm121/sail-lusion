@@ -1,21 +1,18 @@
 import PageShell from '../components/PageShell';
-import SplitLine from '../components/SplitLine';
+import SubHero from '../components/SubHero';
+import Reveal from '../components/Reveal';
+import TransitionLink from '../components/TransitionLink';
 
 export default function NotFound() {
   return (
-    <PageShell back={{ href: '/', label: 'Home' }} next={{ label: 'Home', href: '/' }}>
-      <section className="sl-about-hero" style={{ minHeight: '70svh' }}>
-        <p className="sl-eyebrow">404</p>
-        <h1>
-          <span>
-            <SplitLine text="LOST IN" />
-          </span>
-          <span>
-            <SplitLine text="THE LAB" delay={80} />
-          </span>
-        </h1>
-        <p className="sl-about-lede" style={{ marginTop: 'calc(var(--u) * 4)' }}>That page is not part of the voyage. Head home, or open the CLI with Ctrl K and type help.</p>
-      </section>
+    <PageShell className="is-domain" back={{ href: '/', label: 'Home' }} next={{ label: 'Home', href: '/' }}>
+      <SubHero eyebrow="Error 404" title="Lost in the dark" lede="That page is not part of the voyage. Head home, or open the CLI with Ctrl K and type help." size="s" scrollLabel="Nothing below">
+        <Reveal type="up" y={30} delay={900} className="sl-sh-actions">
+          <TransitionLink className="sl-pill sl-pill--white" href="/" label="Home" data-magnetic>
+            <i /> Back to the start
+          </TransitionLink>
+        </Reveal>
+      </SubHero>
     </PageShell>
   );
 }

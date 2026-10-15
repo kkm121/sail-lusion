@@ -1,134 +1,91 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
-import PreloaderBlob from './PreloaderBlob';
-import { SITE } from '../data/site';
-import { artUrl, projects } from '../data/projects';
+import { useEffect, useRef, useState } from 'react';
+import { useLocation } from 'react-router-dom';
+import LoaderScreen from './LoaderScreen';
+import { assetProgress, assetsDone, expectRoute, pendingAssets, subscribeAssets } from '../lib/assets';
+import { setReady } from '../lib/ready';
 import '../styles/loader.css';
 
 let seen = false;
 
-const STACK = Array.from({ length: 101 }, (_, i) => i % 10);
-
-function Digit({ n }) {
-  return (
-    <span className="col">
-      <span className="stack" style={{ '--n': n }}>
-        {STACK.map((d, i) => (
-          <i key={i}>{d}</i>
-        ))}
-      </span>
-    </span>
-  );
-}
-
-export default function Preloader({ onReady }) {
-  const [done, setDone] = useState(false);
+// The first load: the loader stays up until the fonts, images, reel video, hero scene and the whole voyage scene
+// (models, shaders, textures) are ready, so nothing compiles or decodes while the visitor scrolls.
+export default function Preloader() {
+  const { pathname } = useLocation();
+  const [done, setDone] = useState(seen);
   const [phase, setPhase] = useState('load');
   const [value, setValue] = useState(0);
   const fill = useRef(null);
 
   useEffect(() => {
     if (seen) {
-      onReady?.();
+      setReady();
       return undefined;
     }
     document.documentElement.style.overflow = 'hidden';
     window.scrollTo(0, 0);
-    let loaded = document.readyState === 'complete';
-    let fonts = false;
-    let images = false;
-    const onLoad = () => (loaded = true);
-    window.addEventListener('load', onLoad);
-    document.fonts.ready.then(() => (fonts = true));
-    Promise.all(
-      projects.slice(0, 4).map(
-        (p) =>
-          new Promise((resolve) => {
-            const img = new Image();
-            img.onload = img.onerror = resolve;
-            img.src = artUrl(p);
-          })
-      )
-    ).then(() => (images = true));
+    expectRoute(pathname);
 
     const timers = [];
     const later = (fn, ms) => timers.push(window.setTimeout(fn, ms));
-    const duration = 1500;
-    let last = performance.now();
+    const MIN = 1900;
+    const MAX = 11000;
+    const t0 = performance.now();
+    let last = t0;
     let v = 0;
     let finished = false;
+    let target = 0;
+    const unsub = subscribeAssets(() => (target = assetProgress()));
+
+    const finish = () => {
+      if (finished) return;
+      finished = true;
+      clearInterval(tick);
+      unsub();
+      later(() => setPhase('mark'), 100);
+      later(() => {
+        setPhase('open');
+        document.documentElement.style.overflow = '';
+        setReady();
+      }, 780);
+      later(() => {
+        window.scrollTo(0, 0);
+        seen = true;
+        setDone(true);
+      }, 1800);
+    };
+
     const tick = window.setInterval(() => {
       const now = performance.now();
       const dt = Math.min(now - last, 500);
       last = now;
-      const cap = loaded && fonts && images ? 100 : 91;
-      const rate = (dt / duration) * 100 * (0.55 + 0.9 * Math.sin((Math.min(v, 100) / 100) * Math.PI));
-      v = Math.min(cap, v + Math.max(rate, dt / 2200));
+      const elapsed = now - t0;
+      const ready = assetsDone() && elapsed >= MIN;
+      // Real progress drives the number, but it never races ahead of a calm, readable count.
+      const timeCap = Math.min(1, elapsed / MIN);
+      const cap = ready ? 100 : Math.min(97, Math.max(8, target * 100 * 0.94 + 6), 6 + timeCap * 91);
+      const rate = (dt / MIN) * 100 * (0.55 + 0.9 * Math.sin((Math.min(v, 100) / 100) * Math.PI));
+      v = Math.min(cap, v + Math.max(rate, dt / 2600));
       const p = Math.min(100, v);
       if (fill.current) fill.current.style.transform = `scaleX(${p / 100})`;
       setValue(Math.round(p));
-      if (p >= 99.9 && !finished) {
-        finished = true;
-        clearInterval(tick);
-        later(() => setPhase('mark'), 100);
-        later(() => {
-          setPhase('open');
-          document.documentElement.style.overflow = '';
-          onReady?.();
-        }, 750);
-        later(() => {
-          window.scrollTo(0, 0);
-          seen = true;
-          setDone(true);
-        }, 1750);
+      if (p >= 99.9 || elapsed > MAX) {
+        if (elapsed > MAX && pendingAssets().length) console.warn('Loader continued without:', pendingAssets().join(', '));
+        setValue(100);
+        if (fill.current) fill.current.style.transform = 'scaleX(1)';
+        finish();
       }
     }, 30);
 
-    later(() => {
-      onReady?.();
-      document.documentElement.style.overflow = '';
-      seen = true;
-      setDone(true);
-    }, 5500);
-
     return () => {
       clearInterval(tick);
+      unsub();
       timers.forEach(clearTimeout);
-      window.removeEventListener('load', onLoad);
       document.documentElement.style.overflow = '';
     };
-  }, [onReady]);
+    // The loader runs once for the first route only.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-  const digits = useMemo(() => {
-    const h = Math.floor(value / 100);
-    const t = Math.floor(value / 10);
-    return [h, t, value];
-  }, [value]);
-
-  if (done || seen) return null;
-  return (
-    <div className={`sl-pre sl-preloader is-${phase}`} aria-hidden="true" role="presentation">
-      <div className="sl-pre-half a" />
-      <div className="sl-pre-half b" />
-      <PreloaderBlob progress={value} phase={phase} />
-      <div className="sl-pre-top">
-        <span className="brand">SAIL</span>
-        <span>{SITE.fullName}</span>
-        <span>{SITE.tagline}</span>
-      </div>
-      <div className="sl-pre-stage">
-        <div className="sl-pre-bar">
-          <span className="track" />
-          <span className="fill" ref={fill} />
-        </div>
-        <span className="sl-pre-sail" />
-        <span className="sl-pre-hull" />
-      </div>
-      <div className="sl-pre-digits">
-        <Digit n={digits[0]} />
-        <Digit n={digits[1]} />
-        <Digit n={digits[2]} />
-      </div>
-      <div className="sl-pre-credit">Website made by {SITE.creator}</div>
-    </div>
-  );
+  if (done) return null;
+  return <LoaderScreen className="sl-preloader" phase={phase} value={value} fill={fill} blob />;
 }

@@ -48,3 +48,16 @@
   .sl-pre-top span:nth-child(3) { display: none; }
   .sl-pre-credit { right: auto; left: calc(var(--u) * 4.5); bottom: auto; top: calc(var(--u) * 3.6 + 30px); font-size: 10px; }
 }
+
+/* ---------- route transition: same loader, driven by the router ---------- */
+.sl-pre.sl-tr { z-index: 650; visibility: hidden; pointer-events: none; }
+.sl-pre.sl-tr:is(.is-cover, .is-count, .is-mark, .is-open) { visibility: visible; }
+.sl-pre.sl-tr:is(.is-cover, .is-count, .is-mark) { pointer-events: all; }
+.sl-pre.sl-tr.is-idle .sl-pre-half.a { transform: translate3d(-105%, 0, 0); transition: none; }
+.sl-pre.sl-tr.is-idle .sl-pre-half.b { transform: translate3d(105%, 0, 0); transition: none; }
+.sl-pre.sl-tr.is-cover .sl-pre-half { transition-duration: 0.6s; }
+.sl-pre.sl-tr :is(.sl-pre-top, .sl-pre-digits, .sl-pre-credit) { transition: opacity 0.4s ease 0.25s; }
+.sl-pre.sl-tr:is(.is-idle, .is-cover) :is(.sl-pre-top, .sl-pre-digits, .sl-pre-credit) { opacity: 0; transition-delay: 0s; }
+.sl-pre.sl-tr:is(.is-idle, .is-cover) .sl-pre-stage { opacity: 0; transition: none; }
+.sl-pre.sl-tr.is-count .sl-pre-stage { opacity: 1; transition: opacity 0.4s ease 0.3s; }
+.sl-pre.sl-tr.is-count .sl-pre-top { opacity: 0.7; }

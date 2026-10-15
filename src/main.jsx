@@ -7,6 +7,7 @@ import '@fontsource/jetbrains-mono/500.css';
 import '@fontsource/jetbrains-mono/600.css';
 import './styles/sail.css';
 import './styles/nav.css';
+import './styles/motion.css';
 import App from './App';
 
 if ('scrollRestoration' in history) history.scrollRestoration = 'manual';

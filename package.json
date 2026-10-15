@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.1.0",
   "type": "module",
-  "description": "SAIL (SRM Artificial Intelligence Lab) - immersive local build",
+  "description": "FireFly (FireFly Club) - immersive local build",
   "scripts": {
     "dev": "vite",
     "build": "vite build",

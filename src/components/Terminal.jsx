@@ -18,7 +18,7 @@ const COMMANDS = ['help', 'team', 'domains', 'projects', 'socials', 'creator', '
 
 const HELP = `commands
   help        show this list
-  about       what SAIL is
+  about       what FireFly is
   team        the core team
   domains     the five domains and who runs them
   projects    every project and its status
@@ -31,7 +31,7 @@ const HELP = `commands
 
 const BOOT = [
   { type: 'art', text: BANNER },
-  { type: 'dim', text: 'SRM Artificial Intelligence Lab · associated with AMIEE' },
+  { type: 'dim', text: 'FireFly Club · associated with AMIEE' },
   { type: 'dim', text: "the ship's console · type a command or tap a chip below\n" },
 ];
 
@@ -40,7 +40,7 @@ function run(cmd) {
     case 'help':
       return { type: 'out', text: HELP };
     case 'about':
-      return { type: 'out', text: `${SITE.name} is ${SITE.fullName}, associated with AMIEE.\nA student-run lab for vision, language, robotics and interactive 3D.` };
+      return { type: 'out', text: `${SITE.name} is ${SITE.fullName}, associated with AMIEE.\nA student-run club for vision, language, robotics and interactive 3D.` };
     case 'team':
       return { type: 'out', text: [`core team · ${coreTeam.length} members`, ...coreTeam.map((m) => `  ${m.index}  ${m.name.padEnd(26)}${m.tag ? `[${m.tag}]` : ''}`)].join('\n') };
     case 'domains':
@@ -142,7 +142,7 @@ export default function Terminal({ open, onClose }) {
   };
 
   return (
-    <div className="sl-cli" role="dialog" aria-modal="true" aria-label="SAIL console" onClick={onClose}>
+    <div className="sl-cli" role="dialog" aria-modal="true" aria-label="FireFly console" onClick={onClose}>
       <div className="sl-cli-panel" onClick={(e) => e.stopPropagation()}>
         <div className="sl-cli-bar">
           <span>

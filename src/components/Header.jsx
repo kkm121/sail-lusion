@@ -4,6 +4,9 @@ import TransitionLink from './TransitionLink';
 import { useBuilding, useRecruit, useTerminal } from './RecruitContext';
 import { SITE } from '../data/site';
 import { isSoundOn, playSound, setSound, subscribeSound } from '../lib/sound';
+import { onTick } from '../lib/ticker';
+import { scrollState } from '../lib/scroll';
+import { trackAll } from '../lib/measure';
 
 const PAGES = [
   { label: 'Home', href: '/' },
@@ -37,44 +40,32 @@ export default function Header({ back }) {
 
   useEffect(() => {
     const root = document.documentElement;
-    let raf = 0;
-    const check = () => {
-      // 1. Sub-pages are inherently dark
-      if (document.querySelector('.sl-sub')) {
-        root.classList.add('sl-nav-dark');
-        return;
+    if (document.querySelector('.sl-sub')) {
+      root.classList.add('sl-nav-dark');
+      return () => root.classList.remove('sl-nav-dark');
+    }
+    const track = trackAll(() => [...document.querySelectorAll('#lab, .sl-end, .sl-nav, [data-dark]')]);
+    const retry = [400, 1200, 2800].map((ms) => window.setTimeout(() => window.dispatchEvent(new Event('sl:layout')), ms));
+    let current = null;
+    const stop = onTick(() => {
+      const y = scrollState.y + 75;
+      let dark = false;
+      for (const r of track.rects) {
+        if (!r || y < r.top || y > r.bottom) continue;
+        if (r.el.id === 'lab') {
+          const range = Math.max(r.height - scrollState.vh, 1);
+          if ((scrollState.y - r.top) / range > 0.06) dark = true;
+        } else dark = true;
       }
-      // 2. Lab journey section check
-      const lab = document.getElementById('lab');
-      if (lab) {
-        const r = lab.getBoundingClientRect();
-        if (r.top <= 75 && r.bottom >= 75) {
-          const range = Math.max(r.height - window.innerHeight, 1);
-          const p = -r.top / range;
-          if (p > 0.06) {
-            root.classList.add('sl-nav-dark');
-            return;
-          }
-        }
+      if (dark !== current) {
+        current = dark;
+        root.classList.toggle('sl-nav-dark', dark);
       }
-      // 3. Elements with explicit dark attribute or end section
-      const dark = [...document.querySelectorAll('.sl-end, .sl-nav, [data-dark]')].some((el) => {
-        const r = el.getBoundingClientRect();
-        return r.top <= 75 && r.bottom >= 75;
-      });
-      root.classList.toggle('sl-nav-dark', dark);
-    };
-    const onScroll = () => {
-      cancelAnimationFrame(raf);
-      raf = requestAnimationFrame(check);
-    };
-    check();
-    window.addEventListener('scroll', onScroll, { passive: true });
-    window.addEventListener('resize', onScroll);
+    }, 6);
     return () => {
-      cancelAnimationFrame(raf);
-      window.removeEventListener('scroll', onScroll);
-      window.removeEventListener('resize', onScroll);
+      stop();
+      track.stop();
+      retry.forEach(clearTimeout);
       root.classList.remove('sl-nav-dark');
     };
   }, []);
@@ -95,9 +86,9 @@ export default function Header({ back }) {
   return (
     <>
       <header className="sl-nav-bar">
-        <TransitionLink className="brand" href="/" label="Home" aria-label="SAIL home">
-          <b>SAIL</b>
-          <small>SRM AI Lab · Associated with AMIEE</small>
+        <TransitionLink className="brand" href="/" label="Home" aria-label="FireFly home">
+          <b>FireFly</b>
+          <small>Student club · Associated with AMIEE</small>
         </TransitionLink>
 
         <nav className="links" aria-label="Primary">
@@ -120,7 +111,7 @@ export default function Header({ back }) {
           <button className="btn ghost" type="button" onClick={soon('Sign in')} data-magnetic>
             Sign in
           </button>
-          <button className="btn cli" type="button" onClick={openTerminal} data-magnetic aria-label="Open the SAIL CLI">
+          <button className="btn cli" type="button" onClick={openTerminal} data-magnetic aria-label="Open the FireFly CLI">
             CLI <span aria-hidden="true">⚡</span>
           </button>
           <button className="btn menu" type="button" aria-expanded={open} aria-controls="sl-menu" onClick={() => setOpen((o) => !o)}>
@@ -165,7 +156,7 @@ export default function Header({ back }) {
           </a>
         </div>
         <div className="sl-menu-news">
-          <h3>Follow the lab</h3>
+          <h3>Follow the club</h3>
           <div className="sl-menu-social">
             <a href={SITE.instagram} target="_blank" rel="noreferrer" tabIndex={open ? 0 : -1}>
               Instagram ↗

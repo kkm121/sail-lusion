@@ -28,7 +28,7 @@ page.on('response', (r) => {
   if (r.status() >= 400) seen.set(`http ${r.status()}: ${r.url().slice(0, 160)}`, 1);
 });
 
-for (const url of ['/', '/about', '/domains', '/domains/technical', '/projects', '/projects/sail-vision-core']) {
+for (const url of ['/', '/about', '/domains', '/domains/technical', '/projects', '/projects/vision-core']) {
   await page.goto(`${process.env.BASE || 'http://127.0.0.1:5180'}${url}`, { waitUntil: 'domcontentloaded' });
   for (let i = 0; i < 120; i++) {
     if (!(await page.evaluate(() => !!document.querySelector('.sl-pre')))) break;

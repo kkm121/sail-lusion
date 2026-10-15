@@ -5,9 +5,9 @@ import Terminal from './Terminal';
 const Ctx = createContext({ building: () => {}, openTerminal: () => {} });
 
 export const MESSAGES = {
-  Recruitment: 'Applications will open here soon. Follow SAIL to hear the moment they go live.',
-  'Sign in': 'Accounts and sign-in will open here soon. Follow SAIL to hear the moment they go live.',
-  'Sign up': 'Sign-up will open together with recruitment. Follow SAIL to hear the moment it goes live.',
+  Recruitment: 'Applications will open here soon. Follow FireFly to hear the moment they go live.',
+  'Sign in': 'Accounts and sign-in will open here soon. Follow FireFly to hear the moment they go live.',
+  'Sign up': 'Sign-up will open together with recruitment. Follow FireFly to hear the moment it goes live.',
 };
 
 export const useBuilding = () => useContext(Ctx).building;

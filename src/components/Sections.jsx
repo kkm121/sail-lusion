@@ -1,6 +1,8 @@
 import { lazy, Suspense } from 'react';
-import ProjectTile from './ProjectTile';
-import SplitLine from './SplitLine';
+import ProjectGrid from './ProjectGrid';
+import Text from './Text';
+import Reveal from './Reveal';
+import Marquee from './Marquee';
 import TransitionLink from './TransitionLink';
 import FluidBackdrop from './FluidBackdrop';
 import { useBuilding, useRecruit, useTerminal } from './RecruitContext';
@@ -15,15 +17,16 @@ const Plus = () => (
   </span>
 );
 
+const VOYAGE = ['Build', 'Discover', 'Create', 'Connect', 'Record'];
+const FIELDS = ['Computer Vision', 'Language Models', 'Robotics', 'Interactive 3D', 'Data Science', 'Edge Intelligence', 'Research', 'Community'];
+
 export function Hero() {
   return (
     <section className="sl-hero" id="home-hero">
       <h1 className="sl-tagline">
-        We build intelligent systems
-        <br />
-        and bring AI ideas to life
-        <br />
-        with the SRM community
+        <Text type="lines" trigger="ready">
+          We build intelligent systems and bring AI ideas to life with the SRM community
+        </Text>
       </h1>
       <div className="sl-hero-visual">
         <Suspense fallback={null}>
@@ -36,9 +39,20 @@ export function Hero() {
       </div>
       <div className="sl-hero-scroll">
         <Plus />
-        <span>Scroll to explore</span>
+        <Text as="span" type="scramble" trigger="ready" delay={900}>
+          Scroll to explore
+        </Text>
         <Plus />
       </div>
+    </section>
+  );
+}
+
+export function VoyageTicker() {
+  return (
+    <section className="sl-voyage" aria-label="The five chapters of the club">
+      <Marquee variant="outline" items={VOYAGE} speed={46} dir={1} label="Build, Discover, Create, Connect, Record" />
+      <Marquee variant="mono" items={FIELDS} speed={34} dir={-1} className="sl-voyage-mono" />
     </section>
   );
 }
@@ -48,21 +62,19 @@ export function Featured({ list = projects.slice(0, 4), withCta = true }) {
     <section className="sl-featured" id="featured">
       <div className="sl-featured-head">
         <h2>
-          <SplitLine text="Featured Work" />
+          <Text type="chars">Featured Work</Text>
         </h2>
-        <p>The cargo so far: what the crew has brought back from its voyages. Placeholders for now, real work as it ships.</p>
+        <Text as="p" type="lines" delay={160}>
+          The cargo so far: what the crew has brought back from its voyages. Placeholders for now, real work as it ships.
+        </Text>
       </div>
-      <div className="sl-grid">
-        {list.map((p) => (
-          <ProjectTile key={p.id} p={p} />
-        ))}
-      </div>
+      <ProjectGrid list={list} />
       {withCta && (
-        <div className="sl-featured-cta">
+        <Reveal type="up" className="sl-featured-cta">
           <TransitionLink className="sl-pill sl-pill--white" href="/projects" label="Projects" data-magnetic>
             See all projects
           </TransitionLink>
-        </div>
+        </Reveal>
       )}
     </section>
   );
@@ -74,14 +86,19 @@ export function End() {
     <section className="sl-end" id="end">
       <FluidBackdrop />
       <div className="sl-end-inner">
-        <small>The crew has a seat for you</small>
+        <small>
+          <Text type="scramble">The crew has a seat for you</Text>
+        </small>
         <h2>
           <button type="button" onClick={recruit} data-cursor="JOIN">
-            <SplitLine text="Join the lab!" />
+            <Text type="chars">Join the club!</Text>
           </button>
         </h2>
-        <p className="hint">Continue to scroll</p>
+        <Text as="p" type="words" className="hint" delay={300}>
+          Continue to scroll
+        </Text>
       </div>
+      <Marquee variant="mono" items={['Recruitment open', 'Apply now', 'Computer vision', 'Language', 'Robotics', 'Creative tech']} speed={40} dir={1} className="sl-end-mq" />
     </section>
   );
 }
@@ -92,8 +109,9 @@ export function Footer({ next = { label: 'About us', href: '/about' } }) {
   return (
     <>
       <footer className="sl-footer">
+        <Marquee variant="outline" items={['FireFly', 'Student club', 'AMIEE']} speed={34} dir={-1} className="sl-footer-mq" label="FireFly, FireFly, AMIEE" />
         <div className="sl-footer-mid">
-          <div className="sl-footer-contact">
+          <Reveal type="up" className="sl-footer-contact">
             <p>
               {SITE.address.map((line, i) => (
                 <span key={line}>
@@ -124,16 +142,16 @@ export function Footer({ next = { label: 'About us', href: '/about' } }) {
                 CLI <em>Ctrl K</em>
               </button>
             </p>
-          </div>
+          </Reveal>
           <div className="sl-footer-news">
             <h3>
-              Join us in
-              <br />
-              building what&apos;s next
+              <Text type="lines">Join us in building what&apos;s next</Text>
             </h3>
-            <a className="sl-pill sl-pill--dark sl-footer-pill" href={SITE.instagram} target="_blank" rel="noreferrer" data-magnetic>
-              Follow on Instagram <i />
-            </a>
+            <Reveal type="up" delay={220}>
+              <a className="sl-pill sl-pill--dark sl-footer-pill" href={SITE.instagram} target="_blank" rel="noreferrer" data-magnetic>
+                Follow on Instagram <i />
+              </a>
+            </Reveal>
           </div>
         </div>
         <div className="sl-footer-bottom">

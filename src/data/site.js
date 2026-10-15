@@ -1,6 +1,6 @@
 export const SITE = {
-  name: 'SAIL',
-  fullName: 'SRM Artificial Intelligence Lab',
+  name: 'FireFly',
+  fullName: 'FireFly Club',
   tagline: 'associated with AMIEE',
   instagram: 'https://www.instagram.com/sail.srmofficial/',
   linkedin: 'https://www.linkedin.com/company/amiee-srmist/?originalSubdomain=in',

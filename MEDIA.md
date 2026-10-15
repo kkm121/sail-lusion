@@ -6,7 +6,7 @@ The site tells one story (see [STORY.md](STORY.md)). Everything below was downlo
 
 | Story role | File | Flag in `src/data/media.js` |
 | --- | --- | --- |
-| **Nav**, the lab's friendly robot | `public/models/navigator.glb` | `HAVE.navigator` |
+| **Nav**, the club's friendly robot | `public/models/navigator.glb` | `HAVE.navigator` |
 | The crew (intro photo, slide 1) | `public/media/crew.jpg` | `HAVE.crew` |
 | The crew building a robot (slide 2) | `public/media/build.jpg` | `HAVE.build` |
 | The mission recording (reel card) | `public/video/reel-desktop.mp4`, `reel-mobile.mp4` | built from the clips below (see Rebuilding the reel) |
@@ -37,6 +37,8 @@ The site tells one story (see [STORY.md](STORY.md)). Everything below was downlo
 | `engineering-handbook.jpg` | [Pexels 7054513](https://www.pexels.com/photo/7054513/) | Pexels licence |
 | Reel clips (network, coding eye, humanoid robot, robot face, circuit board, robot arm, small humanoid, students, data centre) | Mixkit videos 31510, 46635, 21921, 20961, 47051, 47257, 49042, 48166, 23282 | Mixkit Stock Video Free License |
 | `quantum-tensor-decomposition.jpg`, `lab-screen.jpg` | stills from Mixkit videos 31771 and 23282 | Mixkit Stock Video Free License |
+
+Fonts (Space Grotesk, Inter, JetBrains Mono) are installed from npm through `@fontsource` and are licensed under the SIL Open Font License 1.1.
 
 Generated placeholder art was removed; every image on the site is a real photo or footage from the sources above. Pexels and Mixkit do not require attribution, but the table keeps the trail so any asset can be swapped later. The project photos are stand-ins for the real work and can be replaced file by file.
 

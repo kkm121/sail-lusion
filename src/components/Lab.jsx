@@ -56,12 +56,13 @@ export default function Lab() {
         w.style.transform = 'none';
         const wr = w.getBoundingClientRect();
         w.style.transform = prev;
-        let dx = (wr.left + wr.width / 2 - cx) / (r.width / 2);
-        const dy = (wr.top + wr.height / 2 - cy) / (r.height / 2);
-        const sgn = dx === 0 ? (i % 2 ? 1 : -1) : Math.sign(dx);
-        dx = sgn * (0.38 + Math.abs(dx) * 0.62);
-        w.style.setProperty('--dx', dx.toFixed(3));
-        w.style.setProperty('--dy', dy.toFixed(3));
+        // Offset of each word from the middle of the block. Words move outward along it, so spacing grows with the scale.
+        let ox = wr.left + wr.width / 2 - cx;
+        const oy = wr.top + wr.height / 2 - cy;
+        const min = r.width * 0.07;
+        if (Math.abs(ox) < min) ox = (ox === 0 ? (i % 2 ? 1 : -1) : Math.sign(ox)) * min;
+        w.style.setProperty('--cx', ox.toFixed(1));
+        w.style.setProperty('--cy', (Math.abs(oy) < 4 ? (i % 2 ? 1 : -1) * 6 : oy).toFixed(1));
       });
     };
     measure();
@@ -112,18 +113,19 @@ export default function Lab() {
         dev.style.setProperty('--bz', `${lerp(13, 0, seg(e, 0.55, 1)) / eff}px`);
       }
 
-      const ringIn = seg(p, 0.22, 0.34) * (1 - seg(p, 0.66, 0.72));
+      const ringIn = seg(p, 0.3, 0.4) * (1 - seg(p, 0.7, 0.8));
       if (ring.current) {
         ring.current.style.opacity = String(ringIn);
-        ring.current.style.transform = `translate(-50%, -50%) scale(${lerp(0.7, 1.06, seg(p, 0.22, 0.7))})`;
+        ring.current.style.transform = `translate(-50%, -50%) scale(${lerp(0.72, 1.04, seg(p, 0.3, 0.62))})`;
       }
 
-      const wIn = seg(p, 0.37, 0.44);
-      const sp = ease(seg(p, 0.5, 0.68));
+      // Words fade in small around Nav, then fly outward past the camera while growing huge.
+      const wIn = seg(p, 0.34, 0.4);
+      const sp = seg(p, 0.43, 0.6);
       if (words.current) {
-        words.current.style.setProperty('--sp', (1 - Math.pow(1 - sp, 2.2)).toFixed(4));
-        words.current.style.setProperty('--sc', (sp * sp).toFixed(4));
-        words.current.style.opacity = String(wIn * (1 - seg(p, 0.64, 0.7)));
+        words.current.style.setProperty('--ex', (Math.pow(sp, 1.15) * 11).toFixed(4));
+        words.current.style.setProperty('--s', (1 + Math.pow(sp, 2.7) * 16).toFixed(4));
+        words.current.style.opacity = String(wIn * (1 - seg(p, 0.57, 0.605)));
       }
       if (giant.current) {
         giant.current.style.opacity = '0';
@@ -194,7 +196,7 @@ export default function Lab() {
           <div className="sl-lab-intro">
             <h2>
               <span>
-                <SplitLine text="Inside the lab," />
+                <SplitLine text="Inside FireFly," />
               </span>
               <span>
                 <SplitLine text="a mind is" delay={90} />
@@ -226,7 +228,7 @@ export default function Lab() {
         </div>
 
         <div className="sl-lab-giant" ref={giant} aria-hidden="true">
-          LAB
+          FLY
         </div>
         <div className="sl-lab-words" ref={words} aria-label="Come aboard. Follow the signal. Ask what is next.">
           {LINES.map((line, li) => (

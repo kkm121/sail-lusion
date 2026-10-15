@@ -3,6 +3,8 @@ import * as THREE from 'three';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { createEnvironment, seeded } from '../lib/three-utils';
 import { hasWebGL, isTouch } from '../lib/device';
+import { resolveAsset } from '../lib/assets';
+import { whenShown } from '../lib/ready';
 
 function gyroGeometry() {
   const parts = [new THREE.SphereGeometry(0.42, 32, 24)];
@@ -42,7 +44,10 @@ export default function HeroScene() {
 
   useEffect(() => {
     const el = host.current;
-    if (!el || !hasWebGL()) return undefined;
+    if (!el || !hasWebGL()) {
+      resolveAsset('hero');
+      return undefined;
+    }
     const touch = isTouch();
     let disposed = false;
     let envHandle = null;
@@ -169,8 +174,11 @@ export default function HeroScene() {
     const m4 = new THREE.Matrix4();
     const sc = new THREE.Vector3();
 
-    const t0 = performance.now();
-    let prev = t0;
+    // The cluster pops in when the loader opens, not while it is still covered.
+    let t0 = performance.now() + 60000;
+    const unready = whenShown(() => (t0 = performance.now()));
+    let frames = 0;
+    let prev = performance.now();
     let raf = 0;
     const tick = () => {
       raf = requestAnimationFrame(tick);
@@ -179,9 +187,10 @@ export default function HeroScene() {
         return;
       }
       const now = performance.now();
-      const dt = Math.min((now - prev) / 1000, 1 / 30);
+      const dt = Math.max(0.0001, Math.min((now - prev) / 1000, 1 / 30));
       prev = now;
-      const t = (now - t0) / 1000;
+      const t = Math.max((now - t0) / 1000, -1);
+      if (frames < 4 && ++frames === 4) resolveAsset('hero');
 
       if (!real || now - lastMove > 3500) {
         ndc.set(Math.cos(t * 0.37) * 0.55, Math.sin(t * 0.53) * 0.4);
@@ -296,6 +305,7 @@ export default function HeroScene() {
 
     return () => {
       disposed = true;
+      unready();
       cancelAnimationFrame(raf);
       ro.disconnect();
       io.disconnect();

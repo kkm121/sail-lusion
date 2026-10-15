@@ -7,7 +7,7 @@ export const leadershipTeam = [
     division: 'Executive Leadership',
     badge: 'PRESIDENT',
     badgeStyle: 'bg-red-500/15 text-red-400 border-red-500/30',
-    bio: 'Sets the direction of SAIL, represents the lab, and guides every team towards its goals.',
+    bio: 'Sets the direction of FireFly, represents the club, and guides every team towards its goals.',
   },
   {
     name: 'Bedabrata Bhattacharjee',
@@ -32,7 +32,7 @@ export const teams = [
     id: 'technical',
     name: 'Technical Team',
     accent: 'text-cyan-400',
-    blurb: 'Builds and maintains the club website, builds registration pages and databases for every event, and owns all technical and project work for the lab. Secretary Sai Srikanth also works within this team.',
+    blurb: 'Builds and maintains the club website, builds registration pages and databases for every event, and owns all technical and project work for the club. Secretary Sai Srikanth also works within this team.',
     lead: { name: 'Tharun', role: 'Head' },
     members: ['Dharun', CREATOR],
   },

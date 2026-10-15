@@ -1,4 +1,4 @@
-import puppeteer from 'puppeteer-core';
+﻿import puppeteer from 'puppeteer-core';
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -21,7 +21,7 @@ if (mode === 'mobile') {
   await page.setUserAgent('Mozilla/5.0 (Linux; Android 13; 2201122C) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Mobile Safari/537.36');
   await page.setViewport({ width: 412, height: 860, deviceScaleFactor: 1.5, isMobile: true, hasTouch: true });
 } else {
-  await page.setViewport({ width: 1440, height: 900, deviceScaleFactor: 1 });
+  await page.setViewport({ width: 1440, height: 900, deviceScaleFactor: Number(process.env.DPR || 1) });
 }
 await page.goto('http://127.0.0.1:5180/', { waitUntil: 'domcontentloaded' });
 for (let i = 0; i < 160; i++) {
@@ -49,3 +49,4 @@ for (const p of stops) {
 }
 console.log('problems', JSON.stringify([...new Set(problems)].slice(0, 10)));
 await browser.close();
+

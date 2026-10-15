@@ -1,6 +1,8 @@
 import { useMemo } from 'react';
 import * as THREE from 'three';
 
+export const labState = { nav: false };
+
 export const seg = (p, a, b) => Math.min(1, Math.max(0, (p - a) / (b - a)));
 export const lerp = (a, b, t) => a + (b - a) * t;
 export const ease = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
@@ -57,7 +59,8 @@ export function makeGlowMaterial(size, color, gain, fall = 3.4) {
   });
 }
 
-const quad = new THREE.PlaneGeometry(1, 1);
+export const glowQuad = new THREE.PlaneGeometry(1, 1);
+const quad = glowQuad;
 
 export function SoftGlow({ position, size, color, gain = 1, fall = 3.4, order = 2 }) {
   const mat = useMemo(() => makeGlowMaterial(size, color, gain, fall), [size, color, gain, fall]);
