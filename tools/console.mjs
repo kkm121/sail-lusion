@@ -8,6 +8,8 @@ const browser = await puppeteer.launch({
   args: ['--no-sandbox', '--ignore-gpu-blocklist'],
 });
 const page = await browser.newPage();
+page.setDefaultNavigationTimeout(180000);
+page.setDefaultTimeout(180000);
 if (mode === 'mobile') {
   await page.setUserAgent('Mozilla/5.0 (Linux; Android 13; 2201122C) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Mobile Safari/537.36');
   await page.setViewport({ width: 412, height: 860, deviceScaleFactor: 1.5, isMobile: true, hasTouch: true });

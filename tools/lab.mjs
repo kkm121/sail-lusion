@@ -11,6 +11,8 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 const browser = await puppeteer.launch({ executablePath: process.env.BROWSER_PATH || 'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe', headless: 'new', args: ['--no-sandbox', '--ignore-gpu-blocklist'] });
 const page = await browser.newPage();
+page.setDefaultNavigationTimeout(180000);
+page.setDefaultTimeout(180000);
 const problems = [];
 page.on('pageerror', (e) => problems.push('pageerror: ' + e.message));
 page.on('console', (m) => { if (['error'].includes(m.type())) problems.push(m.type() + ': ' + m.text().slice(0, 200)); });

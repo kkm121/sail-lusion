@@ -13,6 +13,8 @@ fs.mkdirSync(out, { recursive: true });
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const browser = await puppeteer.launch({ executablePath: 'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe', headless: 'new', args: ['--no-sandbox', '--ignore-gpu-blocklist'] });
 const page = await browser.newPage();
+page.setDefaultNavigationTimeout(180000);
+page.setDefaultTimeout(180000);
 const errs = [];
 page.on('pageerror', (e) => errs.push(e.message));
 page.on('console', (m) => { if (m.type() === 'error') errs.push(m.text().slice(0, 200)); });

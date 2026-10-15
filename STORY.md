@@ -4,7 +4,7 @@ A short film you scroll through. Everything on the site, every animation, colour
 
 ## Logline
 
-A mind made of glass wakes up in the dark. Beside it, a small robot called Nav, the lab's first machine, is waiting for that mind to arrive. Together, with a crew of seventeen students, they cross five chapters of the lab and turn a question into something that works. You are the next to come aboard.
+A small robot called Nav, the lab's first machine, wakes up in the dark. Together with a crew of seventeen students it crosses five chapters of the lab and turns a question into something that works. You are the next to come aboard.
 
 ## The idea behind it
 
@@ -14,7 +14,6 @@ SAIL is a ship, and the unknown is the sea. The wind is curiosity. The sail is t
 
 | Who | What it is on screen | Meaning |
 | --- | --- | --- |
-| **The Core** | The glass crystal (the exact blob from the deployed site) | The lab's mind. It starts dim and small, grows brighter as the voyage goes on |
 | **Nav** | A friendly low-poly robot (CC0) with big expressive eyes, wave, nod and thumbs-up | The lab's first machine. An AI lab's natural hero: a robot waiting to be given a mind. It guides us through every chapter |
 | **The Ideas** | The ring-and-sphere cluster in the hero | Thoughts drifting in the dark. They scatter when you touch them, because curiosity moves things |
 | **The Crew** | The 17 core members on the About page | The people behind the voyage. Equal space, equal responsibility |
@@ -23,7 +22,7 @@ SAIL is a ship, and the unknown is the sea. The wind is curiosity. The sail is t
 
 | Colour | Meaning | Where it shows |
 | --- | --- | --- |
-| Teal `#00f5d4` | Signal, curiosity, the Core | Core, ribbon, buttons, the first chapter |
+| Teal `#00f5d4` | Signal, curiosity | Ribbon, buttons, Nav's glow, the first chapter |
 | Violet `#8b5cf6` | Imagination | Ideas, lattice, R&D |
 | White | Clarity | Ideas, the bright room |
 | Black | Rigor | Ideas, the cage |
@@ -50,14 +49,14 @@ Project tiles, each tagged with its domain and status. They bend with your scrol
 *Meaning: what the crew has already brought back from earlier voyages.*
 
 ### Act III: The Voyage (the lab)
-The longest scene. A console appears (a tablet frame) with the Core inside, floating above a planet: home. The heading says *Inside the lab, a mind is waking up.* Nav stands beside the Core and looks at it. We scroll and the console grows until we are inside it. The headline bursts apart and Nav drifts into view, still looking back at the Core. Then five chapters, one per domain, each a different space with its own colour. Nav is always in frame, small against the scale, and he reacts to each space: he flies ahead on a teal thruster, leaning into the flight and doing a barrel roll or flip at every chapter change, dances in the bright room, drifts calmly through the open worlds, nods yes in the last chapter, then waves and gives a thumbs-up at the end.
+The longest scene. A console appears (a tablet frame) showing the first corridor. The heading says *Inside the lab, a mind is waking up.* We scroll and the console grows until we are inside it. The headline bursts apart and Nav drifts into view. Then five chapters, one per domain, each a different space with its own colour. Nav is always in frame, small against the scale, and he reacts to each space: he flies ahead on a teal thruster, leaning into the flight and doing a barrel roll or flip at every chapter change, dances in the bright room, drifts calmly through the open worlds, nods yes in the last chapter, then waves and gives a thumbs-up at the end.
 
 | Chapter | Domain | Space | Meaning |
 | --- | --- | --- | --- |
-| I. Build | Technical Core | A dark steel cage with data glitching along the beams and a thin light-gold glass glow in one corner | Structure comes first: rigor and engineering |
+| I. Build | Technical Core | A dark steel cage with data glitching along the beams and a soft gold glow in one corner | Structure comes first: rigor and engineering |
 | II. Discover | R&D Lab | A dense woven vortex of teal, violet and gold light strands spiralling inward around a silk wall, with motes streaming through it | A network forming into something that looks like art, not a diagram. Research is flying toward what nobody has seen |
-| III. Create | Spatial Design | A bright room of rings and arches | Colour and light arrive. Design makes it feel alive |
-| IV. Connect | Corporate and Operations | Open space with soft glowing orbs drifting past, each a different colour, brightest at the centre and fading evenly outward | Other crews and companies: bright minds we can reach |
+| III. Create | Spatial Design | A blue room of white rings and arches that ends in a pane of glass | Colour and light arrive. Design makes it feel alive |
+| IV. Connect | Corporate and Operations | The glass shatters and we float through a field of stickers (a smile, a gear, a star, a chip, a rocket): the people and tools of other crews | Other crews and companies: bright minds we can reach |
 | V. Record | Operations and Media | Open space again, Nav alone, waving | The voyage is written down. The robot says goodbye |
 
 As you scroll, each chapter title rises letter by letter from the bottom of the screen, holds, then sinks away as the next one arrives, with the domain name above it and a one-line meaning below. A five-step rail on the right edge tracks the voyage, and a "Next chapter" tag appears near the end of every chapter. At the end Nav waves goodbye in open space. One button, bottom right: *Explore the chapters.*
@@ -74,7 +73,7 @@ The fluid glow behind the final heading is the wake of the ship. *The crew has a
 | About | The Crew | Dark glass panels, as on the deployed site |
 | Domains | The Chapters: one tab per chapter, with its team and achievements | Dark glass panels, segmented tabs |
 | Projects | The Logbook: every project and its status | Dark glass panels |
-| CLI | The ship's console: what the Core would answer if asked | Docked terminal |
+| CLI | The ship's console: what the ship would answer if asked | Docked terminal |
 | Sign in, Sign up, Recruitment | The boarding pass: still being printed | "Currently building" popup |
 
 ## Rules so everything fits
@@ -93,7 +92,7 @@ The fluid glow behind the final heading is the wake of the ship. *The crew has a
 | Two photos of students at work | The Question scene and About | Pexels, free to use |
 | A quadruped robot cameo (optional) | Chapter I, a nod to Project Chiron | Only if a licence without attribution is found |
 
-Everything else (the Core, the Ideas, the cage, the lattice, the room, the art) is generated in code or by our own render scripts.
+Everything else (the Ideas, the cage, the vortex, the room, the stickers, the art) is generated in code or by our own render scripts.
 
 ## Open choices for the team
 

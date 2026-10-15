@@ -48,7 +48,7 @@ export default function HeroScene() {
     let envHandle = null;
 
     const renderer = new THREE.WebGLRenderer({ antialias: !touch, alpha: false, powerPreference: 'high-performance' });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, touch ? 1.5 : 2));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, touch ? 1.25 : 1.5));
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 1.02;
     renderer.setClearColor(0x0c1015);

@@ -2,7 +2,7 @@ import { Suspense, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import Ribbon from './Ribbon';
 import SplitLine from './SplitLine';
 import TransitionLink from './TransitionLink';
-import { CHAPTERS, pAtZ } from '../lib/journey';
+import { CHAPTERS, ROOM_START, pAtZ } from '../lib/journey';
 import LabScene from './LabScene';
 import '../styles/lab.css';
 
@@ -129,7 +129,8 @@ export default function Lab() {
         giant.current.style.opacity = '0';
       }
       if (fade.current) {
-        fade.current.style.opacity = '0';
+        const f = Math.min(seg(p, pAtZ(ROOM_START + 14), pAtZ(ROOM_START - 2)), 1 - seg(p, pAtZ(ROOM_START - 2), pAtZ(ROOM_START - 20)));
+        fade.current.style.opacity = String(Math.max(f, 0) * 0.92);
       }
 
       let active = -1;

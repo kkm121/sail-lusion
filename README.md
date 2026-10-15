@@ -15,10 +15,10 @@
 SAIL is a state-of-the-art interactive web experience inspired by top-tier award-winning creative engineering:
 - **Preloader & Reveal**: High-speed rolling counter, dynamic SVG geometry build-up, and razor-sharp diagonal split reveal.
 - **Interactive Physics Hero**: Instanced orbit-node cluster featuring simulated spring dynamics and reactive pointer push.
-- **Cinematic Showreel Warp**: Pinned perspective showreel card with smooth inertia warp and blur dissipation.
-- **Deep Lab Journey**: Five-chapter continuous voyage driven by scroll: Build (steel cage), Discover (a dense woven light vortex), Create (a lit neon room), Connect (glowing orbs) and Record (Nav waves goodbye). Nav, the robot, tumbles weightlessly through all of it.
-- **Hero Cybernetic Navigator & Companion Drone**: Real-time PBR ceramic armor, titanium exoskeleton, and dual counter-rotating gimbal drone stabilizer.
-- **Prismatic Amiee Core**: High-detail transmission shader with chromatic aberration, internal emissive plasma, and organic distortion.
+- **Showreel Warp**: A tilted, skewed reel card that straightens as it reaches the middle of the screen and then scrolls away with the page (no pin, the section is the same height as the reference at 1440x900). Title lines scissor in, the copy fades up with light parallax.
+- **Deep Lab Journey**: Five-chapter continuous voyage driven by scroll: Build (a dark steel cage with a gold glow), Discover (a woven light vortex of rings, rays and glass facets), Create (a blue room that ends in a glass pane), Connect (the pane shatters into a field of stickers) and Record (Nav waves goodbye). Nav, the robot, tumbles weightlessly through all of it.
+- **Nav**: A CC0 robot with per-chapter clips (idle, dance, wave), lit as white ceramic and brushed titanium.
+- **Performance**: Every chapter is drawn once during the loader so shaders compile before they are needed, the image layer renders only when something moves, and the 3D canvas drops pixel ratio and post effects if the frame rate falls.
 - **Docked Cyber CLI**: Full keyboard-accessible terminal with auto-complete chips, history, and lab command execution.
 - **Universal Smooth Scroll**: Powered by Lenis with continuous velocity damping and native touch acceleration for seamless mobile delivery.
 

@@ -69,7 +69,7 @@ void main(){
   gl_FragColor = vec4(col * a, a);
 }`;
 
-const stage = { canvas: null, renderer: null, scene: null, camera: null, geo: null, items: new Set(), stop: null, vel: 0, w: 1, h: 1 };
+const stage = { sig: 0, canvas: null, renderer: null, scene: null, camera: null, geo: null, items: new Set(), stop: null, vel: 0, w: 1, h: 1 };
 const NOGL = {};
 const DUO = [new THREE.Color('#070425'), new THREE.Color('#6a3dff'), new THREE.Color('#00f5d4')];
 
@@ -84,6 +84,7 @@ function resize() {
   const h = window.innerHeight;
   stage.w = w;
   stage.h = h;
+  stage.sig = 0;
   renderer.setSize(w, h, false);
   camera.left = -w / 2;
   camera.right = w / 2;
@@ -98,6 +99,8 @@ function frame() {
   stage.vel += (target - stage.vel) * 0.12;
   const vh = stage.h;
   let any = false;
+  let sig = stage.vel * 977;
+  let live = false;
   stage.items.forEach((it) => {
     if (!it.ready) return;
     const r = it.box.getBoundingClientRect();
@@ -107,6 +110,8 @@ function frame() {
     if (!on) return;
     any = true;
     const g = it.box.__gl || NOGL;
+    if (it.video) live = true;
+    sig += r.top * 1.01 + r.left * 1.3 + r.width * 0.7 + r.height * 0.9 + (g.x || 0) * 1.7 + (g.y || 0) * 1.9 + (g.rot || 0) * 311 + (g.scale || 0) * 257 + (g.skew || 0) * 199 + (g.bend || 0) * 173 + (g.blur || 0) * 131 + (g.desat || 0) * 113 + (g.lift || 0) * 97;
     const sc = g.scale === undefined ? 1 : g.scale;
     it.mesh.scale.set(r.width * sc, r.height * sc, 1);
     it.mesh.position.set(r.left + r.width / 2 - stage.w / 2 + (g.x || 0), -(r.top + r.height / 2 - vh / 2 + (g.y || 0)), 0);
@@ -129,8 +134,11 @@ function frame() {
     const want = (parseFloat(it.box.dataset.tint || '0') || 0) * (it.box.dataset.tintHover ? 1 - it.hover : 1);
     it.tint += (want - it.tint) * 0.12;
     u.uTint.value = it.tint;
+    sig += it.tint * 53 + it.hover * 47 + u.uPoint.value.x * 31 + u.uPoint.value.y * 29;
   });
   if (any) {
+    if (!live && Math.abs(sig - stage.sig) < 1e-6) return;
+    stage.sig = sig;
     renderer.render(scene, camera);
     stage.cleared = false;
   } else if (!stage.cleared) {
@@ -142,8 +150,8 @@ function frame() {
 export function attachStage(canvas) {
   if (!glSupported()) return () => {};
   if (stage.canvas === canvas) return () => {};
-  const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true, premultipliedAlpha: true, powerPreference: 'high-performance' });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.75));
+  const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: false, premultipliedAlpha: true, powerPreference: 'high-performance' });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
   renderer.setClearColor(0x000000, 0);
   stage.canvas = canvas;
   stage.renderer = renderer;
@@ -167,7 +175,7 @@ export function attachStage(canvas) {
 }
 
 export function registerMedia({ box, media, video = false }) {
-  const item = { box, media, ready: false, hover: 0, tint: 0, hovering: false, mesh: null, mat: null, tex: null };
+  const item = { box, media, video, ready: false, hover: 0, tint: 0, hovering: false, mesh: null, mat: null, tex: null };
 
   const build = () => {
     if (!stage.renderer || item.mesh) return;
@@ -223,6 +231,7 @@ export function registerMedia({ box, media, video = false }) {
     item.ready = true;
     box.dataset.gl = '1';
     stage.cleared = false;
+    stage.sig = 0;
   };
 
   const ready = () => (video ? media.readyState >= 2 : media.complete && media.naturalWidth > 0);

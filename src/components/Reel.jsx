@@ -1,13 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
 import Ribbon from './Ribbon';
-import SplitLine from './SplitLine';
 import TransitionLink from './TransitionLink';
 import GLMedia from './GLMedia';
 import { HAVE, MEDIA } from '../data/media';
 
 const isMobile = () => typeof window !== 'undefined' && window.matchMedia('(max-width: 767px)').matches;
 const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
-const ease = (t) => 1 - Math.pow(1 - t, 3);
+const sm = (t) => t * t * (3 - 2 * t);
 
 const REAL = [HAVE.crew && MEDIA.crew.src, HAVE.build && MEDIA.build.src].filter(Boolean);
 const SLIDES = REAL.length
@@ -47,6 +46,12 @@ export default function Reel() {
   const play = useRef(null);
   const duo = useRef(null);
   const modalVideo = useRef(null);
+  const title = useRef(null);
+  const ln1 = useRef(null);
+  const ln2 = useRef(null);
+  const desc = useRef(null);
+  const descIn = useRef(null);
+  const cta = useRef(null);
   const [open, setOpen] = useState(false);
 
   const [reelSrc] = useState(() => {
@@ -64,10 +69,10 @@ export default function Reel() {
       const vw = window.innerWidth;
       const mobile = vw < 768;
       const r = trackEl.getBoundingClientRect();
-      const warp = Math.pow(clamp(r.top / (vh * 0.92)), 1.25);
-      const pin = clamp(-r.top / Math.max(r.height - vh, 1));
-      const exit = clamp((pin - 0.62) / 0.38);
-      const colour = 1 - clamp(pin / 0.45);
+      // The card is never pinned: it rises with the page and straightens as it reaches the middle of the screen.
+      const c = (r.top + r.height / 2 - vh / 2) / vh;
+      const warp = Math.pow(clamp(c / 0.62), 1.1);
+      const colour = clamp(warp * 1.2);
 
       const g = {
         x: warp * vw * (mobile ? 0.05 : 0.11),
@@ -76,17 +81,45 @@ export default function Reel() {
         scale: 1 - 0.36 * warp,
         skew: 0.62 * warp,
         bend: 0.42 * warp,
-        blur: ease(exit) * 0.5,
-        desat: ease(exit) * 0.45,
-        lift: ease(exit) * 0.22,
+        blur: 0,
+        desat: 0,
+        lift: 0,
       };
       if (card.current) {
         card.current.__gl = g;
-        card.current.dataset.tint = String(clamp(warp * 1.1 + colour * 0.9, 0, 1));
+        card.current.dataset.tint = String(clamp(warp * 1.1 + colour * 0.3, 0, 1));
       }
       if (play.current) {
         play.current.style.transform = `translate3d(${g.x}px, 0, 0) rotate(${g.rot}rad) scale(${g.scale})`;
-        play.current.style.opacity = String(clamp(1 - warp * 1.6) * (1 - ease(exit)));
+        play.current.style.opacity = String(clamp(1 - warp * 1.3));
+      }
+      // Text motion measured from lusion.co: the two title lines scissor in (one rises from below while
+      // sliding in from the left, the other drops from above), the copy fades up 30px with 0.13 parallax.
+      const fs = parseFloat(getComputedStyle(title.current).fontSize) || 120;
+      const rel = (el) => el.getBoundingClientRect().top / vh;
+      const par = mobile ? 0 : 0.13;
+      if (ln1.current) {
+        const t = rel(ln1.current.parentElement);
+        const ty = (1 - sm(clamp((1.13 - t) / 0.36))) * fs * 1.07;
+        const tx = -(1 - sm(clamp((0.9 - t) / 0.34))) * fs * 1.64 * (mobile ? 0.5 : 1);
+        ln1.current.style.transform = `translate3d(${tx}px, ${ty}px, 0)`;
+      }
+      if (ln2.current) {
+        const t = rel(ln2.current.parentElement);
+        ln2.current.style.transform = `translate3d(0, ${-(1 - sm(clamp((1.13 - t) / 0.3))) * fs * 1.07}px, 0)`;
+      }
+      if (desc.current) {
+        const t = rel(desc.current);
+        const p = clamp((1.12 - t) / 0.42);
+        desc.current.style.transform = `translate3d(0, ${par * vh * (t - 1)}px, 0)`;
+        descIn.current.style.opacity = String(sm(clamp(p * 1.25)));
+        descIn.current.style.transform = `translate3d(0, ${30 * (1 - sm(clamp(p * 1.3)))}px, 0)`;
+      }
+      if (cta.current) {
+        const t = rel(cta.current);
+        const p = clamp((1.1 - t) / 0.26);
+        cta.current.style.opacity = String(0.6 + 0.4 * sm(p));
+        cta.current.style.transform = `translate3d(0, ${par * vh * (t - 1) + 24 * (1 - sm(p))}px, 0) skewY(${3.4 * (1 - sm(p))}deg)`;
       }
       if (duo.current) {
         const pr = duo.current.getBoundingClientRect();
@@ -128,27 +161,26 @@ export default function Reel() {
   return (
     <section className="sl-reel" id="reel" ref={sectionRef}>
       <Ribbon section={sectionRef} track={track} />
-      <h2 className="sl-reel-title">
-        <span>
-          <SplitLine text="Bold ideas," />
+      <h2 className="sl-reel-title" ref={title}>
+        <span className="ln">
+          <span ref={ln1}>Bold ideas,</span>
         </span>
-        <span>
-          <SplitLine text="built to think" delay={120} />
+        <span className="ln">
+          <span ref={ln2}>built to think</span>
         </span>
       </h2>
 
       <div className="sl-reel-row">
         <Slideshow tintRef={duo} />
         <div className="sl-reel-content">
-          <p>
-            <SplitLine
-              mode="word"
-              text="It starts with a question. We are the SRM Artificial Intelligence Lab: students who build, research and ship intelligent systems together, from computer vision and language models to robotics and interactive 3D."
-            />
-          </p>
-          <TransitionLink className="sl-pill sl-pill--white" href="/about" label="About us" data-magnetic>
-            <i /> Meet the crew
-          </TransitionLink>
+          <div ref={desc}>
+            <p ref={descIn}>It starts with a question. We are the SRM Artificial Intelligence Lab: students who build, research and ship intelligent systems together, from computer vision and language models to robotics and interactive 3D.</p>
+          </div>
+          <div className="sl-reel-cta" ref={cta}>
+            <TransitionLink className="sl-pill sl-pill--white" href="/about" label="About us" data-magnetic>
+              <i /> Meet the crew
+            </TransitionLink>
+          </div>
         </div>
       </div>
 
