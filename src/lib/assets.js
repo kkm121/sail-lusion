@@ -5,7 +5,7 @@ import { isMobileWidth } from './device';
 // What each route needs before its loader opens. Components resolve their own names when ready.
 const BY_ROUTE = {
   '/': ['fonts', 'media', 'hero', 'lab'],
-  '/about': ['fonts', 'media', 'about'],
+  '/about': ['fonts', 'media', 'sub'],
   '/projects': ['fonts', 'media', 'sub'],
   '/domains': ['fonts', 'media', 'sub'],
 };
@@ -23,6 +23,8 @@ export function expectAsset(name) {
   if (!names.has(name)) names.set(name, false);
   notify();
 }
+
+export const isResolved = (name) => names.get(name) === true;
 
 export function resolveAsset(name) {
   if (names.get(name) === true) return;

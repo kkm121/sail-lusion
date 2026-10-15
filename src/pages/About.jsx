@@ -4,16 +4,16 @@ import Text from '../components/Text';
 import Reveal from '../components/Reveal';
 import Marquee from '../components/Marquee';
 import Crosses from '../components/Crosses';
+import SubHero from '../components/SubHero';
+import CountUp from '../components/CountUp';
 import { CREATOR } from '../data/team';
 import { coreTeam } from '../data/core';
 import { SITE } from '../data/site';
 import { canGL } from '../lib/device';
-import { resolveAsset } from '../lib/assets';
 import { scrollState, scrollTo } from '../lib/scroll';
 import { useDocRect } from '../lib/measure';
 import { useTick } from '../lib/useTick';
 
-const AboutHero = lazy(() => import('../scene/AboutHero'));
 const TeamStage = lazy(() => import('../scene/TeamStage'));
 
 const EXPERTISE = [
@@ -47,50 +47,22 @@ const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
 const initialOf = (name) => name.trim()[0]?.toUpperCase() || '';
 
 function Hero() {
-  const gl = canGL();
-  useEffect(() => {
-    if (!gl) resolveAsset('about');
-  }, [gl]);
   return (
-    <section className="sl-ah" id="about-hero">
-      {gl ? (
-        <Suspense fallback={null}>
-          <AboutHero />
-        </Suspense>
-      ) : (
-        <div className="sl-ah-fallback" aria-hidden="true" />
-      )}
-      <Crosses />
-      <div className="sl-ah-copy">
-        <h1>
-          <Text type="lines" trigger="ready" delay={250}>
-            WE ARE
-          </Text>
-          <Text type="lines" trigger="ready" delay={330}>
-            FireFly
-          </Text>
-          <Text type="lines" trigger="ready" delay={410}>
-            A STUDENT-RUN
-          </Text>
-          <Text type="lines" trigger="ready" delay={490} className="it">
-            AI CLUB
-          </Text>
-        </h1>
-        <p className="sl-ah-right">
-          <Text type="lines" trigger="ready" delay={560} className="it">
-            BUILDING INTELLIGENT
-          </Text>
-          <Text type="lines" trigger="ready" delay={640} className="it">
-            SYSTEMS TOGETHER
-          </Text>
-        </p>
-      </div>
-      <div className="sl-ah-scroll">
-        <Text type="scramble" trigger="ready" delay={900}>
-          Scroll to explore
-        </Text>
-      </div>
-    </section>
+    <SubHero
+      eyebrow="About FireFly"
+      title="We are FireFly"
+      lede="A student-run AI club at SRM, associated with AMIEE, building intelligent systems together."
+      accent="#f5c84b"
+      accent2="#ff4d8d"
+      look={{ freq: 17, warp: 2.2, line: 0.05, speed: 0.7 }}
+      size="s"
+    >
+      <Reveal type="rise" cols={3} stagger={110} y={34} className="sl-sh-stats">
+        <div className="sl-sh-stat"><b><CountUp to={coreTeam.length} delay={700} /></b><small>Core team</small></div>
+        <div className="sl-sh-stat"><b><CountUp to={5} delay={700} /></b><small>Domains</small></div>
+        <div className="sl-sh-stat"><b><CountUp to={4} delay={700} /></b><small>Directions</small></div>
+      </Reveal>
+    </SubHero>
   );
 }
 

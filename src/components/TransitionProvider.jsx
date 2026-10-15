@@ -1,7 +1,8 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import LoaderScreen from './LoaderScreen';
-import { assetProgress, assetsDone, expectRoute, subscribeAssets } from '../lib/assets';
+import { assetProgress, assetsDone, expectRoute } from '../lib/assets';
+import { runCounter } from '../lib/counter';
 import { scrollState } from '../lib/scroll';
 import { setCovered } from '../lib/ready';
 
@@ -24,7 +25,7 @@ export default function TransitionProvider({ children }) {
   const pending = useRef(null);
   const mounted = useRef(false);
   const timers = useRef([]);
-  const ticker = useRef(0);
+  const ticker = useRef(() => {});
 
   const later = useCallback((fn, ms) => {
     const id = window.setTimeout(fn, ms);
@@ -38,42 +39,33 @@ export default function TransitionProvider({ children }) {
   };
 
   const count = useCallback(() => {
-    const t0 = performance.now();
-    let v = 0;
-    let target = 0;
-    let finished = false;
-    const unsub = subscribeAssets(() => (target = assetProgress()));
-    const finish = () => {
-      if (finished) return;
-      finished = true;
-      clearInterval(ticker.current);
-      unsub();
-      setValue(100);
-      if (fill.current) fill.current.style.transform = 'scaleX(1)';
-      setPhase('mark');
-      later(() => {
-        setCovered(false);
-        setPhase('open');
-      }, 520);
-      later(() => {
-        setPhase('idle');
-        setValue(0);
-        busy.current = false;
-      }, 1500);
-    };
-    let last = t0;
-    ticker.current = window.setInterval(() => {
-      const now = performance.now();
-      const dt = Math.min(now - last, 400);
-      last = now;
-      const elapsed = now - t0;
-      const ready = mounted.current && assetsDone() && elapsed >= MIN;
-      const cap = ready ? 100 : Math.min(96, 8 + Math.min(1, elapsed / MIN) * 88, Math.max(10, target * 100 * 0.95 + 8));
-      v = Math.min(cap, v + Math.max((dt / MIN) * 100 * 1.1, dt / 1800));
-      if (fill.current) fill.current.style.transform = `scaleX(${v / 100})`;
-      setValue(Math.round(v));
-      if (v >= 99.9 || elapsed > MAX) finish();
-    }, 30);
+    let last = -1;
+    ticker.current = runCounter({
+      min: MIN,
+      max: MAX,
+      progress: assetProgress,
+      isReady: () => mounted.current && assetsDone(),
+      onValue: (v) => {
+        if (fill.current) fill.current.style.transform = `scaleX(${v / 100})`;
+        const r = Math.round(v);
+        if (r !== last) {
+          last = r;
+          setValue(r);
+        }
+      },
+      onDone: () => {
+        setPhase('mark');
+        later(() => {
+          setCovered(false);
+          setPhase('open');
+        }, 520);
+        later(() => {
+          setPhase('idle');
+          setValue(0);
+          busy.current = false;
+        }, 1500);
+      },
+    });
   }, [later]);
 
   const go = useCallback(
@@ -117,7 +109,7 @@ export default function TransitionProvider({ children }) {
   useEffect(
     () => () => {
       timers.current.forEach(clearTimeout);
-      clearInterval(ticker.current);
+      ticker.current();
     },
     []
   );

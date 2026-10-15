@@ -67,7 +67,47 @@ void main(){
   gl_FragColor = vec4(vec3(0.6, 0.85, 1.0) * a * 1.4 * uFade, 1.0);
 }`;
 
+const FLY_V = `uniform float uTime; uniform float uFade; attribute vec4 aS; varying float vA;
+void main(){
+  float t = uTime * (0.08 + aS.w * 0.12);
+  vec3 p = position;
+  p.x += sin(t * 2. + aS.x * 6.28) * 0.8 + cos(t + aS.y * 6.28) * 0.4;
+  p.y += cos(t * 1.7 + aS.y * 6.28) * 0.5 + sin(t * 0.6 + aS.z * 6.28) * 0.3;
+  p.z += sin(t * 1.2 + aS.z * 6.28) * 0.6;
+  vec4 mv = modelViewMatrix * vec4(p, 1.);
+  gl_Position = projectionMatrix * mv;
+  gl_PointSize = (14. + aS.w * 26.) * (7. / max(-mv.z, 1.));
+  float blink = pow(0.5 + 0.5 * sin(uTime * (0.7 + aS.x * 1.3) + aS.y * 40.), 3.);
+  vA = (0.25 + 0.75 * blink) * uFade;
+}`;
+const FLY_F = `varying float vA; void main(){ float d = length(gl_PointCoord - .5) * 2.; float a = pow(max(1. - d, 0.), 2.4) * vA; gl_FragColor = vec4(vec3(1., .86, .45) * 1.5, a); }`;
+
+function Fireflies({ fade }) {
+  const { geo, mat } = useMemo(() => {
+    const n = 70;
+    const pos = new Float32Array(n * 3);
+    const s = new Float32Array(n * 4);
+    let seed = 7;
+    const r = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+    for (let i = 0; i < n; i++) {
+      pos.set([(r() - 0.5) * 16, -1.5 + r() * 6, -1 - r() * 11], i * 3);
+      s.set([r(), r(), r(), r()], i * 4);
+    }
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+    g.setAttribute('aS', new THREE.BufferAttribute(s, 4));
+    const m = new THREE.ShaderMaterial({ vertexShader: FLY_V, fragmentShader: FLY_F, uniforms: { uTime: { value: 0 }, uFade: { value: 1 } }, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending });
+    return { geo: g, mat: m };
+  }, []);
+  useFrame((st) => {
+    mat.uniforms.uTime.value = st.clock.elapsedTime;
+    mat.uniforms.uFade.value = fade.current;
+  });
+  return <points geometry={geo} material={mat} frustumCulled={false} renderOrder={7} />;
+}
+
 export default function Planet({ sp }) {
+  const fly = useRef(1);
   const group = useRef();
   const body = useRef();
   const mats = useMemo(
@@ -84,6 +124,7 @@ export default function Planet({ sp }) {
     const p = sp.current;
     const fade = 1 - seg(p, 0.3, 0.4);
     const drop = seg(p, 0.26, 0.4);
+    fly.current = fade;
     if (group.current) group.current.visible = fade > 0.003;
     if (fade <= 0.003) return;
     mats.surf.uniforms.uTime.value = s.clock.elapsedTime;
@@ -97,6 +138,8 @@ export default function Planet({ sp }) {
     group.current.position.y = -R - 3.6 - drop * 9;
   });
   return (
+    <>
+      <Fireflies fade={fly} />
     <group ref={group} position={[0, -R - 3.6, -7]}>
       <mesh ref={body} material={mats.surf}>
         <sphereGeometry args={[R, 128, 96]} />
@@ -112,5 +155,6 @@ export default function Planet({ sp }) {
         </mesh>
       </group>
     </group>
+    </>
   );
 }

@@ -1,7 +1,7 @@
 import { Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { Environment, Lightformer, PerformanceMonitor, Stars, useGLTF } from '@react-three/drei';
-import { Bloom, ChromaticAberration, EffectComposer, Noise, SMAA, Vignette } from '@react-three/postprocessing';
+import { Environment, Lightformer, PerformanceMonitor, Stars } from '@react-three/drei';
+import { Bloom, ChromaticAberration, EffectComposer, SMAA, Vignette } from '@react-three/postprocessing';
 import { BlendFunction } from 'postprocessing';
 import * as THREE from 'three';
 import { ErrorBoundary } from './ErrorBoundary';
@@ -9,12 +9,10 @@ import Cage from '../scene/Cage';
 import Vortex from '../scene/Vortex';
 import Room from '../scene/Room';
 import Finale from '../scene/Finale';
-import Navigator from '../scene/Navigator';
 import Planet from '../scene/Planet';
-import { labState, lerp, seg } from '../scene/shared';
+import { lerp, seg } from '../scene/shared';
 import { hasWebGL, isTouch } from '../lib/device';
 import { resolveAsset } from '../lib/assets';
-import { HAVE, MEDIA } from '../data/media';
 import { CAGE_END, ROOM_END, ROOM_START, START, Z0, ZTOT } from '../lib/journey';
 
 const BG = {
@@ -71,6 +69,15 @@ function Rig({ progress, sp, bloomRef }) {
   return null;
 }
 
+// Shaders compile on parallel threads while the loader is still up, instead of freezing the page on the first frame.
+function Compile() {
+  const { gl, scene, camera } = useThree();
+  useEffect(() => {
+    gl.compileAsync?.(scene, camera).catch(() => {});
+  }, [gl, scene, camera]);
+  return null;
+}
+
 const CURTAIN_V = 'void main(){ gl_Position = vec4(position.xy, 0.0, 1.0); }';
 const CURTAIN_F = 'uniform float uA; void main(){ gl_FragColor = vec4(0.012, 0.016, 0.027, uA); }';
 
@@ -102,7 +109,7 @@ function Tunnel({ touch, sp }) {
   useFrame((state) => {
     const zc = state.camera.position.z;
     const warm = frames.current++ < 16;
-    if (frames.current >= 18 && (labState.nav || !HAVE.navigator)) resolveAsset('lab');
+    if (frames.current >= 18) resolveAsset('lab');
     const p = sp.current;
     if (cage.current) cage.current.visible = warm || (p > 0.545 && zc <= Z0 + 4 && zc > CAGE_END - 6);
     if (vortex.current) vortex.current.visible = warm || (zc <= CAGE_END + 42 && zc > ROOM_START - 8);
@@ -127,13 +134,11 @@ function Tunnel({ touch, sp }) {
   );
 }
 
-useGLTF.preload(MEDIA.navigator);
-
 export default function LabScene({ progress, visible = true }) {
   const touch = useRef(isTouch()).current;
   const sp = useRef(0);
   const bloomRef = useRef();
-  const [dpr, setDpr] = useState(() => Math.min(window.devicePixelRatio || 1, touch ? 1.75 : 1.75));
+  const [dpr, setDpr] = useState(() => Math.min(window.devicePixelRatio || 1, touch ? 1.75 : 2));
   const [fx, setFx] = useState(touch ? 0 : 2);
   const aberration = useMemo(() => new THREE.Vector2(0.0007, 0.0006), []);
   const [warm, setWarm] = useState(true);
@@ -172,25 +177,19 @@ export default function LabScene({ progress, visible = true }) {
       </ErrorBoundary>
 
       <FollowStars count={touch ? 1200 : 2600} />
-      {HAVE.navigator && (
-        <ErrorBoundary fallback={null}>
-          <Suspense fallback={null}>
-            <Navigator sp={sp} />
-          </Suspense>
-        </ErrorBoundary>
-      )}
       <Planet sp={sp} />
       <Tunnel touch={touch} sp={sp} />
       <Curtain sp={sp} />
+      <Compile />
       <Rig progress={progress} sp={sp} bloomRef={bloomRef} />
 
       {fx > 0 && (
         <EffectComposer disableNormalPass multisampling={0}>
           <Bloom ref={bloomRef} luminanceThreshold={0.86} luminanceSmoothing={0.3} intensity={0.9} radius={0.65} mipmapBlur />
           <ChromaticAberration offset={aberration} radialModulation modulationOffset={0.35} />
-          <Noise blendFunction={BlendFunction.SOFT_LIGHT} opacity={0.07} />
+          
           <Vignette offset={0.3} darkness={0.5} />
-          {fx >= 2 ? <SMAA /> : <></>}
+          {fx >= 1 ? <SMAA /> : <></>}
         </EffectComposer>
       )}
     </Canvas>

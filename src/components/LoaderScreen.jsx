@@ -1,10 +1,10 @@
-import { useMemo } from 'react';
+import { memo, useMemo } from 'react';
 import PreloaderBlob from './PreloaderBlob';
 import { SITE } from '../data/site';
 
 const STACK = Array.from({ length: 101 }, (_, i) => i % 10);
 
-function Digit({ n }) {
+const Digit = memo(function Digit({ n }) {
   return (
     <span className="col">
       <span className="stack" style={{ '--n': n }}>
@@ -14,7 +14,7 @@ function Digit({ n }) {
       </span>
     </span>
   );
-}
+});
 
 // One loader design for the first load and for every route change.
 export default function LoaderScreen({ phase, value, fill, blob = false, label, className = '' }) {

@@ -15,8 +15,8 @@
 .sl-sh-canvas canvas { display: block; width: 100% !important; height: 100% !important; }
 .sl-sh-fallback { position: absolute; inset: 0; overflow: hidden; background: #03050c; }
 .sl-sh-fallback i { position: absolute; width: 80vmax; height: 80vmax; border-radius: 50%; will-change: transform; }
-.sl-sh-fallback .a { left: -30vmax; top: -36vmax; background: radial-gradient(circle, color-mix(in srgb, var(--accent) 46%, transparent), transparent 62%); animation: sl-drift-a 24s ease-in-out infinite alternate; }
-.sl-sh-fallback .b { right: -38vmax; top: -8vmax; background: radial-gradient(circle, rgba(139, 92, 246, 0.42), transparent 62%); animation: sl-drift-b 30s ease-in-out infinite alternate; }
+.sl-sh-fallback .a { left: -30vmax; top: -36vmax; background: radial-gradient(circle, color-mix(in srgb, var(--fa, var(--accent)) 46%, transparent), transparent 62%); animation: sl-drift-a 24s ease-in-out infinite alternate; }
+.sl-sh-fallback .b { right: -38vmax; top: -8vmax; background: radial-gradient(circle, color-mix(in srgb, var(--fb, #8b5cf6) 42%, transparent), transparent 62%); animation: sl-drift-b 30s ease-in-out infinite alternate; }
 .sl-sh-fallback::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 45%; background: linear-gradient(transparent, #03050c); }
 .sl-sh-crosses { top: auto; bottom: calc(var(--u) * 4); opacity: 0.5; }
 

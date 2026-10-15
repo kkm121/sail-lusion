@@ -11,12 +11,12 @@ import { useTick } from '../lib/useTick';
 const SubField = lazy(() => import('../scene/SubField'));
 
 // Soft drifting colour for phones and for machines without WebGL; it also lets the loader finish.
-function Fallback() {
+function Fallback({ a, b }) {
   useEffect(() => {
     resolveAsset('sub');
   }, []);
   return (
-    <div className="sl-sh-fallback">
+    <div className="sl-sh-fallback" style={{ '--fa': a, '--fb': b }}>
       <i className="a" />
       <i className="b" />
     </div>
@@ -25,7 +25,7 @@ function Fallback() {
 
 // Opening block of the inner pages: moving backdrop, eyebrow, big title, lede and room for extras.
 // size: xl (index pages) | l (long titles). ghost: a large outlined number behind the title.
-export default function SubHero({ eyebrow, title, lede, count, accent = '#00f5d4', accent2, size = 'xl', ghost, figure, scrollLabel = 'Scroll to explore', children, extra }) {
+export default function SubHero({ eyebrow, title, lede, count, accent = '#00f5d4', accent2, look, size = 'xl', ghost, figure, scrollLabel = 'Scroll to explore', children, extra }) {
   const gl = canGL();
   const root = useRef(null);
   const back = useRef(null);
@@ -51,13 +51,13 @@ export default function SubHero({ eyebrow, title, lede, count, accent = '#00f5d4
     <section className={`sl-sh sl-sh--${size}`} ref={root}>
       <div className="sl-sh-back" ref={back} aria-hidden="true">
         {gl ? (
-          <ErrorBoundary fallback={<Fallback />}>
+          <ErrorBoundary fallback={<Fallback a={accent} b={accent2} />}>
             <Suspense fallback={null}>
-              <SubField accent={accent} accent2={accent2} />
+              <SubField accent={accent} accent2={accent2} {...look} />
             </Suspense>
           </ErrorBoundary>
         ) : (
-          <Fallback />
+          <Fallback a={accent} b={accent2} />
         )}
       </div>
       <Crosses className="sl-sh-crosses" />

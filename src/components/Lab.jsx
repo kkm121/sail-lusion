@@ -4,6 +4,7 @@ import SplitLine from './SplitLine';
 import TransitionLink from './TransitionLink';
 import { CHAPTERS, ROOM_START, pAtZ } from '../lib/journey';
 import LabScene from './LabScene';
+import { isResolved, subscribeAssets } from '../lib/assets';
 import '../styles/lab.css';
 
 const seg = (p, a, b) => Math.min(1, Math.max(0, (p - a) / (b - a)));
@@ -17,6 +18,19 @@ export default function Lab() {
   const stage = useRef(null);
   const world = useRef(null);
   const device = useRef(null);
+  // The voyage canvas mounts once the hero scene is ready, so the two never compile their shaders at the same moment.
+  const [go, setGo] = useState(false);
+  useEffect(() => {
+    if (go) return undefined;
+    const check = () => isResolved('hero') && setGo(true);
+    check();
+    const un = subscribeAssets(check);
+    const t = window.setTimeout(() => setGo(true), 5000);
+    return () => {
+      un();
+      window.clearTimeout(t);
+    };
+  }, [go]);
   const ring = useRef(null);
   const words = useRef(null);
   const giant = useRef(null);
@@ -87,7 +101,7 @@ export default function Lab() {
       const tw = mobile ? vw * 0.9 : vw * 0.46;
       const s0 = tw / vw;
       const cx0 = mobile ? vw / 2 : vw * 0.065 + tw / 2;
-      const cy0 = mobile ? vh * 0.7 : vh * 0.66;
+      const cy0 = mobile ? vh * 0.72 : vh * 0.7;
       const e = ease(seg(p, 0.02, 0.27));
       const f = lerp(1, 1 / s0, e);
       const rot = -0.17 * Math.sin(e * Math.PI);
@@ -207,7 +221,7 @@ export default function Lab() {
             </h2>
             <div className="copy">
               <p>Every project starts as a question. In here we turn it into structure, then colour, and finally something that works.</p>
-              <p className="more">Come aboard. The Core is waiting, and Nav knows the way.</p>
+              <p className="more">Come aboard. The Core is waiting, and the crew is ready.</p>
             </div>
           </div>
           <div className="sl-lab-device" ref={device}>
@@ -215,7 +229,7 @@ export default function Lab() {
               <div className="sl-lab-still" />
               <Suspense fallback={null}>
                 <div className="sl-lab-canvas">
-                  <LabScene progress={progress} visible={visible} />
+                  {go && <LabScene progress={progress} visible={visible} />}
                 </div>
               </Suspense>
               <div className="sl-lab-ring" ref={ring} aria-hidden="true">

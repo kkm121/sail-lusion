@@ -9,7 +9,7 @@ import { whenShown } from '../lib/ready';
 const VERT = 'varying vec2 vUv; void main(){ vUv = uv; gl_Position = vec4(position.xy, 0.999, 1.0); }';
 const FRAG = `
 precision highp float;
-uniform float uTime; uniform float uIntro; uniform vec2 uRes; uniform vec2 uPointer; uniform vec3 uA; uniform vec3 uB;
+uniform float uTime; uniform float uIntro; uniform vec2 uRes; uniform vec2 uPointer; uniform vec3 uA; uniform vec3 uB; uniform float uFreq; uniform float uWarp; uniform float uLine; uniform float uSpeed;
 varying vec2 vUv;
 float hash(vec2 p){ p = fract(p * vec2(123.34, 456.21)); p += dot(p, p + 45.32); return fract(p.x * p.y); }
 float noise(vec2 p){ vec2 i = floor(p), f = fract(p); f = f * f * (3. - 2. * f); return mix(mix(hash(i), hash(i + vec2(1, 0)), f.x), mix(hash(i + vec2(0, 1)), hash(i + vec2(1, 1)), f.x), f.y); }
@@ -21,15 +21,15 @@ void main(){
   float asp = uRes.x / uRes.y;
   vec2 p = (uv - .5) * vec2(asp, 1.) * mix(2.5, 1.75, uIntro);
   p += uPointer * .1;
-  float t = uTime * .05;
+  float t = uTime * .05 * uSpeed;
   vec2 q = vec2(fbm3(p + t), fbm3(p + vec2(5.2, 1.3) - t));
   vec2 r = vec2(fbm3(p * 1.1 + 2.6 * q + vec2(1.7, 9.2) + t * 1.3), fbm3(p * 1.1 + 2.6 * q + vec2(8.3, 2.8) - t));
-  float f = fbm4(p + 2.8 * r);
+  float f = fbm4(p + uWarp * r);
 
   // contour lines of the flowing field, bright where the field is high, like silk threads
-  float cl = f * 12. + uTime * .06;
+  float cl = f * uFreq + uTime * .06 * uSpeed;
   float d = abs(fract(cl) - .5);
-  float line = 1. - smoothstep(0., .07, d);
+  float line = 1. - smoothstep(0., uLine, d);
   float fine = 1. - smoothstep(0., .035, abs(fract(cl * 3.) - .5));
   float mask = smoothstep(.16, .66, f) * (.6 + .4 * q.y) * (.42 + .58 * smoothstep(.12, .78, uv.x));
   vec3 tint = mix(uA, uB, clamp(uv.x * .9 + (q.x - .5) * .8, 0., 1.));
@@ -60,7 +60,7 @@ void main(){
   gl_FragColor = vec4(mix(page, col, uIntro), 1.);
 }`;
 
-function Field({ accent, accent2 }) {
+function Field({ accent, accent2, freq, warp, line, speed }) {
   const mat = useMemo(
     () =>
       new THREE.ShaderMaterial({
@@ -71,6 +71,7 @@ function Field({ accent, accent2 }) {
           uIntro: { value: 0 },
           uRes: { value: new THREE.Vector2(1, 1) },
           uPointer: { value: new THREE.Vector2() },
+          uFreq: { value: freq }, uWarp: { value: warp }, uLine: { value: line }, uSpeed: { value: speed },
           uA: { value: new THREE.Color(accent) },
           uB: { value: new THREE.Color(accent2 || accent) },
         },
@@ -119,7 +120,7 @@ function Frames({ onReady }) {
   return null;
 }
 
-export default function SubField({ accent = '#00f5d4', accent2 }) {
+export default function SubField({ accent = '#00f5d4', accent2, freq = 12, warp = 2.8, line = 0.07, speed = 1 }) {
   const box = useRef(null);
   const [visible, setVisible] = useState(true);
 
@@ -139,7 +140,7 @@ export default function SubField({ accent = '#00f5d4', accent2 }) {
         gl={{ antialias: false, alpha: false, depth: false, stencil: false, powerPreference: 'high-performance' }}
         frameloop={visible ? 'always' : 'never'}
       >
-        <Field accent={accent} accent2={accent2} />
+        <Field accent={accent} accent2={accent2} freq={freq} warp={warp} line={line} speed={speed} />
         <Frames onReady={() => resolveAsset('sub')} />
       </Canvas>
     </div>
