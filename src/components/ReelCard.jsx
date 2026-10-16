@@ -52,7 +52,7 @@ void main(){
   gl_FragColor = vec4(col * a, a);
 }`;
 
-const DUO = [new THREE.Color('#070425'), new THREE.Color('#6a3dff'), new THREE.Color('#00f5d4')];
+const DUO = [new THREE.Color('#070425'), new THREE.Color('#6a3dff'), new THREE.Color('#ff5a1f')];
 
 // The reel card draws its own video so the warp is a shader on a canvas that scrolls with the page.
 export default function ReelCard({ src, fallback, poster, warp, className = '', children, ...rest }) {

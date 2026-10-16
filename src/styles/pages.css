@@ -1,7 +1,7 @@
 .sail.sl-sub {
   --bg: #060814;
   --ink: #eef3f7;
-  --accent: #00f5d4;
+  --accent: #ff5a1f;
   --line: rgba(255, 255, 255, 0.13);
   --card: rgba(255, 255, 255, 0.045);
   --muted: rgba(238, 243, 247, 0.66);
@@ -9,7 +9,7 @@
   color: var(--ink);
   min-height: 100svh;
 }
-.sl-sub::before { content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none; background: radial-gradient(60% 50% at 12% 0%, rgba(139, 92, 246, 0.2), transparent 70%), radial-gradient(50% 45% at 92% 18%, color-mix(in srgb, var(--accent) 22%, transparent), transparent 70%), radial-gradient(60% 50% at 50% 110%, rgba(56, 189, 248, 0.12), transparent 70%); transition: background 0.8s; }
+.sl-sub::before { content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none; background: radial-gradient(60% 50% at 12% 0%, rgba(139, 92, 246, 0.2), transparent 70%), radial-gradient(50% 45% at 92% 18%, color-mix(in srgb, var(--accent) 22%, transparent), transparent 70%), radial-gradient(60% 50% at 50% 110%, rgba(255, 179, 71, 0.12), transparent 70%); transition: background 0.8s; }
 .sl-sub .sl-nav-bar { color: #fff; }
 .sl-sub .sl-nav-bar::before { content: ""; position: absolute; inset: 0 0 -26px 0; z-index: -1; pointer-events: none; background: linear-gradient(to bottom, rgba(6, 8, 20, 0.92) 55%, rgba(6, 8, 20, 0)); }
 .sl-sub .sl-nav-bar { padding-bottom: 14px; }
@@ -25,7 +25,7 @@
 /* core team */
 .sl-core-grid { margin-top: calc(var(--u) * 3.4); display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); grid-auto-rows: 1fr; gap: calc(var(--u) * 1.4); }
 .sl-core-card { position: relative; display: flex; flex-direction: column; gap: calc(var(--u) * 0.9); min-height: calc(var(--u) * 20); padding: calc(var(--u) * 2.1); border-radius: 18px; background: var(--card); border: 1px solid var(--line); transition: transform 0.45s cubic-bezier(0.2, 0.7, 0.2, 1), border-color 0.3s, box-shadow 0.45s; }
-.sl-core-card:hover { transform: translateY(-4px); border-color: rgba(0, 245, 212, 0.55); box-shadow: 0 30px 70px -40px rgba(0, 245, 212, 0.5); }
+.sl-core-card:hover { transform: translateY(-4px); border-color: rgba(255, 90, 31, 0.55); box-shadow: 0 30px 70px -40px rgba(255, 90, 31, 0.5); }
 .sl-core-top { display: flex; align-items: center; justify-content: space-between; min-height: 26px; }
 .sl-core-index { font-family: var(--f-mono); font-size: 12px; letter-spacing: 0.14em; opacity: 0.5; }
 .sl-core-tag { display: inline-flex; align-items: center; height: 26px; padding: 0 12px; border-radius: 99px; font-family: var(--f-mono); font-size: 11px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; background: #fff; color: #060814; white-space: nowrap; }

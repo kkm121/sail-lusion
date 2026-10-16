@@ -26,7 +26,7 @@ function Fallback({ a, b }) {
 
 // Opening block of the inner pages: moving backdrop, eyebrow, big title, lede and room for extras.
 // size: xl (index pages) | l (long titles). ghost: a large outlined number behind the title.
-export default function SubHero({ eyebrow, title, lede, count, accent = '#00f5d4', accent2, look, brand = false, size = 'xl', ghost, figure, scrollLabel = 'Scroll to explore', children, extra }) {
+export default function SubHero({ eyebrow, title, lede, count, accent = '#ff5a1f', accent2, look, brand = false, size = 'xl', ghost, figure, scrollLabel = 'Scroll to explore', children, extra }) {
   const gl = canGL();
   const root = useRef(null);
   const back = useRef(null);

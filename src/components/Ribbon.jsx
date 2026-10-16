@@ -21,7 +21,7 @@ const PATHS = {
     ].join(' '),
 };
 
-export default function Ribbon({ section, track, variant = 'intro', stops = ['#00f5d4', '#38bdf8', '#8b5cf6', '#f5c84b'], span, drawRef }) {
+export default function Ribbon({ section, track, variant = 'intro', stops = ['#ff5a1f', '#ffb347', '#8b5cf6', '#f5c84b'], span, drawRef }) {
   const [geom, setGeom] = useState(null);
   const main = useRef(null);
   const shine = useRef(null);

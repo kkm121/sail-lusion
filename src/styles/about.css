@@ -45,9 +45,9 @@
 .sl-ts-about { position: absolute; right: var(--pad); bottom: calc(var(--u) * 5); z-index: 3; width: calc(var(--u) * 26); font-family: var(--f-body); font-size: max(14px, calc(var(--u) * 0.98)); line-height: 1.55; color: rgba(255, 255, 255, 0.82); animation: sl-swap 0.8s var(--ease-out) 0.08s both; }
 .sl-ts-letter { position: absolute; right: calc(var(--pad) + var(--u) * 28); bottom: calc(var(--u) * 4.6); z-index: 3; font-size: calc(var(--u) * 11.5); line-height: 0.78; font-weight: 600; letter-spacing: -0.04em; color: #fff; animation: sl-swap 0.9s var(--ease-out) 0.05s both; }
 .sl-ts-letter.is-creator { background: linear-gradient(180deg, #ffe08a, #d9a82f); -webkit-background-clip: text; background-clip: text; color: transparent; }
-.sl-ts-next { position: absolute; left: calc(var(--pad) + var(--u) * 27); bottom: calc(var(--u) * 5); z-index: 4; width: calc(var(--u) * 4.4); min-width: 44px; aspect-ratio: 1; border-radius: 50%; background: var(--cyan); color: #02130f; display: grid; place-items: center; box-shadow: 0 0 44px rgba(0, 245, 212, 0.4); transition: transform 0.3s var(--ease-out), box-shadow 0.3s, background 0.3s; }
+.sl-ts-next { position: absolute; left: calc(var(--pad) + var(--u) * 27); bottom: calc(var(--u) * 5); z-index: 4; width: calc(var(--u) * 4.4); min-width: 44px; aspect-ratio: 1; border-radius: 50%; background: var(--cyan); color: #fffaf5; display: grid; place-items: center; box-shadow: 0 0 44px rgba(255, 90, 31, 0.4); transition: transform 0.3s var(--ease-out), box-shadow 0.3s, background 0.3s; }
 .sl-ts-next svg { width: 44%; }
-.sl-ts-next:hover { background: #fff; transform: scale(1.08); box-shadow: 0 0 60px rgba(0, 245, 212, 0.7); }
+.sl-ts-next:hover { background: #fff; transform: scale(1.08); box-shadow: 0 0 60px rgba(255, 90, 31, 0.7); }
 @keyframes sl-swap { from { opacity: 0; transform: translate3d(0, 24px, 0); filter: blur(6px); } to { opacity: 1; transform: none; filter: none; } }
 
 /* ---------- crew ---------- */
@@ -67,14 +67,14 @@
 .sl-ex-note { max-width: calc(var(--u) * 26); font-family: var(--f-body); font-size: max(15px, calc(var(--u) * 1.05)); line-height: 1.5; color: var(--muted); }
 .sl-ex-row { position: relative; display: grid; grid-template-columns: calc(var(--u) * 5) 1.1fr 1.4fr; align-items: center; gap: calc(var(--u) * 2); padding: calc(var(--u) * 2.4) 0; border-top: 1px solid var(--line); isolation: isolate; transition: padding 0.5s var(--ease-out), opacity 0.95s ease var(--rd, 0ms), transform 1.25s var(--ease-out) var(--rd, 0ms); }
 .sl-ex-row:last-child { border-bottom: 1px solid var(--line); }
-.sl-ex-row::before { content: ""; position: absolute; left: calc(var(--pad) * -1); right: calc(var(--pad) * -1); top: 0; bottom: 0; z-index: -1; background: linear-gradient(90deg, rgba(0, 245, 212, 0.12), transparent 70%); opacity: 0; transition: opacity 0.5s; }
+.sl-ex-row::before { content: ""; position: absolute; left: calc(var(--pad) * -1); right: calc(var(--pad) * -1); top: 0; bottom: 0; z-index: -1; background: linear-gradient(90deg, rgba(255, 90, 31, 0.12), transparent 70%); opacity: 0; transition: opacity 0.5s; }
 .sl-ex-row:hover { padding-left: calc(var(--u) * 1.4); }
 .sl-ex-row:hover::before { opacity: 1; }
 .sl-ex-row .n { font-family: var(--f-mono); font-size: 12px; letter-spacing: 0.12em; opacity: 0.55; }
 .sl-ex-row h3 { font-size: calc(var(--u) * 4.4); line-height: 1; letter-spacing: -0.04em; font-weight: 500; }
 .sl-ex-row ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
 .sl-ex-row li { padding: 8px 14px; border-radius: 99px; border: 1px solid var(--line); background: var(--card); font-family: var(--f-mono); font-size: 12px; letter-spacing: 0.04em; color: var(--muted); transition: background 0.3s, color 0.3s, border-color 0.3s; }
-.sl-ex-row:hover li { border-color: rgba(0, 245, 212, 0.4); color: #fff; }
+.sl-ex-row:hover li { border-color: rgba(255, 90, 31, 0.4); color: #fff; }
 
 /* ---------- tools + credit ---------- */
 .sl-ab-tools { position: relative; background: #03050c; color: #fff; padding: calc(var(--u) * 5) 0 calc(var(--u) * 7); display: grid; gap: calc(var(--u) * 2); overflow: hidden; }

@@ -6,7 +6,7 @@ html.sl-nav-dark .sl-nav-bar .brand small { color: rgba(255, 255, 255, 0.72); }
 html.sl-nav-dark .sl-nav-bar .links { background: rgba(255, 255, 255, 0.08); border-color: rgba(255, 255, 255, 0.16); }
 html.sl-nav-dark .sl-nav-bar .links a { color: #fff; opacity: 0.85; }
 html.sl-nav-dark .sl-nav-bar .links a:hover { background: rgba(255, 255, 255, 0.18); opacity: 1; }
-html.sl-nav-dark .sl-nav-bar .links a[aria-current="page"] { background: var(--cyan); color: #02130f; opacity: 1; }
+html.sl-nav-dark .sl-nav-bar .links a[aria-current="page"] { background: var(--cyan); color: #fffaf5; opacity: 1; }
 html.sl-nav-dark .sl-nav-bar .btn.ghost { border-color: rgba(255, 255, 255, 0.4); color: #fff; }
 html.sl-nav-dark .sl-nav-bar .btn.ghost:hover { background: rgba(255, 255, 255, 0.16); }
 html.sl-nav-dark .sl-nav-bar .btn.menu { border-color: rgba(255, 255, 255, 0.4); color: #fff; }
@@ -19,12 +19,12 @@ html.sl-nav-dark .sl-nav-bar .btn.cli { background: rgba(255, 255, 255, 0.12); c
 .sl-nav-bar .links { display: flex; gap: 6px; padding: 5px; border-radius: 99px; background: rgba(127, 140, 150, 0.14); backdrop-filter: blur(14px); border: 1px solid rgba(127, 140, 150, 0.2); }
 .sl-nav-bar .links a { padding: 8px 16px; border-radius: 99px; font-family: var(--f-mono); font-size: 11px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; opacity: 0.78; transition: background 0.3s, color 0.3s, opacity 0.3s; }
 .sl-nav-bar .links a:hover { opacity: 1; background: rgba(127, 140, 150, 0.22); }
-.sl-nav-bar .links a[aria-current="page"] { opacity: 1; background: var(--cyan); color: #02130f; font-weight: 600; }
+.sl-nav-bar .links a[aria-current="page"] { opacity: 1; background: var(--cyan); color: #fffaf5; font-weight: 600; }
 .sl-nav-bar .actions { display: flex; align-items: center; gap: 8px; justify-self: end; }
 .sl-nav-bar .btn { height: 38px; padding: 0 16px; border-radius: 99px; font-family: var(--f-mono); font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; white-space: nowrap; transition: transform 0.25s ease, background 0.3s, color 0.3s, box-shadow 0.3s, border-color 0.3s; }
 .sl-nav-bar .btn:hover { transform: translateY(-2px) scale(1.03); }
-.sl-nav-bar .btn.apply { background: var(--cyan); color: #02130f; box-shadow: 0 0 20px rgba(0, 245, 212, 0.35); }
-.sl-nav-bar .btn.apply:hover { background: #fff; box-shadow: 0 0 34px rgba(0, 245, 212, 0.55); }
+.sl-nav-bar .btn.apply { background: var(--cyan); color: #fffaf5; box-shadow: 0 0 20px rgba(255, 90, 31, 0.35); }
+.sl-nav-bar .btn.apply:hover { background: #fff; box-shadow: 0 0 34px rgba(255, 90, 31, 0.55); }
 .sl-nav-bar .btn.ghost { border: 1px solid currentColor; opacity: 0.85; }
 .sl-nav-bar .btn.ghost:hover { background: rgba(127, 140, 150, 0.2); }
 .sl-nav-bar .btn.cli { background: #05070c; color: #fff; border: 1px solid rgba(255, 255, 255, 0.18); }
@@ -51,7 +51,7 @@ html.sl-nav-dark .sl-nav-bar .btn.cli { background: rgba(255, 255, 255, 0.12); c
 .sl-menu-links, .sl-menu-news { background: rgba(8, 12, 18, 0.94); color: #fff; backdrop-filter: blur(18px); border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 30px 80px -30px rgba(0, 0, 0, 0.7); }
 .sl-menu-links a, .sl-menu-links button { border-bottom-color: rgba(255, 255, 255, 0.08); }
 .sl-menu-links a:hover, .sl-menu-links button:hover { color: var(--cyan); }
-.sl-menu-links em { background: rgba(0, 245, 212, 0.14); color: var(--cyan); }
+.sl-menu-links em { background: rgba(255, 90, 31, 0.14); color: var(--cyan); }
 .sl-menu-news h3 { font-size: 22px; }
 .sl-menu-social a:hover { color: var(--cyan); }
 

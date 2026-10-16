@@ -206,7 +206,7 @@ export default function Lab() {
       <div className="sl-lab-stage" ref={stage} data-z="0">
         <div className="sl-lab-world" ref={world}>
           <div className="sl-lab-paper" ref={introRef} />
-          <Ribbon section={introRef} variant="lab" stops={['#00f5d4', '#38bdf8']} span={(sec) => sec.offsetHeight} drawRef={ribbonDraw} />
+          <Ribbon section={introRef} variant="lab" stops={['#ff5a1f', '#ffb347']} span={(sec) => sec.offsetHeight} drawRef={ribbonDraw} />
           <div className="sl-lab-intro">
             <h2>
               <span>
