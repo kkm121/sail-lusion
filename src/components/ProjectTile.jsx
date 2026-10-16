@@ -1,6 +1,7 @@
 import { useRef } from 'react';
 import TransitionLink from './TransitionLink';
 import { artUrl } from '../data/projects';
+import { MockBadge } from './Mock';
 
 export default function ProjectTile({ p, priority = false }) {
   const box = useRef(null);
@@ -23,6 +24,7 @@ export default function ProjectTile({ p, priority = false }) {
         <img src={artUrl(p)} alt={p.name} loading={priority ? 'eager' : 'lazy'} decoding="async" draggable="false" />
         <span className="sl-project-tint" aria-hidden="true" />
         <span className="sl-project-sheen" aria-hidden="true" />
+        <MockBadge />
       </div>
       <div className="sl-project-meta">
         <span className="dom">

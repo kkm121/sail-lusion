@@ -9,6 +9,7 @@ import TransitionLink from '../components/TransitionLink';
 import { artUrl, projectById, projects } from '../data/projects';
 import { domainById } from '../data/domains';
 import { SITE } from '../data/site';
+import { MockBadge, MockNote } from '../components/Mock';
 
 export default function ProjectDetail() {
   const { id } = useParams();
@@ -34,6 +35,7 @@ export default function ProjectDetail() {
           <TransitionLink className="sl-sh-chip sl-sh-chip--link" href={`/domains/${d.id}`} color={d.bg} text={d.text} label={d.shortName}>
             <i /> {d.shortName}
           </TransitionLink>
+          <MockBadge />
           <span className="sl-sh-chip">{p.status}</span>
           <span className="sl-sh-chip">{p.metric}</span>
         </Reveal>
@@ -44,6 +46,7 @@ export default function ProjectDetail() {
       </section>
 
       <section className="sl-pd-meta">
+        <MockNote>This project page is a mockup. The project, its status, numbers and team shown here are sample content for the design; nothing on this page is a real, published FireFly project yet.</MockNote>
         <div className="sl-pd-cols">
           <div className="sl-pd-left">
             <div className="sl-pd-desc">

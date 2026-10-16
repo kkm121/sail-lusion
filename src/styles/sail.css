@@ -161,7 +161,7 @@ html.lenis, html.lenis body { height: auto; }
 .sl-project-img { --mx: 0; --my: 0; position: relative; aspect-ratio: 451 / 293; border-radius: 16px; overflow: hidden; background: #1e1410; isolation: isolate; transform: translateZ(0); transition: box-shadow 0.6s ease, transform 0.9s var(--ease-out); }
 .sl-project-img img { position: absolute; left: -5%; top: -5%; width: 110%; height: 110%; max-width: none; object-fit: cover; display: block; transform: translate3d(calc(var(--mx) * -9px), calc(var(--my) * -7px), 0) scale(1.05); filter: saturate(0.82) contrast(1.05); transition: transform 1.2s var(--ease-out), filter 0.7s ease; }
 .sl-project-tint { position: absolute; inset: 0; z-index: 1; background: linear-gradient(135deg, #ff7a3d, #b8336a 70%, #3d0a1f); mix-blend-mode: color; opacity: 0.62; transition: opacity 0.7s ease; pointer-events: none; }
-.sl-project:hover .sl-project-img { box-shadow: 0 40px 90px -30px rgba(0, 200, 175, 0.6); transform: translate3d(0, -4px, 0); }
+.sl-project:hover .sl-project-img { box-shadow: 0 40px 90px -30px rgba(255, 90, 31, 0.5); transform: translate3d(0, -4px, 0); }
 .sl-project:hover .sl-project-img img { filter: saturate(1.05) contrast(1.02); }
 .sl-project:hover .sl-project-tint { opacity: 0; }
 .sl-project-sheen { position: absolute; inset: 0; background: linear-gradient(115deg, transparent 35%, rgba(255, 255, 255, 0.28) 50%, transparent 65%); transform: translateX(-120%); transition: transform 0.9s ease; pointer-events: none; }

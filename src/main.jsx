@@ -9,6 +9,7 @@ import './styles/sail.css';
 import './styles/nav.css';
 import './styles/motion.css';
 import './styles/brand.css';
+import './styles/mock.css';
 import App from './App';
 
 if ('scrollRestoration' in history) history.scrollRestoration = 'manual';

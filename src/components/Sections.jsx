@@ -66,7 +66,7 @@ export function Featured({ list = projects.slice(0, 4), withCta = true }) {
           <Text type="chars">Featured Work</Text>
         </h2>
         <Text as="p" type="lines" delay={160}>
-          The cargo so far: what the crew has brought back from its voyages. Placeholders for now, real work as it ships.
+          The cargo so far: what the crew has brought back from its voyages. Every project below is a mockup for now; real work replaces it as it ships.
         </Text>
       </div>
       <ProjectGrid list={list} />
