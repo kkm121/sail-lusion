@@ -166,6 +166,9 @@ export function Footer({ next = { label: 'About us', href: '/about' } }) {
         <div className="sl-footer-bottom">
           <span>
             ©{SITE.year} {SITE.name} · {SITE.fullName}
+            <a className="sl-nod" href="https://lusion.co" target="_blank" rel="noreferrer">
+              Motion inspired by Lusion
+            </a>
           </span>
           <div className="right">
             <a href={SITE.linkedin} target="_blank" rel="noreferrer">
