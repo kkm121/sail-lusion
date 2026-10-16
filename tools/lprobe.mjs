@@ -3,7 +3,7 @@ import fs from 'node:fs';
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const browser = await puppeteer.launch({
-  executablePath: 'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe',
+  executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe',
   headless: 'new',
   args: ['--no-sandbox', '--ignore-gpu-blocklist', '--autoplay-policy=no-user-gesture-required'],
 });

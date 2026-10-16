@@ -70,7 +70,7 @@ export default function PreloaderBlob({ progress, phase }) {
       const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 50);
       camera.position.z = 4.4;
 
-      const count = touch ? 14000 : 38000;
+      const count = touch ? 9000 : 18000;
       const positions = new Float32Array(count * 3);
       for (let i = 0; i < count; i++) {
         const u = Math.random() * Math.PI * 2;
@@ -86,7 +86,7 @@ export default function PreloaderBlob({ progress, phase }) {
         uBurst: { value: 0 },
         uMouse: { value: new THREE.Vector2() },
         uPixel: { value: pixel },
-        uSizeMul: { value: touch ? 1.3 : 1 },
+        uSizeMul: { value: touch ? 1.5 : 1.3 },
         uAlpha: { value: touch ? 0.85 : 0.7 },
       };
       const material = new THREE.ShaderMaterial({ uniforms, vertexShader: VERT, fragmentShader: FRAG, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending });
@@ -117,8 +117,15 @@ export default function PreloaderBlob({ progress, phase }) {
       const tick = () => {
         raf = requestAnimationFrame(tick);
         const s = state.current;
+        // The route loader keeps this mounted between uses; it only draws while the loader is showing.
+        if (s.phase === 'idle') {
+          burst = 0;
+          uniforms.uK.value = 0;
+          return;
+        }
         uniforms.uTime.value = clock.getElapsedTime();
-        const target = s.phase === 'load' ? s.progress / 100 : s.phase === 'mark' ? 0.06 : 0.9;
+        const counting = s.phase === 'load' || s.phase === 'count' || s.phase === 'cover';
+        const target = counting ? s.progress / 100 : s.phase === 'mark' ? 0.06 : 0.9;
         uniforms.uK.value += (target - uniforms.uK.value) * (s.phase === 'mark' ? 0.12 : 0.08);
         alpha += ((s.phase === 'mark' ? base * 0.22 : base) - alpha) * 0.1;
         uniforms.uAlpha.value = alpha;
@@ -129,6 +136,9 @@ export default function PreloaderBlob({ progress, phase }) {
         points.rotation.x = Math.sin(uniforms.uTime.value * 0.3) * 0.2;
         renderer.render(scene, camera);
       };
+      const { compileAsync } = await import('../lib/three-utils');
+      await compileAsync(renderer, scene, camera);
+      if (disposed) return;
       tick();
 
       cleanup = () => {

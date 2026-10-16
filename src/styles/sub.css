@@ -262,7 +262,4 @@
   .sl-filter button.is-on { background: #fff; }
 }
 @media (hover: none) { .sl-dom-row .thumb { display: none; } .sl-dom-row .go { transform: none !important; } }
-@media (prefers-reduced-motion: reduce) {
-  .sl-sh-scroll i, .sl-sh-fallback i { animation: none; }
-  .sl-sh-figure, .sl-sh-figure img, .sl-strip-item, .sl-strip-item img, .sl-sh-ghost { transition: none; clip-path: none; transform: none; opacity: 1; }
-}
+

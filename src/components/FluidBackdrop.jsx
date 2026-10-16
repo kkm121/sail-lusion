@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
+import { precompile } from '../lib/three-utils';
 import { isTouch } from '../lib/device';
 
 const VS = 'varying vec2 vUv;void main(){vUv=uv;gl_Position=vec4(position,1.);}';
@@ -139,9 +140,11 @@ export default function FluidBackdrop() {
       renderer.setRenderTarget(null);
       renderer.render(scene, cam);
     };
-    tick();
+    let alive = true;
+    precompile(renderer, scene, cam, quad, [sim, out]).then(() => alive && tick());
 
     return () => {
+      alive = false;
       cancelAnimationFrame(raf);
       ro.disconnect();
       io.disconnect();

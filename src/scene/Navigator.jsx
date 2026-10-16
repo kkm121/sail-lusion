@@ -1,39 +1,42 @@
 import { useEffect, useMemo, useRef } from 'react';
-import { useFrame, useThree } from '@react-three/fiber';
+import { createPortal, useFrame, useThree } from '@react-three/fiber';
 import { useAnimations, useGLTF } from '@react-three/drei';
 import { clone as skeletonClone } from 'three/examples/jsm/utils/SkeletonUtils.js';
 import { toCreasedNormals } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import * as THREE from 'three';
 import { MEDIA } from '../data/media';
-import { START, chapterAt } from '../lib/journey';
-import { ease, labState, lerp, seg } from './shared';
+import { ease, glowQuad, labState, makeGlowMaterial, seg } from './shared';
 
-const HOLD = 'Dance';
-const HOLD_T = 0.9;
+// Nav appears only once, at the very end of the voyage: a cloud of light gathers into the robot, which turns to face
+// the visitor and waves goodbye. Scrolling back up dissolves it again.
+const SPAWN_A = 0.945;
+const SPAWN_B = 0.982;
 
 const C = (hex) => new THREE.Color(hex);
-const KEY_A = C('#fff1dc');
-const KEY_B = C('#ffffff');
-const FILL_A = C('#4e9bff');
-const FILL_B = C('#8ff7e8');
-const RIM_A = C('#ffffff');
-const RIM_B = C('#ffe9b0');
+
+const SPARK_V = `uniform float uK; uniform float uTime; attribute vec4 aS; varying float vA;
+void main(){
+  vec3 p = position * mix(4.2, 0.35, uK);
+  float a = uTime * (0.6 + aS.w) + aS.x * 6.28;
+  p.xz = mat2(cos(a), -sin(a), sin(a), cos(a)) * p.xz;
+  vec4 mv = modelViewMatrix * vec4(p, 1.);
+  gl_Position = projectionMatrix * mv;
+  gl_PointSize = (3. + aS.y * 5.) * (9. / max(-mv.z, 1.));
+  vA = sin(uK * 3.14159) * (0.5 + 0.5 * aS.z);
+}`;
+const SPARK_F = `varying float vA; void main(){ float d = length(gl_PointCoord - .5) * 2.; float a = pow(max(1. - d, 0.), 2.) * vA; gl_FragColor = vec4(vec3(.62, 1., .93) * 1.6, a); }`;
 
 export default function Navigator({ sp }) {
   const group = useRef();
+  const body = useRef();
   const holder = useRef();
-  const key = useRef();
-  const fill = useRef();
-  const rim = useRef();
   const { scene, animations } = useGLTF(MEDIA.navigator);
   const model = useMemo(() => {
     const m = skeletonClone(scene);
     m.updateMatrixWorld(true);
     const box = new THREE.Box3().setFromObject(m);
     const size = box.getSize(new THREE.Vector3());
-    const k = 1 / Math.max(size.y, 0.001);
-    const c = box.getCenter(new THREE.Vector3());
-    m.userData.fit = { k, c };
+    m.userData.fit = { k: 1 / Math.max(size.y, 0.001), c: box.getCenter(new THREE.Vector3()) };
     const crease = THREE.MathUtils.degToRad(46);
     m.traverse((o) => {
       if (!o.isMesh) return;
@@ -41,165 +44,118 @@ export default function Navigator({ sp }) {
       if (o.geometry) {
         try {
           o.geometry = toCreasedNormals(o.geometry, crease);
-        } catch (e) {
+        } catch {
           o.geometry.computeVertexNormals();
         }
       }
-      const matName = (o.material?.name || '').toLowerCase();
-      if (matName.includes('main')) {
-        o.material = new THREE.MeshStandardMaterial({ color: C('#f6f8fd'), roughness: 0.22, metalness: 0.1, envMapIntensity: 2.4 });
-      } else if (matName.includes('grey') || matName.includes('gray')) {
-        o.material = new THREE.MeshStandardMaterial({ color: C('#1b212b'), roughness: 0.3, metalness: 0.9, envMapIntensity: 2.2 });
-      } else if (matName.includes('black')) {
-        o.material = new THREE.MeshStandardMaterial({ color: C('#04070b'), roughness: 0.12, metalness: 0.85, emissive: C('#00f5d4'), emissiveIntensity: 0.34, envMapIntensity: 3 });
-      } else if (o.material) {
-        o.material.envMapIntensity = 2.2;
-        o.material.roughness = Math.min(o.material.roughness ?? 0.4, 0.3);
-      }
+      const name = (o.material?.name || '').toLowerCase();
+      // Finished look: glossy white ceramic shell, satin silver joints, a dark glass visor with glowing eyes.
+      if (name.includes('main')) o.material = new THREE.MeshPhysicalMaterial({ color: C('#fbfcff'), roughness: 0.32, metalness: 0, clearcoat: 1, clearcoatRoughness: 0.06, sheen: 0.3, sheenColor: C('#ffffff'), envMapIntensity: 1.3 });
+      else if (name.includes('grey') || name.includes('gray')) o.material = new THREE.MeshPhysicalMaterial({ color: C('#dfe3ea'), roughness: 0.28, metalness: 0.75, clearcoat: 0.6, clearcoatRoughness: 0.1, envMapIntensity: 1.4 });
+      else if (name.includes('black')) o.material = new THREE.MeshPhysicalMaterial({ color: C('#0c1117'), roughness: 0.06, metalness: 0.2, clearcoat: 1, clearcoatRoughness: 0.02, emissive: C('#00f5d4'), emissiveIntensity: 0.18, envMapIntensity: 1.8 });
+      else if (o.material) o.material = new THREE.MeshPhysicalMaterial({ color: o.material.color || C('#ffffff'), roughness: 0.3, clearcoat: 0.8, clearcoatRoughness: 0.08, emissive: o.material.color || C('#00f5d4'), emissiveIntensity: 0.35, envMapIntensity: 1.3 });
     });
     return m;
   }, [scene]);
   const { actions } = useAnimations(animations, holder);
-  const { camera } = useThree();
 
-  const clip = useRef('');
+  const spark = useMemo(() => {
+    const n = 360;
+    const pos = new Float32Array(n * 3);
+    const s = new Float32Array(n * 4);
+    for (let i = 0; i < n; i++) {
+      const u = Math.random() * Math.PI * 2;
+      const v = Math.acos(2 * Math.random() - 1);
+      const r = 0.4 + Math.random() * 0.6;
+      pos.set([Math.sin(v) * Math.cos(u) * r, Math.cos(v) * r * 1.2, Math.sin(v) * Math.sin(u) * r], i * 3);
+      s.set([Math.random(), Math.random(), Math.random(), Math.random()], i * 4);
+    }
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+    g.setAttribute('aS', new THREE.BufferAttribute(s, 4));
+    const m = new THREE.ShaderMaterial({ vertexShader: SPARK_V, fragmentShader: SPARK_F, uniforms: { uK: { value: 0 }, uTime: { value: 0 } }, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending });
+    return { g, m };
+  }, []);
+  const halo = useMemo(() => makeGlowMaterial(3.6, '#8ff7e8', 0, 3.4), []);
+
   useEffect(() => {
     labState.nav = true;
-    clip.current = '';
-    return () => Object.values(actions).forEach((a) => a?.stop());
-  }, [actions]);
+  }, []);
 
-  const rot = useRef({ x: 0, y: 0, z: 0 });
-  const pos = useRef({ x: 0, y: 0.2, rel: 7.8, s: 2.3 });
-  const lastP = useRef(0);
-  const velP = useRef(0);
+  const frames = useRef(0);
+  const rig = useRef();
+  const l1 = useRef();
+  const l2 = useRef();
+  const l3 = useRef();
+  const root = useThree((st) => st.scene);
+  const waving = useRef(false);
+  const smoothK = useRef(0);
 
   useFrame((s, dt) => {
     const g = group.current;
     if (!g) return;
-    const p = sp.current;
     const t = s.clock.elapsedTime;
-    const inTunnel = p >= START;
-    const ax = THREE.MathUtils.clamp(camera.aspect / 1.6, 0.34, 1);
-    const d = Math.min(dt, 0.05);
-    const intro = 1 - seg(p, 0.3, 0.56);
+    // drawn once during the shared warm-up under the loader, never on its own first frames
+    const warm = labState.warm;
+    const target = ease(seg(sp.current, SPAWN_A, SPAWN_B));
+    smoothK.current += (target - smoothK.current) * (1 - Math.exp(-5 * Math.min(dt, 0.05)));
+    const k = smoothK.current;
+    g.visible = warm || k > 0.002;
+    // lights follow the robot and fade with it instead of hiding (see the note in Cage.jsx)
+    const lk = warm ? 1 : Math.min(1, k * 1.5);
+    if (l1.current) l1.current.intensity = 3.4 * lk;
+    if (l2.current) l2.current.intensity = 6 * lk;
+    if (l3.current) l3.current.intensity = 8 * lk;
+    if (!g.visible) return;
 
-    const scrollVel = (p - lastP.current) / Math.max(d, 0.001);
-    lastP.current = p;
-    velP.current += (scrollVel - velP.current) * (1 - Math.exp(-6.0 * d));
-    const inertiaPitch = THREE.MathUtils.clamp(velP.current * 0.35, -0.45, 0.45);
-    const inertiaDragZ = THREE.MathUtils.clamp(-velP.current * 0.9, -1.6, 1.6);
-
-    const hoverY = Math.sin(t * 1.25) * 0.12 + Math.sin(t * 2.5) * 0.03;
-    const hoverX = Math.cos(t * 0.95) * 0.09 + Math.sin(t * 1.9) * 0.025;
-    const px = s.pointer.x;
-    const py = s.pointer.y;
-
-    const zc = camera.position.z;
-    const vortexK = seg(zc, -120, -190);
-    const vortexBank = Math.sin(zc * 0.08) * 0.32 * vortexK;
-    const ci = inTunnel ? chapterAt(p) : -1;
-    const end = seg(p, 0.955, 0.985);
-
-    // Rotation targets. Intro: a slow weightless sway with the arms held out; tunnel: banking and scroll inertia.
-    let targetRx;
-    let targetRy;
-    let targetRz;
-    if (!inTunnel) {
-      targetRx = -0.05 + Math.sin(t * 0.5) * 0.06 - py * 0.22;
-      targetRy = Math.sin(t * 0.33) * 0.55 + px * 0.5;
-      targetRz = Math.sin(t * 0.42) * 0.09 - px * 0.1;
-    } else {
-      targetRx = -py * 0.32 + 0.04 + Math.cos(t * 1.05) * 0.025 + inertiaPitch * (1 - end);
-      targetRy = lerp(px * 0.52 - 0.22, 0, end);
-      targetRz = -px * 0.18 + Math.sin(t * 0.8) * 0.035 + vortexBank * (1 - end);
+    const cam = s.camera;
+    const ax = THREE.MathUtils.clamp(cam.aspect / 1.6, 0.5, 1);
+    g.position.set(cam.position.x, cam.position.y - 0.25 + Math.sin(t * 1.1) * 0.05, cam.position.z - 8.2);
+    if (rig.current) rig.current.position.copy(g.position);
+    if (l1.current && l1.current.target !== g) l1.current.target = g;
+    const pop = Math.pow(THREE.MathUtils.clamp((k - 0.25) / 0.75, 0, 1), 0.7);
+    if (body.current) {
+      body.current.scale.setScalar((warm ? 0.02 : Math.max(pop, 0.0001)) * 1.9 * ax);
+      body.current.rotation.set(-0.04 - s.pointer.y * 0.15, (1 - pop) * Math.PI * 1.4 + Math.sin(t * 0.6) * 0.12 + s.pointer.x * 0.3, 0);
     }
-    const R = rot.current;
-    const kr = 1 - Math.exp(-4.5 * d);
-    R.x += (targetRx - R.x) * kr;
-    R.y += (targetRy - R.y) * kr;
-    R.z += (targetRz - R.z) * kr;
+    spark.m.uniforms.uK.value = k;
+    spark.m.uniforms.uTime.value = t;
+    halo.uniforms.uGain.value = (Math.sin(k * Math.PI) * 1.4 + k * 0.35) * (warm ? 0 : 1);
 
-    // Body language. Before the tunnel the T-pose clip is frozen and breathes; each chapter then cross-fades to its own clip.
-    const hold = actions[HOLD];
-    const want = inTunnel ? ['Idle', 'WalkJump', 'Dance', 'Yes', 'Wave'][ci] || 'Idle' : HOLD;
-    if (clip.current !== want) {
-      if (want === HOLD && hold) {
-        hold.reset().setEffectiveWeight(1).play();
-        hold.paused = true;
-      } else if (actions[want]) {
-        const next = actions[want];
-        next.reset().setEffectiveWeight(1).fadeIn(0.8).play();
-        next.timeScale = want === 'Dance' ? 0.35 : want === 'Idle' ? 0.45 : want === 'Wave' ? 0.85 : 0.4;
-        if (clip.current) {
-          const prev = actions[clip.current];
-          prev?.fadeOut(0.8);
-          if (prev) prev.paused = false;
-        }
-      }
-      clip.current = want;
-    }
-    if (hold && clip.current === HOLD) hold.time = HOLD_T + Math.sin(t * 0.6) * 0.045;
-
-    g.rotation.order = 'YXZ';
-    g.rotation.set(R.x, R.y, R.z);
-
-    let tx = 0;
-    let ty = 0;
-    let tr = 11.5;
-    let ts = 1.35;
-    if (!inTunnel) {
-      // On the planet, then lifting off to the middle of the frame, then dwindling into the distance while the words fly past.
-      const lift = ease(seg(p, 0.28, 0.42));
-      const away = ease(seg(p, 0.43, 0.6));
-      tx = 0;
-      ty = lerp(lerp(0.12, 0.05, lift), 0.0, away);
-      tr = lerp(zc - lerp(0.2, -0.4, lift), 11.5, away);
-      ts = lerp(lerp(2.25, 1.9, lift), 1.45, away);
-    } else {
-      tx = camera.position.x + lerp(-0.7 * ax, 0, end);
-      ty = camera.position.y + lerp(-0.2, 0.1, end);
-      tr = lerp(11.5, 8.6, end);
-      ts = lerp(1.45, 1.7, end);
-    }
-    const P = pos.current;
-    const kp = 1 - Math.exp(-5.0 * d);
-    P.x += (tx - P.x) * kp;
-    P.y += (ty - P.y) * kp;
-    P.rel += (tr - P.rel) * kp;
-    P.s += (ts - P.s) * kp;
-
-    g.position.set(P.x + hoverX, P.y + hoverY, zc - P.rel + inertiaDragZ);
-    g.scale.setScalar(P.s * THREE.MathUtils.clamp(camera.aspect * 1.25, 0.45, 1));
-
-    // Lighting moves from a sunrise set (warm key, blue fill, white rim) to the tunnel set (white, teal, gold).
-    if (key.current) {
-      key.current.color.copy(KEY_B).lerp(KEY_A, intro);
-      key.current.intensity = lerp(3.2, 4.8, intro);
-    }
-    if (fill.current) {
-      fill.current.color.copy(FILL_B).lerp(FILL_A, intro);
-      fill.current.intensity = lerp(6, 7.5, intro);
-    }
-    if (rim.current) {
-      rim.current.color.copy(RIM_B).lerp(RIM_A, intro);
-      rim.current.intensity = lerp(8, 10, intro);
+    const wave = actions.Wave;
+    if (wave && pop > 0.6 && !waving.current) {
+      wave.reset().setLoop(THREE.LoopRepeat, Infinity).fadeIn(0.5).play();
+      wave.timeScale = 0.85;
+      waving.current = true;
+    } else if (wave && pop < 0.3 && waving.current) {
+      wave.fadeOut(0.4);
+      waving.current = false;
     }
   });
 
   return (
-    <group ref={group}>
-      <group scale={model.userData.fit.k}>
-        <group position={[-model.userData.fit.c.x, -model.userData.fit.c.y, -model.userData.fit.c.z]}>
-          <group ref={holder}>
-            <primitive object={model} />
+    <>
+      {createPortal(
+        <group ref={rig}>
+          <directionalLight ref={l1} position={[-3.5, 3.4, 4.2]} intensity={3.4} color="#ffffff" target={group.current || undefined} />
+          <pointLight ref={l2} position={[2.4, -2.2, 2.6]} intensity={6} color="#8ff7e8" distance={10} decay={2} />
+          <pointLight ref={l3} position={[-3.2, 2.4, -3.2]} intensity={8} color="#ffe9b0" distance={10} decay={2} />
+        </group>,
+        root
+      )}
+    <group ref={group} visible={false}>
+      <mesh geometry={glowQuad} material={halo} renderOrder={6} frustumCulled={false} />
+      <points geometry={spark.g} material={spark.m} frustumCulled={false} renderOrder={7} />
+      <group ref={body}>
+        <group scale={model.userData.fit.k}>
+          <group position={[-model.userData.fit.c.x, -model.userData.fit.c.y, -model.userData.fit.c.z]}>
+            <group ref={holder}>
+              <primitive object={model} />
+            </group>
           </group>
         </group>
       </group>
-      <directionalLight ref={key} position={[-3.5, 3.4, 4.2]} intensity={3.2} color="#ffffff" />
-      <pointLight ref={fill} position={[2.4, -2.2, 2.6]} intensity={6} color="#8ff7e8" distance={10} decay={2} />
-      <pointLight ref={rim} position={[-3.2, 2.4, -3.2]} intensity={8} color="#ffe9b0" distance={10} decay={2} />
-      <pointLight position={[0, 0.1, 0.35]} intensity={1.1} color="#9ff8ec" distance={2.5} decay={2} />
     </group>
+    </>
   );
 }

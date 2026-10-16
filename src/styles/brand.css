@@ -1,0 +1,50 @@
+/* ---------- FireFly brand ---------- */
+:root {
+  --ember-1: #ffb347;
+  --ember-2: #ff6a2b;
+  --ember-3: #e8192c;
+  --ember-4: #8a0b1a;
+  --ember: linear-gradient(140deg, var(--ember-1), var(--ember-2) 38%, var(--ember-3) 72%, var(--ember-4));
+}
+.ff-logo { display: inline-block; width: 1em; height: 1em; object-fit: contain; flex: none; user-select: none; }
+.ff-logo--ember { background: var(--ember); background-size: 220% 220%; -webkit-mask: url(/brand/firefly-mask.png) center / contain no-repeat; mask: url(/brand/firefly-mask.png) center / contain no-repeat; animation: ff-burn 7s ease-in-out infinite alternate; }
+@keyframes ff-burn { from { background-position: 0% 0%; } to { background-position: 100% 100%; } }
+
+/* header: the bird sits beside the word mark and flares on hover */
+.sl-nav-bar .brand { flex-direction: row; align-items: center; gap: 12px; }
+.sl-nav-bar .brand .ff-logo { font-size: 40px; filter: drop-shadow(0 0 0 rgba(255, 90, 40, 0)); transition: transform 0.6s var(--ease-out, ease), filter 0.5s ease; transform-origin: 40% 70%; }
+.sl-nav-bar .brand:hover .ff-logo { transform: rotate(-8deg) scale(1.08) translateY(-2px); filter: drop-shadow(0 0 14px rgba(255, 90, 40, 0.65)); }
+.sl-nav-bar .brand .txt { display: flex; flex-direction: column; gap: 6px; }
+.sl-nav-bar .brand:hover b { color: var(--ember-2) !important; }
+
+/* loader: the bird replaces the old sail, drawn in by a rising brush stroke */
+.sl-pre-bird { position: absolute; left: -100px; top: -118px; width: 200px; height: 200px; font-size: 200px; opacity: 0; clip-path: inset(100% 0 0 0); transform: translate3d(0, 26px, 0) rotate(-6deg) scale(0.86); filter: drop-shadow(0 0 22px rgba(255, 80, 30, 0.55)); }
+.sl-pre.is-mark .sl-pre-bird { opacity: 1; clip-path: inset(0 0 0 0); transform: none; transition: clip-path 0.85s cubic-bezier(0.7, 0, 0.2, 1) 0.08s, transform 1s cubic-bezier(0.2, 0.9, 0.2, 1) 0.08s, opacity 0.01s 0.08s; }
+.sl-pre.is-open .sl-pre-bird { opacity: 1; clip-path: inset(0 0 0 0); transform: translate3d(0, -40px, 0) scale(1.1); transition: transform 1s cubic-bezier(0.7, 0, 0.2, 1); }
+.sl-pre-top .brand { display: inline-flex; align-items: center; gap: 10px; }
+.sl-pre-top .brand .ff-logo { font-size: 18px; }
+
+/* home hero chip and footer */
+.sl-hero-chip .ff-logo { font-size: 18px; margin-right: 2px; }
+.sl-footer-brand { display: flex; align-items: center; gap: calc(var(--u) * 2); margin-bottom: calc(var(--u) * 5); }
+.sl-footer-brand .ff-logo { font-size: calc(var(--u) * 9); filter: drop-shadow(0 18px 40px rgba(232, 25, 44, 0.25)); }
+.sl-footer-brand b { display: block; font-size: calc(var(--u) * 5.6); line-height: 0.9; letter-spacing: -0.04em; font-weight: 600; }
+.sl-footer-brand small { display: block; margin-top: 10px; font-family: var(--f-mono); font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; opacity: 0.6; }
+
+/* join section: a large ember bird rises behind the call to action */
+.sl-end-bird { position: absolute; left: 50%; top: 50%; z-index: 0; width: min(46vw, 560px); height: min(46vw, 560px); font-size: min(46vw, 560px); translate: -50% -52%; opacity: 0.22; pointer-events: none; mix-blend-mode: screen; filter: drop-shadow(0 0 60px rgba(255, 80, 30, 0.6)); }
+
+/* about hero: a faint ember watermark of the bird */
+.sl-sh-mark { position: absolute; right: calc(var(--pad) * 0.6); top: 50%; z-index: 1; width: min(44vw, 640px); height: min(44vw, 640px); font-size: min(44vw, 640px); translate: 0 -50%; opacity: 0; pointer-events: none; transform: translate3d(0, 6vh, 0) rotate(-4deg); transition: opacity 1.8s ease 0.5s, transform 2.4s var(--ease-out, ease) 0.5s; }
+.sl-sh.is-in .sl-sh-mark { opacity: 0.32; transform: none; }
+
+@media (max-width: 767px) {
+  .sl-nav-bar .brand .ff-logo { font-size: 30px; }
+  .sl-nav-bar .brand { gap: 8px; min-width: 0; }
+  .sl-nav-bar .brand b { font-size: 18px; letter-spacing: 0.22em; }
+  .sl-nav-bar .brand small { display: none; }
+  .sl-footer-brand .ff-logo { font-size: 22vw; }
+  .sl-footer-brand b { font-size: 12vw; }
+  .sl-sh-mark { width: 80vw; height: 80vw; font-size: 80vw; right: -14vw; top: 30%; }
+  .sl-sh.is-in .sl-sh-mark { opacity: 0.2; }
+}

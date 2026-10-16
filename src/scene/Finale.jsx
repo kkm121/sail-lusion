@@ -3,7 +3,7 @@ import { useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 import { seeded } from '../lib/three-utils';
 import { CONNECT_END, ROOM_END } from '../lib/journey';
-import { fillMatrices } from './shared';
+import { fillMatrices, labState } from './shared';
 
 const H = 4.3;
 export const PANE_Z = ROOM_END - 2;
@@ -92,7 +92,7 @@ function GlassPane() {
     const z = s.camera.position.z;
     mat.uniforms.uCamZ.value = z;
     mat.uniforms.uTime.value = s.clock.elapsedTime;
-    if (mesh.current) mesh.current.visible = z < PANE_Z + 34 && z > PANE_Z - 12;
+    if (mesh.current) mesh.current.visible = labState.warm || (z < PANE_Z + 34 && z > PANE_Z - 12);
   });
   return <mesh ref={mesh} geometry={geo} material={mat} frustumCulled={false} renderOrder={5} />;
 }
@@ -352,7 +352,7 @@ function Stickers({ touch }) {
     const z = s.camera.position.z;
     mat.uniforms.uTime.value = s.clock.elapsedTime;
     mat.uniforms.uCamZ.value = z;
-    if (mesh.current) mesh.current.visible = z < PANE_Z + 6;
+    if (mesh.current) mesh.current.visible = labState.warm || z < PANE_Z + 6;
   });
   return (
     <instancedMesh ref={mesh} args={[undefined, mat, data.items.length]} frustumCulled={false}>

@@ -3,7 +3,7 @@ import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { seeded } from '../lib/three-utils';
 import { ROOM_END, ROOM_START } from '../lib/journey';
-import { fillMatrices, paintInstances, seg } from './shared';
+import { fillMatrices, paintInstances, seg, labState } from './shared';
 
 const H = 4.3;
 const LEN = ROOM_START - ROOM_END + 6;
@@ -118,7 +118,7 @@ export default function Room({ touch }) {
   }, [data]);
   const shown = useRef();
   useFrame((s) => {
-    if (shown.current) shown.current.visible = s.camera.position.z < ROOM_START + 12 && s.camera.position.z > ROOM_END - 16;
+    if (shown.current) shown.current.visible = labState.warm || (s.camera.position.z < ROOM_START + 12 && s.camera.position.z > ROOM_END - 16);
     hullMat.uniforms.uA.value.set('#3a24ff').multiplyScalar(0.55 + 0.45 * seg(s.camera.position.z, ROOM_START + 4, ROOM_START - 16));
   });
   return (

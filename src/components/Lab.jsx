@@ -127,7 +127,7 @@ export default function Lab() {
         dev.style.setProperty('--bz', `${lerp(13, 0, seg(e, 0.55, 1)) / eff}px`);
       }
 
-      const ringIn = seg(p, 0.3, 0.4) * (1 - seg(p, 0.7, 0.8));
+      const ringIn = seg(p, 0.3, 0.4) * (1 - seg(p, 0.5, 0.56));
       if (ring.current) {
         ring.current.style.opacity = String(ringIn);
         ring.current.style.transform = `translate(-50%, -50%) scale(${lerp(0.72, 1.04, seg(p, 0.3, 0.62))})`;
@@ -139,7 +139,7 @@ export default function Lab() {
       if (words.current) {
         words.current.style.setProperty('--ex', (Math.pow(sp, 1.15) * 11).toFixed(4));
         words.current.style.setProperty('--s', (1 + Math.pow(sp, 2.7) * 16).toFixed(4));
-        words.current.style.opacity = String(wIn * (1 - seg(p, 0.57, 0.605)));
+        words.current.style.opacity = String(wIn * (1 - seg(p, 0.53, 0.565)));
       }
       if (giant.current) {
         giant.current.style.opacity = '0';

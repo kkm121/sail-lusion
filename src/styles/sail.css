@@ -156,7 +156,7 @@ html.lenis, html.lenis body { height: auto; }
 .sl-featured-head p { font-size: calc(var(--u) * 0.85); line-height: 1.5; text-transform: uppercase; width: calc(var(--u) * 21); font-family: var(--f-mono); letter-spacing: 0.04em; }
 .sl-grid { display: flex; flex-direction: column; row-gap: calc(var(--u) * 5); }
 .sl-grid-row { display: grid; grid-template-columns: 1fr 1fr; column-gap: calc(var(--u) * 1.95); align-items: start; }
-.sl-project { display: block; }
+.sl-project { display: block; will-change: transform, opacity; transform-origin: 50% 100%; }
 .sl-project-img { --mx: 0; --my: 0; position: relative; aspect-ratio: 451 / 293; border-radius: 16px; overflow: hidden; background: #0a1a1c; isolation: isolate; transform: translateZ(0); transition: box-shadow 0.6s ease, transform 0.9s var(--ease-out); }
 .sl-project-img img { position: absolute; left: -5%; top: -5%; width: 110%; height: 110%; max-width: none; object-fit: cover; display: block; transform: translate3d(calc(var(--mx) * -9px), calc(var(--my) * -7px), 0) scale(1.05); filter: saturate(0.82) contrast(1.05); transition: transform 1.2s var(--ease-out), filter 0.7s ease; }
 .sl-project-tint { position: absolute; inset: 0; z-index: 1; background: linear-gradient(135deg, #00cbb0, #6a3dff 70%, #14046b); mix-blend-mode: color; opacity: 0.62; transition: opacity 0.7s ease; pointer-events: none; }

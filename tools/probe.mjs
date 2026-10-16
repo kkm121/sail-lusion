@@ -1,6 +1,6 @@
 import puppeteer from 'puppeteer-core';
 const sleep = (t) => new Promise((r) => setTimeout(r, t));
-const browser = await puppeteer.launch({ executablePath: process.env.BROWSER_PATH || 'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe', headless: 'new', args: ['--no-sandbox', '--ignore-gpu-blocklist'] });
+const browser = await puppeteer.launch({ executablePath: process.env.BROWSER_PATH || 'C:/Program Files/Google/Chrome/Application/chrome.exe', headless: 'new', userDataDir: process.env.PPDIR || 'C:/Users/muthu/AppData/Local/Temp/pp-' + process.pid, args: ['--no-sandbox', '--no-first-run', '--ignore-gpu-blocklist'] });
 const page = await browser.newPage();
 await page.setViewport({ width: 1440, height: 900 });
 await page.goto('http://127.0.0.1:5180/', { waitUntil: 'domcontentloaded' });

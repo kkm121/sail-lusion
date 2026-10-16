@@ -17,6 +17,8 @@ The site tells one story (see [STORY.md](STORY.md)). Everything below was downlo
 
 | Asset | Source | Licence |
 | --- | --- | --- |
+| `env/studio.hdr` | "Studio Small 09" HDRI (1k) from [Poly Haven](https://polyhaven.com/a/studio_small_09) | CC0 |
+| `env/metal-*.jpg` | "Metal 012" (1K JPG: colour, normal, roughness) from [ambientCG](https://ambientcg.com/view?id=Metal012) | CC0 |
 | `navigator.glb` | "RobotExpressive" by Tomás Laulhé, via the [three.js examples](https://github.com/mrdoob/three.js/tree/dev/examples/models/gltf/RobotExpressive) | CC0 |
 | `crew.jpg` | [Pexels 6684552](https://www.pexels.com/photo/6684552/) | Pexels licence |
 | `build.jpg` | [Pexels 9242834](https://www.pexels.com/photo/9242834/) | Pexels licence |

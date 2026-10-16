@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
+import { precompile } from '../lib/three-utils';
 import { onTick } from '../lib/ticker';
 import { scrollState } from '../lib/scroll';
 import { canGL } from '../lib/device';
@@ -152,8 +153,11 @@ export default function LiquidOverlay() {
     };
     window.addEventListener('pointermove', onMove);
 
+    let compiled = false;
+    precompile(renderer, scene, cam, quad, [sim, out]).then(() => (compiled = true));
     let cleared = false;
     const stop = onTick((now) => {
+      if (!compiled) return;
       const speedScroll = Math.min(Math.abs(scrollState.velocity) / 30, 1.4);
       if (speedScroll > 0.05) activeUntil = Math.max(activeUntil, now + 1800);
       if (now > activeUntil || !started) {

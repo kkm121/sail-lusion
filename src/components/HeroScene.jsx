@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
-import { createEnvironment, seeded } from '../lib/three-utils';
+import { createEnvironment, precompile, seeded } from '../lib/three-utils';
 import { hasWebGL, isTouch } from '../lib/device';
 import { resolveAsset } from '../lib/assets';
 import { whenShown } from '../lib/ready';
@@ -301,7 +301,12 @@ export default function HeroScene() {
       rimV.position.y = -4 + Math.cos(t * 0.27) * 2;
       renderer.render(scene, camera);
     };
-    tick();
+    // Compile shaders on parallel threads before the first frame instead of freezing the loader.
+    precompile(renderer, scene, camera)
+      .catch(() => {})
+      .then(() => {
+        if (!disposed) tick();
+      });
 
     return () => {
       disposed = true;

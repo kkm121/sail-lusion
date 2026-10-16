@@ -4,7 +4,7 @@ import { isMobileWidth } from './device';
 
 // What each route needs before its loader opens. Components resolve their own names when ready.
 const BY_ROUTE = {
-  '/': ['fonts', 'media', 'hero', 'lab'],
+  '/': ['fonts', 'media', 'hero', 'labload', 'lab'],
   '/about': ['fonts', 'media', 'sub'],
   '/projects': ['fonts', 'media', 'sub'],
   '/domains': ['fonts', 'media', 'sub'],
@@ -37,14 +37,21 @@ export function resetAssets() {
   notify();
 }
 
+// The voyage's shader warm-up ('lab') freezes the page for a moment on integrated GPUs, so it is left out of the count
+// and started only once the number reaches 100, while the sail mark builds with a pure CSS animation.
+export const warmGate = { open: false };
+const counted = () => [...names.entries()].filter(([k]) => k !== 'lab');
+
 export function assetProgress() {
-  if (!names.size) return 0;
-  let done = 0;
-  names.forEach((v) => v && done++);
-  return done / names.size;
+  const list = counted();
+  if (!list.length) return 0;
+  return list.filter(([, v]) => v).length / list.length;
 }
 
-export const assetsDone = () => names.size > 0 && [...names.values()].every(Boolean);
+// Ready to open: the warm-up, if this page has one, has finished.
+export const warmDone = () => !names.has('lab') || names.get('lab') === true;
+
+export const assetsDone = () => names.size > 0 && counted().every(([, v]) => v);
 export const pendingAssets = () => [...names.entries()].filter(([, v]) => !v).map(([k]) => k);
 
 export function preloadImages(urls, timeout = 7000) {
@@ -96,6 +103,7 @@ function mediaFor(pathname) {
 // Start loading everything a route needs and register what it still has to resolve.
 export function expectRoute(pathname) {
   resetAssets();
+  warmGate.open = false;
   (BY_ROUTE[routeKey(pathname)] || ['fonts', 'media']).forEach(expectAsset);
   (document.fonts?.ready || Promise.resolve()).then(() => resolveAsset('fonts'));
   const jobs = [preloadImages(mediaFor(pathname))];

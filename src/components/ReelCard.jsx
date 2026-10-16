@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
+import { precompile } from '../lib/three-utils';
 import { onTick } from '../lib/ticker';
 import { canGL } from '../lib/device';
 
@@ -150,8 +151,10 @@ export default function ReelCard({ src, fallback, poster, warp, className = '', 
     io.observe(el);
 
     const u = mat.uniforms;
+    let compiled = false;
+    precompile(renderer, scene, cam).then(() => (compiled = true));
     const stop = onTick(() => {
-      if (!ready || !near) return;
+      if (!ready || !near || !compiled) return;
       const w = warp.current;
       u.uScale.value = w.scale;
       u.uRot.value = -w.rot;

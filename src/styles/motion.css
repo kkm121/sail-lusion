@@ -70,9 +70,7 @@ html.is-scrolling .sl-pill { pointer-events: none; }
 @media (max-width: 767px) {
   .sl-mq--solid, .sl-mq--outline { font-size: 13vw; }
 }
-@media (prefers-reduced-motion: reduce) {
-  .sl-t .wi, .sl-t .ci, .sl-r, .sl-rg > .sl-rc { transition: none !important; transform: none !important; opacity: 1 !important; filter: none !important; clip-path: none !important; }
-}
+
 
 /* ---------- section tickers ---------- */
 .sl-voyage { position: relative; display: grid; row-gap: calc(var(--u) * 1.4); padding: calc(var(--u) * 6) 0 calc(var(--u) * 2.4); overflow: hidden; }

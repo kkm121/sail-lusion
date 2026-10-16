@@ -1,7 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import LoaderScreen from './LoaderScreen';
-import { assetProgress, assetsDone, expectRoute } from '../lib/assets';
+import { assetProgress, assetsDone, expectRoute, warmDone, warmGate } from '../lib/assets';
 import { runCounter } from '../lib/counter';
 import { scrollState } from '../lib/scroll';
 import { setCovered } from '../lib/ready';
@@ -55,15 +55,22 @@ export default function TransitionProvider({ children }) {
       },
       onDone: () => {
         setPhase('mark');
-        later(() => {
+        warmGate.open = true;
+        const t0 = performance.now();
+        const open = () => {
+          if (performance.now() - t0 < 520 || (!warmDone() && performance.now() - t0 < 8500)) {
+            later(open, 60);
+            return;
+          }
           setCovered(false);
           setPhase('open');
-        }, 520);
-        later(() => {
-          setPhase('idle');
-          setValue(0);
-          busy.current = false;
-        }, 1500);
+          later(() => {
+            setPhase('idle');
+            setValue(0);
+            busy.current = false;
+          }, 980);
+        };
+        later(open, 520);
       },
     });
   }, [later]);
@@ -119,7 +126,7 @@ export default function TransitionProvider({ children }) {
   return (
     <Ctx.Provider value={value$}>
       {children}
-      <LoaderScreen className="sl-tr" phase={phase} value={value} fill={fill} label={label} />
+      <LoaderScreen className="sl-tr" phase={phase} value={value} fill={fill} label={label} blob />
     </Ctx.Provider>
   );
 }

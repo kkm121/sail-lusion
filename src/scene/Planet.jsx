@@ -1,7 +1,7 @@
 import { useMemo, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
-import { glowQuad, makeGlowMaterial, seg } from './shared';
+import { glowQuad, makeGlowMaterial, seg, labState } from './shared';
 
 const R = 22;
 const SUN = new THREE.Vector3(-0.86, 0.22, -0.46).normalize();
@@ -125,8 +125,8 @@ export default function Planet({ sp }) {
     const fade = 1 - seg(p, 0.3, 0.4);
     const drop = seg(p, 0.26, 0.4);
     fly.current = fade;
-    if (group.current) group.current.visible = fade > 0.003;
-    if (fade <= 0.003) return;
+    if (group.current) group.current.visible = labState.warm || fade > 0.003;
+    if (fade <= 0.003 && !labState.warm) return;
     mats.surf.uniforms.uTime.value = s.clock.elapsedTime;
     mats.surf.uniforms.uFade.value = fade;
     mats.atmo.uniforms.uFade.value = fade;

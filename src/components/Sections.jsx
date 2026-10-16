@@ -4,6 +4,7 @@ import Text from './Text';
 import Reveal from './Reveal';
 import Marquee from './Marquee';
 import TransitionLink from './TransitionLink';
+import Logo from './Logo';
 import FluidBackdrop from './FluidBackdrop';
 import { useBuilding, useRecruit, useTerminal } from './RecruitContext';
 import { projects } from '../data/projects';
@@ -33,7 +34,7 @@ export function Hero() {
           <HeroScene />
         </Suspense>
         <div className="sl-hero-chip">
-          <i /> {SITE.fullName}
+          <Logo /> {SITE.fullName}
           <span className="assoc">Associated with AMIEE</span>
         </div>
       </div>
@@ -85,6 +86,7 @@ export function End() {
   return (
     <section className="sl-end" id="end">
       <FluidBackdrop />
+      <Logo variant="ember" className="sl-end-bird" />
       <div className="sl-end-inner">
         <small>
           <Text type="scramble">The crew has a seat for you</Text>
@@ -110,6 +112,13 @@ export function Footer({ next = { label: 'About us', href: '/about' } }) {
     <>
       <footer className="sl-footer">
         <Marquee variant="outline" items={['FireFly', 'Student club', 'AMIEE']} speed={34} dir={-1} className="sl-footer-mq" label="FireFly, FireFly, AMIEE" />
+        <div className="sl-footer-brand">
+          <Logo title="FireFly logo" />
+          <span>
+            <b>FireFly</b>
+            <small>Student AI club · Associated with AMIEE</small>
+          </span>
+        </div>
         <div className="sl-footer-mid">
           <Reveal type="up" className="sl-footer-contact">
             <p>

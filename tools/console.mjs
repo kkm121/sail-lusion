@@ -3,7 +3,7 @@ import puppeteer from 'puppeteer-core';
 const sleep = (t) => new Promise((r) => setTimeout(r, t));
 const mode = process.argv[2] || 'desktop';
 const browser = await puppeteer.launch({
-  executablePath: process.env.BROWSER_PATH || 'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe',
+  executablePath: process.env.BROWSER_PATH || 'C:/Program Files/Google/Chrome/Application/chrome.exe',
   headless: 'new',
   args: ['--no-sandbox', '--ignore-gpu-blocklist'],
 });

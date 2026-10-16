@@ -1,94 +1,150 @@
 import { useMemo, useRef } from 'react';
-import { useFrame } from '@react-three/fiber';
+import { createPortal, useFrame, useThree } from '@react-three/fiber';
+import { MeshDistortMaterial, MeshTransmissionMaterial, Sparkles, useFBO } from '@react-three/drei';
 import * as THREE from 'three';
-import { seeded } from '../lib/three-utils';
 import { CAGE_END, ROOM_START } from '../lib/journey';
-import { makeGlowMaterial, glowQuad, seg } from './shared';
+import { glowQuad, labState, makeGlowMaterial, seg } from './shared';
 
-// Chapter II, Discover: a twisting wire tunnel. Rings narrow toward the far end while long strands spiral around them,
-// colour runs from violet to magenta to teal, and light pulses race along the strands.
-const LEN = CAGE_END - ROOM_START;
-const RINGS = 30;
-const STRANDS = 28;
-const radius = (u) => 5.6 - 2.6 * u + Math.sin(u * 14) * 0.25;
-const zAt = (u) => CAGE_END - u * LEN;
-const mix = (a, b, t) => a.map((v, i) => v + (b[i] - v) * t);
-const palette = (u) => (u < 0.5 ? mix([0.55, 0.35, 1], [1, 0.3, 0.75], u * 2) : mix([1, 0.3, 0.75], [0.2, 1, 0.9], (u - 0.5) * 2));
+// Chapter II, Discover: the AmieeCore glass blob from the first version of the site (RP_Club, backup-pre-lusion),
+// with the same materials, lights and colour logic, in its red theme (#E11D48). The camera circles it once
+// (see the rig in LabScene) and then dives through it into the Create room.
+export const BLOB_Z = -150;
+export const BLOB_R = 10;
+const SIZE = 1.3;
+const THEME = '#E11D48';
 
-const V = `uniform float uTime; attribute vec3 aC; varying vec3 vC; varying float vZ; varying float vW;
-void main(){
-  vC = aC;
-  vec3 p = position;
-  float a = uTime * 0.08 + p.z * 0.014;
-  float c = cos(a), s = sin(a);
-  p.xy = mat2(c, -s, s, c) * p.xy;
-  vec4 mv = modelViewMatrix * vec4(p, 1.);
-  vZ = -mv.z; vW = position.z;
-  gl_Position = projectionMatrix * mv;
-}`;
-const F = `uniform float uTime; uniform float uFade; varying vec3 vC; varying float vZ; varying float vW;
-void main(){
-  float near = smoothstep(0.4, 5., vZ);
-  float far = exp(-vZ * 0.01);
-  float pulse = pow(max(0., sin(vW * 0.12 - uTime * 1.1)), 18.);
-  float a = near * (0.2 + 0.5 * far) * uFade * 0.55;
-  gl_FragColor = vec4(vC * (0.65 + pulse * 2.6) * a, 1.);
-}`;
+const hsl = { h: 0, s: 0, l: 0 };
+function shiftHue(source, target, offset, saturation = 0.9, lightness = 0.55) {
+  source.getHSL(hsl);
+  target.setHSL((hsl.h + offset + 1) % 1, Math.max(hsl.s, saturation), lightness);
+}
 
 export default function Vortex({ touch }) {
   const group = useRef();
-  const { geo, mat, glows } = useMemo(() => {
-    const pos = [];
-    const col = [];
-    const line = (a, b, c1, c2) => {
-      pos.push(...a, ...b);
-      col.push(...c1, ...c2);
-    };
-    const seq = 96;
-    for (let r = 0; r <= RINGS; r++) {
-      const u = r / RINGS;
-      const R = radius(u);
-      const c = palette(u);
-      for (let i = 0; i < seq; i++) {
-        const a0 = (i / seq) * Math.PI * 2;
-        const a1 = ((i + 1) / seq) * Math.PI * 2;
-        line([Math.cos(a0) * R, Math.sin(a0) * R, zAt(u)], [Math.cos(a1) * R, Math.sin(a1) * R, zAt(u)], c, c);
-      }
-    }
-    const steps = 60;
-    const n = touch ? 18 : STRANDS;
-    for (let s = 0; s < n; s++) {
-      const a0 = (s / n) * Math.PI * 2;
-      for (let k = 0; k < steps; k++) {
-        const u0 = k / steps;
-        const u1 = (k + 1) / steps;
-        const t0 = a0 + u0 * 2.4;
-        const t1 = a0 + u1 * 2.4;
-        line([Math.cos(t0) * radius(u0), Math.sin(t0) * radius(u0), zAt(u0)], [Math.cos(t1) * radius(u1), Math.sin(t1) * radius(u1), zAt(u1)], palette(u0), palette(u1));
-      }
-    }
-    const g = new THREE.BufferGeometry();
-    g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
-    g.setAttribute('aC', new THREE.Float32BufferAttribute(col, 3));
-    const m = new THREE.ShaderMaterial({ vertexShader: V, fragmentShader: F, uniforms: { uTime: { value: 0 }, uFade: { value: 0 } }, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, toneMapped: false });
-    return { geo: g, mat: m, glows: [makeGlowMaterial(20, '#b48cff', 1, 3.2), makeGlowMaterial(9, '#ffffff', 1, 4.4)] };
-  }, [touch]);
+  const spin = useRef();
+  const glass = useRef();
+  const core = useRef();
+  const inner = useRef();
+  const rim = useRef();
+  const top = useRef();
+  const bottom = useRef();
+  const orbit = useRef();
+  const key = useRef();
+  const { scene } = useThree();
+  const target = useMemo(() => new THREE.Object3D(), []);
+  const colors = useMemo(() => ({ base: new THREE.Color(THEME), secondary: new THREE.Color(), mixed: new THREE.Color() }), []);
+  const glow = useMemo(() => makeGlowMaterial(14, THEME, 0, 3), []);
+  // The glass refracts this buffer. It is only redrawn while the blob is on screen, so the rest of the voyage pays nothing.
+  const fbo = useFBO(touch ? 256 : 512, touch ? 256 : 512);
 
-  useFrame((s) => {
+  useFrame((s, dt) => {
+    const g = group.current;
+    if (!g) return;
     const z = s.camera.position.z;
-    const fade = seg(z, CAGE_END + 40, CAGE_END + 12) * (1 - seg(z, ROOM_START + 10, ROOM_START - 2));
-    if (group.current) group.current.visible = fade > 0.001;
-    mat.uniforms.uTime.value = s.clock.elapsedTime;
-    mat.uniforms.uFade.value = fade;
-    glows[0].uniforms.uGain.value = 0.3 * fade;
-    glows[1].uniforms.uGain.value = 0.18 * fade;
+    const fade = seg(z, CAGE_END + 30, CAGE_END + 4) * (1 - seg(z, ROOM_START + 18, ROOM_START + 6));
+    g.visible = labState.warm || fade > 0.001;
+    // lights fade instead of hiding (see the note in Cage.jsx)
+    const lk = labState.warm ? 1 : fade;
+    if (key.current) key.current.intensity = 1.5 * lk;
+    if (rim.current) rim.current.intensity = 0.8 * lk;
+    if (top.current) top.current.intensity = 1.5 * lk;
+    if (bottom.current) bottom.current.intensity = 0.9 * lk;
+    if (orbit.current) orbit.current.intensity = 5 * lk;
+    if (!g.visible) return;
+    const t = s.clock.elapsedTime;
+    const d = Math.min(dt, 0.05);
+
+    // colour logic from the original: the theme drifts toward a neighbouring hue and back
+    // exactly the original colour logic: the theme drifts toward a warmer neighbouring hue and back
+    shiftHue(colors.base, colors.secondary, 0.1 + Math.sin(t * 0.35) * 0.04);
+    colors.mixed.copy(colors.base).lerp(colors.secondary, THREE.MathUtils.clamp(0.3 + 0.2 * Math.sin(t * 0.5), 0, 0.6));
+    if (core.current) {
+      core.current.color.copy(colors.mixed);
+      core.current.emissive.copy(colors.mixed);
+      core.current.emissiveIntensity = 2.0 + Math.sin(t * 1.3) * 0.15;
+    }
+    if (inner.current) {
+      inner.current.rotation.y -= d * 0.4;
+      inner.current.rotation.x += d * 0.18;
+    }
+    if (spin.current) {
+      spin.current.rotation.y = 0.45 + t * 0.15;
+      spin.current.rotation.x = 0.35;
+      spin.current.rotation.z = 0.15 + Math.sin(t * 0.4) * 0.05;
+      spin.current.position.y = Math.sin(t * 0.9) * 0.15;
+      spin.current.scale.setScalar(SIZE * (0.7 + 0.3 * fade) * (1 + Math.sin(t * 1.2) * 0.014));
+    }
+    if (top.current) top.current.color.copy(colors.base);
+    if (rim.current) rim.current.color.copy(colors.secondary);
+    if (bottom.current) bottom.current.color.copy(colors.secondary);
+    if (orbit.current) {
+      const a = t * 0.6;
+      orbit.current.position.set(Math.cos(a) * 4.2, Math.sin(a * 0.7) * 2.2, Math.sin(a) * 4.2);
+      orbit.current.color.copy(colors.secondary);
+    }
+    glow.uniforms.uColor.value.copy(colors.mixed);
+    glow.uniforms.uGain.value = (touch ? 0.6 : 0.3) * fade;
+
+    // refraction buffer, drawn without the glass itself (skipped while the warm-up keeps the chapter hidden)
+    if (glass.current && g.parent?.visible) {
+      glass.current.visible = false;
+      s.gl.setRenderTarget(fbo);
+      s.gl.render(s.scene, s.camera);
+      s.gl.setRenderTarget(null);
+      glass.current.visible = true;
+    }
   });
 
   return (
-    <group ref={group}>
-      <lineSegments geometry={geo} material={mat} frustumCulled={false} renderOrder={3} />
-      <mesh geometry={glowQuad} material={glows[0]} position={[0, 0, ROOM_START + 2]} frustumCulled={false} renderOrder={8} />
-      <mesh geometry={glowQuad} material={glows[1]} position={[0, 0, ROOM_START + 2]} frustumCulled={false} renderOrder={9} />
+    <group ref={group} position={[0, 0, BLOB_Z]}>
+      {createPortal(
+        <group position={[0, 0, BLOB_Z]}>
+          <directionalLight ref={key} position={[10, 10, 5]} intensity={1.5} color="#ffffff" target={target} />
+          <directionalLight ref={rim} position={[-10, -10, -5]} intensity={0.8} color={THEME} target={target} />
+          <spotLight ref={top} position={[0, 10, 0]} intensity={1.5} angle={0.8} penumbra={1} color={THEME} target={target} />
+          <spotLight ref={bottom} position={[0, -10, 0]} intensity={0.9} angle={0.8} penumbra={1} color={THEME} target={target} />
+          <pointLight ref={orbit} intensity={5} distance={14} decay={2} color={THEME} />
+          <primitive object={target} />
+        </group>,
+        scene
+      )}
+      <mesh geometry={glowQuad} material={glow} position={[0, 0, -2]} renderOrder={1} frustumCulled={false} />
+      <group ref={spin}>
+        <mesh ref={glass}>
+          <icosahedronGeometry args={[1.84, 0]} />
+          <MeshTransmissionMaterial
+            buffer={fbo.texture}
+            samples={touch ? 3 : 6}
+            resolution={touch ? 256 : 512}
+            thickness={2.0}
+            chromaticAberration={0}
+            anisotropy={0.2}
+            distortion={0}
+            temporalDistortion={0}
+            iridescence={0}
+            color="#ffffff"
+            transmission={0.96}
+            roughness={0.04}
+            metalness={0.08}
+            ior={1.46}
+            clearcoat={1}
+            clearcoatRoughness={0.02}
+            reflectivity={0.95}
+          />
+        </mesh>
+        <group ref={inner}>
+          <mesh scale={0.99}>
+            <icosahedronGeometry args={[1.83, 0]} />
+            <MeshDistortMaterial ref={core} color={THEME} emissive={THEME} emissiveIntensity={2.1} distort={0.06} speed={1.4} transparent opacity={0.88} roughness={0.08} metalness={0.1} />
+          </mesh>
+          <mesh position={[0, 0.4, 0]}>
+            <sphereGeometry args={[0.85, 24, 24]} />
+            <meshStandardMaterial color="#ffffff" emissive="#ffffff" emissiveIntensity={2.2} transparent opacity={0.8} />
+          </mesh>
+        </group>
+        <Sparkles count={touch ? 34 : 70} scale={5.2} size={1.6} speed={0.45} opacity={0.32} color={THEME} />
+        <Sparkles count={touch ? 18 : 40} scale={5} size={1.5} speed={0.3} opacity={0.35} color="#ffffff" />
+      </group>
     </group>
   );
 }

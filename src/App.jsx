@@ -18,6 +18,7 @@ import { onTick } from './lib/ticker';
 
 // Developer-only pose picker for the navigator model; the whole branch is removed from production builds.
 const NavPose = import.meta.env.DEV ? lazy(() => import('./dev/NavPose')) : null;
+const V1Blob = import.meta.env.DEV ? lazy(() => import('./dev/V1Blob')) : null;
 
 function SmoothScroll() {
   useEffect(() => {
@@ -89,6 +90,16 @@ export default function App() {
             <Route path="/domains/:id" element={<DomainDetail />} />
             <Route path="/projects" element={<Projects />} />
             <Route path="/projects/:id" element={<ProjectDetail />} />
+            {V1Blob && (
+              <Route
+                path="/__v1"
+                element={
+                  <Suspense fallback={null}>
+                    <V1Blob />
+                  </Suspense>
+                }
+              />
+            )}
             {NavPose && (
               <Route
                 path="/__nav"

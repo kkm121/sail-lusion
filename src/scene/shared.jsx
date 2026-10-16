@@ -1,7 +1,8 @@
 import { useMemo } from 'react';
 import * as THREE from 'three';
 
-export const labState = { nav: false };
+// warm: true during the first frames, when every chapter must draw once so its shaders are compiled under the loader
+export const labState = { nav: false, warm: false };
 
 export const seg = (p, a, b) => Math.min(1, Math.max(0, (p - a) / (b - a)));
 export const lerp = (a, b, t) => a + (b - a) * t;

@@ -55,6 +55,7 @@ function Hero() {
       accent="#f5c84b"
       accent2="#ff4d8d"
       look={{ freq: 17, warp: 2.2, line: 0.05, speed: 0.7 }}
+      brand
       size="s"
     >
       <Reveal type="rise" cols={3} stagger={110} y={34} className="sl-sh-stats">

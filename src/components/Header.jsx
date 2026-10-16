@@ -1,6 +1,7 @@
 import { useEffect, useState, useSyncExternalStore } from 'react';
 import { useLocation } from 'react-router-dom';
 import TransitionLink from './TransitionLink';
+import Logo from './Logo';
 import { useBuilding, useRecruit, useTerminal } from './RecruitContext';
 import { SITE } from '../data/site';
 import { isSoundOn, playSound, setSound, subscribeSound } from '../lib/sound';
@@ -87,8 +88,11 @@ export default function Header({ back }) {
     <>
       <header className="sl-nav-bar">
         <TransitionLink className="brand" href="/" label="Home" aria-label="FireFly home">
-          <b>FireFly</b>
-          <small>Student club · Associated with AMIEE</small>
+          <Logo />
+          <span className="txt">
+            <b>FireFly</b>
+            <small>Student club · Associated with AMIEE</small>
+          </span>
         </TransitionLink>
 
         <nav className="links" aria-label="Primary">

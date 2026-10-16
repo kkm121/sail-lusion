@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import LoaderScreen from './LoaderScreen';
-import { assetProgress, assetsDone, expectRoute, pendingAssets } from '../lib/assets';
+import { assetProgress, assetsDone, expectRoute, pendingAssets, warmDone, warmGate } from '../lib/assets';
 import { runCounter } from '../lib/counter';
 import { setReady } from '../lib/ready';
 import '../styles/loader.css';
@@ -19,10 +19,17 @@ export default function Preloader() {
 
   useEffect(() => {
     if (seen) {
+      document.getElementById('boot')?.remove();
       setReady();
       return undefined;
     }
     document.documentElement.style.overflow = 'hidden';
+    // the static loader from index.html steps aside now that this one is on screen
+    const boot = document.getElementById('boot');
+    if (boot) {
+      boot.style.opacity = '0';
+      window.setTimeout(() => boot.remove(), 450);
+    }
     window.scrollTo(0, 0);
     expectRoute(pathname);
 
@@ -44,17 +51,27 @@ export default function Preloader() {
       },
       onDone: (gaveUp) => {
         if (gaveUp && pendingAssets().length) console.warn('Loader continued without:', pendingAssets().join(', '));
-        later(() => setPhase('mark'), 100);
         later(() => {
+          setPhase('mark');
+          warmGate.open = true;
+        }, 100);
+        const t0 = performance.now();
+        const open = () => {
+          // the sail needs ~0.7s to build; then wait for the warm-up (at most 8s more)
+          if (performance.now() - t0 < 780 || (!warmDone() && performance.now() - t0 < 8800)) {
+            later(open, 60);
+            return;
+          }
           setPhase('open');
           document.documentElement.style.overflow = '';
           setReady();
-        }, 780);
-        later(() => {
-          window.scrollTo(0, 0);
-          seen = true;
-          setDone(true);
-        }, 1800);
+          later(() => {
+            window.scrollTo(0, 0);
+            seen = true;
+            setDone(true);
+          }, 1020);
+        };
+        later(open, 780);
       },
     });
 
@@ -68,5 +85,5 @@ export default function Preloader() {
   }, []);
 
   if (done) return null;
-  return <LoaderScreen className="sl-preloader" phase={phase} value={value} fill={fill} />;
+  return <LoaderScreen className="sl-preloader" phase={phase} value={value} fill={fill} blob />;
 }
