@@ -58,6 +58,7 @@ function Rig({ progress, sp, bloomRef }) {
     cam.position.set(px * 0.35 + (inTunnel ? Math.sin(zc * 0.04) * 0.2 : 0), py * 0.24 + (inTunnel ? Math.cos(zc * 0.035) * 0.16 : 0), z);
     cam.rotation.set(py * 0.035, -px * 0.045, roll);
     // Discover: approach the core, circle it a full 360 degrees, then dive straight through it into the Create room.
+    labState.dive = zc <= ROOM_START || (zc < CAGE_END && seg(zc, CAGE_END, ROOM_START) >= 0.72);
     if (zc < CAGE_END && zc > ROOM_START) {
       const u = seg(zc, CAGE_END, ROOM_START);
       // portrait screens orbit further out so the core fits the frame
@@ -92,8 +93,8 @@ function Rig({ progress, sp, bloomRef }) {
     }
     if (bloomRef.current) bloomRef.current.intensity = 0.9 * lerp(1, 0.62, rK) * lerp(1, 0.85, fK);
     // around the Discover core: the original scene's lighting and bloom (city-like reflections at 0.7, bloom from 0.5)
-    state.scene.environmentIntensity = lerp(0.85, 0.7, vK * (1 - rK));
-    if (bloomRef.current?.luminanceMaterial) bloomRef.current.luminanceMaterial.threshold = lerp(0.86, 0.5, vK * (1 - rK));
+    state.scene.environmentIntensity = lerp(0.85, 0.45, vK * (1 - rK));
+    if (bloomRef.current?.luminanceMaterial) bloomRef.current.luminanceMaterial.threshold = lerp(0.86, 0.9, vK * (1 - rK));
   }, -1);
   return null;
 }
@@ -121,13 +122,16 @@ function Curtain({ sp }) {
 const FLASH_F = 'uniform float uA; uniform vec3 uC; void main(){ gl_FragColor = vec4(uC, uA); }';
 
 function Flash() {
-  const mat = useMemo(() => new THREE.ShaderMaterial({ vertexShader: CURTAIN_V, fragmentShader: FLASH_F, uniforms: { uA: { value: 0 }, uC: { value: new THREE.Color('#ff3a5c') } }, transparent: true, depthTest: false, depthWrite: false }), []);
+  const mat = useMemo(() => new THREE.ShaderMaterial({ vertexShader: CURTAIN_V, fragmentShader: FLASH_F, uniforms: { uA: { value: 0 }, uC: { value: new THREE.Color('#ffffff') } }, transparent: true, depthTest: false, depthWrite: false }), []);
   const mesh = useRef();
   useFrame((s) => {
     const z = s.camera.position.z;
-    const a = seg(z, BLOB_Z + 3, BLOB_Z - 2) * (1 - seg(z, ROOM_START + 14, ROOM_START + 2));
+    // only while diving through the core; the back half of the orbit crosses the same depth
+    const a = (labState.dive ? seg(z, BLOB_Z + 3, BLOB_Z - 2) : 0) * (1 - seg(z, ROOM_START + 14, ROOM_START + 2));
     mat.uniforms.uA.value = a * 0.92;
-    mat.uniforms.uC.value.setRGB(1, lerp(0.23, 0.45, seg(z, BLOB_Z - 4, ROOM_START + 6)), lerp(0.36, 0.95, seg(z, BLOB_Z - 4, ROOM_START + 6)));
+    // white as the camera passes through the pearl, turning to the violet of the Create room
+    const fk = seg(z, BLOB_Z - 4, ROOM_START + 6);
+    mat.uniforms.uC.value.setRGB(lerp(1, 0.45, fk), lerp(1, 0.38, fk), 1);
     if (mesh.current) mesh.current.visible = labState.warm || a > 0.002;
   });
   return (
