@@ -15,7 +15,7 @@ const html = `<body style="margin:0;background:#222;display:grid;grid-template-c
   .join('')}</body>`;
 const tmp = path.join(dir, '_sheet.html');
 fs.writeFileSync(tmp, html);
-const browser = await puppeteer.launch({ executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe', headless: 'new', userDataDir: process.env.PPDIR || 'C:/Users/muthu/AppData/Local/Temp/pp-' + process.pid, args: ['--no-sandbox', '--no-first-run', '--allow-file-access-from-files'] });
+const browser = await puppeteer.launch({ executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe', headless: 'new', userDataDir: process.env.PPDIR || 'C:/Users/muthu/AppData/Local/Temp/pp-tools', args: ['--no-sandbox', '--no-first-run', '--allow-file-access-from-files'] });
 const page = await browser.newPage();
 await page.setViewport({ width: 1808, height: (h + 4) * Math.ceil(files.length / cols) + 4 });
 await page.goto('file:///' + tmp.replace(/\\/g, '/'));

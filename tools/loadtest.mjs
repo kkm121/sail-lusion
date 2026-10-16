@@ -4,7 +4,7 @@ import puppeteer from 'puppeteer-core';
 // usage: BASE=http://127.0.0.1:4173 node tools/loadtest.mjs desktop|mobile
 const mode = process.argv[2] || 'desktop';
 const base = process.env.BASE || 'http://127.0.0.1:4173';
-const browser = await puppeteer.launch({ executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe', headless: 'new', userDataDir: process.env.PPDIR || 'C:/Users/muthu/AppData/Local/Temp/pp-' + process.pid, args: ['--no-sandbox', '--no-first-run', '--ignore-gpu-blocklist'] });
+const browser = await puppeteer.launch({ executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe', headless: 'new', userDataDir: process.env.PPDIR || 'C:/Users/muthu/AppData/Local/Temp/pp-tools', args: ['--no-sandbox', '--no-first-run', '--ignore-gpu-blocklist'] });
 const page = await browser.newPage();
 page.setDefaultNavigationTimeout(180000);
 if (mode === 'mobile') {

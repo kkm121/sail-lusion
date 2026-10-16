@@ -2,7 +2,7 @@ import puppeteer from 'puppeteer-core';
 // Screenshots of the places the logo appears: loader mark, header, footer, join section, About hero.
 const base = process.env.BASE || 'http://127.0.0.1:5180';
 const mode = process.argv[2] || 'desktop';
-const browser = await puppeteer.launch({ executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe', headless: 'new', userDataDir: 'C:/Users/muthu/AppData/Local/Temp/pp-' + process.pid, args: ['--no-sandbox', '--no-first-run', '--ignore-gpu-blocklist'] });
+const browser = await puppeteer.launch({ executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe', headless: 'new', userDataDir: 'C:/Users/muthu/AppData/Local/Temp/pp-tools', args: ['--no-sandbox', '--no-first-run', '--ignore-gpu-blocklist'] });
 const page = await browser.newPage();
 page.setDefaultTimeout(180000);
 if (mode === 'mobile') await page.setViewport({ width: 412, height: 860, deviceScaleFactor: 1.5, isMobile: true, hasTouch: true });

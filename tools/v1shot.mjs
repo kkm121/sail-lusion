@@ -2,7 +2,7 @@ import puppeteer from 'puppeteer-core';
 // Screenshots the first deployment's blob (dev route /__v1) for each theme colour given.
 const base = process.env.BASE || 'http://127.0.0.1:5180';
 const colors = (process.argv[2] || '00F5D4').split(',');
-const browser = await puppeteer.launch({ executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe', headless: 'new', userDataDir: 'C:/Users/muthu/AppData/Local/Temp/pp-' + process.pid, args: ['--no-sandbox', '--no-first-run', '--ignore-gpu-blocklist'] });
+const browser = await puppeteer.launch({ executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe', headless: 'new', userDataDir: 'C:/Users/muthu/AppData/Local/Temp/pp-tools', args: ['--no-sandbox', '--no-first-run', '--ignore-gpu-blocklist'] });
 const page = await browser.newPage();
 page.setDefaultTimeout(120000);
 await page.setViewport({ width: 1440, height: 900 });
