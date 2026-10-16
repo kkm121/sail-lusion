@@ -1,0 +1,13 @@
+/* Mockup labels: a striped tape pill and a note block, used on sample projects and achievements. */
+.sl-mock { display: inline-flex; align-items: center; gap: 7px; height: 24px; padding: 0 10px; border-radius: 99px; font-family: var(--f-mono); font-size: 10.5px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: #1b0d06; background: repeating-linear-gradient(-45deg, #ffb347 0 8px, #ffc76e 8px 16px); box-shadow: 0 6px 18px -8px rgba(255, 140, 40, 0.8); white-space: nowrap; }
+.sl-mock::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: #1b0d06; }
+.sl-project-img .sl-mock { position: absolute; top: 12px; left: 12px; z-index: 3; }
+.sl-dd-card .sl-mock { align-self: flex-start; }
+.sl-mock-note { display: flex; align-items: center; gap: 16px; margin: 0 0 calc(var(--u) * 5); padding: 16px 20px; border-radius: 16px; border: 1px dashed rgba(255, 179, 71, 0.55); background: rgba(255, 179, 71, 0.08); }
+.sl-mock-note p { margin: 0; font-size: 15px; line-height: 1.5; color: rgba(255, 244, 232, 0.86); }
+.is-light .sl-mock-note p { color: #3b2414; }
+.sl-sh-actions .sl-mock { height: 40px; padding: 0 16px; font-size: 11.5px; }
+.sl-mock-lede { display: block; margin-top: 14px; }
+@media (max-width: 760px) {
+  .sl-mock-note { flex-direction: column; align-items: flex-start; gap: 10px; }
+}

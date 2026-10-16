@@ -1,6 +1,6 @@
 import { domains, domainById } from './domains';
 
-const NOTE = 'Placeholder project. This page will carry the real write-up, repository and demo once the work is published.';
+const NOTE = 'Mockup: this project, its status and its numbers are sample content that shows the design. The real write-up, repository and demo will replace it once the club publishes the work.';
 
 const base = [
   {

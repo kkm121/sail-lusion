@@ -1,6 +1,7 @@
 import { Navigate, useParams } from 'react-router-dom';
 import PageShell from '../components/PageShell';
 import SubHero from '../components/SubHero';
+import { MockBadge, MockNote } from '../components/Mock';
 import Text from '../components/Text';
 import Reveal from '../components/Reveal';
 import Marquee from '../components/Marquee';
@@ -110,9 +111,11 @@ export default function DomainDetail() {
 
       <section className="sl-dx">
         <Head title="Achievements" count={d.achievements.length} />
+        <MockNote>These achievements are mockups. Their titles, statuses and figures are sample content for the design, not real results.</MockNote>
         <Reveal type="rise" cols={2} stagger={120} y={80} className="sl-dd-ach">
           {d.achievements.map((a, i) => (
             <TransitionLink key={a.id} className="sl-dd-card" href={`/projects/${a.id}`} color={d.bg} text={d.text} label={a.name} data-cursor="VIEW" onPointerMove={spot}>
+              <MockBadge />
               <span className="n" aria-hidden="true">
                 {pad(i + 1)}
               </span>

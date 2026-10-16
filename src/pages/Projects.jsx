@@ -45,7 +45,7 @@ export default function Projects() {
         eyebrow="The cargo so far"
         title="Projects"
         count={<CountUp to={list.length} delay={500} />}
-        lede="Everything the crew is building, from open toolkits to flagship research. Filter by domain to follow a single chapter."
+        lede="Every project here is a mockup for now: sample work that shows how the real projects will look once the crew publishes them. Filter by domain to follow a single chapter."
         accent={active?.color || '#b8336a'}
         accent2={active ? undefined : '#ff4d8d'}
         look={{ freq: 8, warp: 3.6, line: 0.1, speed: 1.3 }}
