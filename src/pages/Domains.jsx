@@ -24,7 +24,7 @@ export default function Domains() {
         count={<CountUp to={domains.length} delay={500} />}
         lede="Each domain is a chapter of the voyage, with its own team, flagship work and achievements. Technical and R&D sit together under the Technical Team, so the same three members carry both."
         accent="#ff5a1f"
-        accent2="#8b5cf6"
+        accent2="#b8336a"
       >
         <Reveal type="rise" cols={3} stagger={110} y={34} className="sl-sh-stats">
           {STATS.map((s) => (

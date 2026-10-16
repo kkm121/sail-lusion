@@ -46,7 +46,7 @@ export default function Projects() {
         title="Projects"
         count={<CountUp to={list.length} delay={500} />}
         lede="Everything the crew is building, from open toolkits to flagship research. Filter by domain to follow a single chapter."
-        accent={active?.color || '#8b5cf6'}
+        accent={active?.color || '#b8336a'}
         accent2={active ? undefined : '#ff4d8d'}
         look={{ freq: 8, warp: 3.6, line: 0.1, speed: 1.3 }}
         size="s"

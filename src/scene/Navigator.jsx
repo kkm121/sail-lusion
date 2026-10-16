@@ -52,8 +52,8 @@ export default function Navigator({ sp }) {
       // Finished look: glossy white ceramic shell, satin silver joints, a dark glass visor with glowing eyes.
       if (name.includes('main')) o.material = new THREE.MeshPhysicalMaterial({ color: C('#fbfcff'), roughness: 0.32, metalness: 0, clearcoat: 1, clearcoatRoughness: 0.06, sheen: 0.3, sheenColor: C('#ffffff'), envMapIntensity: 1.3 });
       else if (name.includes('grey') || name.includes('gray')) o.material = new THREE.MeshPhysicalMaterial({ color: C('#dfe3ea'), roughness: 0.28, metalness: 0.75, clearcoat: 0.6, clearcoatRoughness: 0.1, envMapIntensity: 1.4 });
-      else if (name.includes('black')) o.material = new THREE.MeshPhysicalMaterial({ color: C('#0c1117'), roughness: 0.06, metalness: 0.2, clearcoat: 1, clearcoatRoughness: 0.02, emissive: C('#00f5d4'), emissiveIntensity: 0.18, envMapIntensity: 1.8 });
-      else if (o.material) o.material = new THREE.MeshPhysicalMaterial({ color: o.material.color || C('#ffffff'), roughness: 0.3, clearcoat: 0.8, clearcoatRoughness: 0.08, emissive: o.material.color || C('#00f5d4'), emissiveIntensity: 0.35, envMapIntensity: 1.3 });
+      else if (name.includes('black')) o.material = new THREE.MeshPhysicalMaterial({ color: C('#0c1117'), roughness: 0.06, metalness: 0.2, clearcoat: 1, clearcoatRoughness: 0.02, emissive: C('#ff5a1f'), emissiveIntensity: 0.18, envMapIntensity: 1.8 });
+      else if (o.material) o.material = new THREE.MeshPhysicalMaterial({ color: o.material.color || C('#ffffff'), roughness: 0.3, clearcoat: 0.8, clearcoatRoughness: 0.08, emissive: o.material.color || C('#ff5a1f'), emissiveIntensity: 0.35, envMapIntensity: 1.3 });
     });
     return m;
   }, [scene]);

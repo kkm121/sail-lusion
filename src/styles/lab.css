@@ -56,7 +56,7 @@
 .sl-lab-rail li.on span { opacity: 1; transform: none; }
 .sl-lab-rail li.on b { background: var(--cc); border-color: var(--cc); color: #fffaf5; box-shadow: 0 0 18px var(--cc); }
 .sl-lab-rail li.done b { border-color: rgba(255, 255, 255, 0.6); color: rgba(255, 255, 255, 0.85); }
-.sl-lab-next { --nc: #8b5cf6; position: absolute; right: var(--pad); bottom: calc(var(--u) * 5.4); z-index: 6; opacity: 0; pointer-events: none; display: grid; justify-items: end; gap: 4px; color: #fff; text-shadow: 0 2px 30px rgba(3, 4, 7, 0.8); text-align: right; }
+.sl-lab-next { --nc: #b8336a; position: absolute; right: var(--pad); bottom: calc(var(--u) * 5.4); z-index: 6; opacity: 0; pointer-events: none; display: grid; justify-items: end; gap: 4px; color: #fff; text-shadow: 0 2px 30px rgba(3, 4, 7, 0.8); text-align: right; }
 .sl-lab-next span { font-family: var(--f-mono); font-size: 10.5px; letter-spacing: 0.22em; text-transform: uppercase; opacity: 0.7; }
 .sl-lab-next b { font-size: calc(var(--u) * 3.2); font-weight: 600; letter-spacing: -0.04em; line-height: 1; color: var(--nc); display: inline-flex; align-items: center; gap: 12px; }
 .sl-lab-next b::after { content: "→"; color: #fff; font-weight: 400; }

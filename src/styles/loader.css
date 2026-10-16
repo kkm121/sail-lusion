@@ -1,6 +1,6 @@
 .sl-pre { --u: min(1vw, 15.6px); position: fixed; inset: 0; z-index: 200; color: #fff; font-family: var(--f-display); overflow: hidden; pointer-events: all; }
 .sl-pre.is-open { pointer-events: none !important; }
-.sl-pre-half { position: absolute; inset: 0; background: radial-gradient(70% 60% at 18% 8%, #0b2a33 0%, transparent 62%), radial-gradient(70% 70% at 88% 96%, #2a0f3d 0%, transparent 64%), radial-gradient(50% 50% at 50% 50%, #120c2a 0%, transparent 70%), #03040a; background-attachment: fixed; transition: transform 0.95s cubic-bezier(0.85, 0, 0.15, 1); will-change: transform; }
+.sl-pre-half { position: absolute; inset: 0; background: radial-gradient(70% 60% at 18% 8%, #33140b 0%, transparent 62%), radial-gradient(70% 70% at 88% 96%, #3d0f22 0%, transparent 64%), radial-gradient(50% 50% at 50% 50%, #2a120c 0%, transparent 70%), #03040a; background-attachment: fixed; transition: transform 0.95s cubic-bezier(0.85, 0, 0.15, 1); will-change: transform; }
 .sl-pre-half.a { clip-path: polygon(0 0, 66.4% 0, 34.4% 100%, 0 100%); }
 .sl-pre-half.b { clip-path: polygon(66% 0, 100% 0, 100% 100%, 34% 100%); }
 .sl-pre.is-open .sl-pre-half.a { transform: translate3d(-105%, 0, 0); }
@@ -8,7 +8,7 @@
 
 .sl-pre-blob { position: absolute; inset: 0; z-index: 1; pointer-events: none; transition: opacity 0.9s ease 0.2s; }
 .sl-pre-blob canvas { display: block; width: 100% !important; height: 100% !important; }
-.sl-pre-blob::before { content: ""; position: absolute; left: 50%; top: 50%; width: min(78vw, 78vh); aspect-ratio: 1; translate: -50% -50%; border-radius: 50%; background: radial-gradient(closest-side, rgba(255, 90, 31, 0.26), rgba(139, 92, 246, 0.13) 55%, transparent 74%); filter: blur(12px); animation: sl-breathe 3.6s ease-in-out infinite alternate; }
+.sl-pre-blob::before { content: ""; position: absolute; left: 50%; top: 50%; width: min(78vw, 78vh); aspect-ratio: 1; translate: -50% -50%; border-radius: 50%; background: radial-gradient(closest-side, rgba(255, 90, 31, 0.26), rgba(184, 51, 106, 0.13) 55%, transparent 74%); filter: blur(12px); animation: sl-breathe 3.6s ease-in-out infinite alternate; }
 @keyframes sl-breathe { from { scale: 0.9; opacity: 0.75; } to { scale: 1.08; opacity: 1; } }
 .sl-pre.is-mark .sl-pre-blob::before { opacity: 0.35; transition: opacity 0.6s; }
 .sl-pre.is-open .sl-pre-blob { opacity: 0; }
@@ -25,7 +25,7 @@
 .sl-pre-bar .fill { background: linear-gradient(90deg, #ffb347, #ff6a2b 45%, #e8192c); box-shadow: 0 0 24px rgba(255, 90, 40, 0.55); transform-origin: left; transform: scaleX(0); }
 .sl-pre.is-mark .sl-pre-bar, .sl-pre.is-open .sl-pre-bar { opacity: 0; transition-delay: 0.2s; }
 
-.sl-pre-sail, .sl-pre-hull { position: absolute; background: linear-gradient(160deg, #ff5a1f, #8b5cf6 60%, #ff4d8d); opacity: 0; }
+.sl-pre-sail, .sl-pre-hull { position: absolute; background: linear-gradient(160deg, #ff5a1f, #b8336a 60%, #ff4d8d); opacity: 0; }
 .sl-pre-sail { left: -26px; top: -62px; width: 52px; height: 112px; clip-path: polygon(8% 0, 100% 100%, 0 100%); transform: translate3d(-34px, 40px, 0) rotate(-72deg) scale(0.5, 0.35); transform-origin: 50% 100%; }
 .sl-pre-hull { left: -62px; top: 58px; width: 124px; height: 22px; clip-path: polygon(0 0, 100% 0, 86% 100%, 14% 100%); transform: translate3d(42px, -78px, 0) scaleX(0.55); }
 .sl-pre.is-mark .sl-pre-sail { opacity: 1; transform: none; transition: transform 0.85s cubic-bezier(0.2, 0.9, 0.2, 1) 0.12s, opacity 0.01s 0.14s; }
@@ -38,7 +38,7 @@
 .sl-pre-digits i { display: block; height: 1em; line-height: 1; font-style: normal; text-align: center; background: linear-gradient(90deg, #ffd27a, #ff8a3d 30%, #ff4a2b 62%, #d4142a); background-size: 300% 100%; background-position: var(--gx, 0%) 0; -webkit-background-clip: text; background-clip: text; color: transparent; }
 .sl-pre-digits .col:nth-child(2) i { --gx: 50%; }
 .sl-pre-digits .col:nth-child(3) i { --gx: 100%; }
-.sl-pre-glow { position: absolute; left: 50%; top: 50%; z-index: 1; width: min(80vw, 80vh); aspect-ratio: 1; translate: -50% -50%; border-radius: 50%; pointer-events: none; background: radial-gradient(closest-side, rgba(255, 140, 60, 0.2), rgba(232, 25, 44, 0.14) 50%, rgba(139, 92, 246, 0.08) 66%, transparent 76%); filter: blur(14px); opacity: 0; transition: opacity 0.6s ease; animation: sl-breathe 3.6s ease-in-out infinite alternate; }
+.sl-pre-glow { position: absolute; left: 50%; top: 50%; z-index: 1; width: min(80vw, 80vh); aspect-ratio: 1; translate: -50% -50%; border-radius: 50%; pointer-events: none; background: radial-gradient(closest-side, rgba(255, 140, 60, 0.2), rgba(232, 25, 44, 0.14) 50%, rgba(184, 51, 106, 0.08) 66%, transparent 76%); filter: blur(14px); opacity: 0; transition: opacity 0.6s ease; animation: sl-breathe 3.6s ease-in-out infinite alternate; }
 .sl-pre:is(.is-load, .is-count) .sl-pre-glow { opacity: 1; }
 .sl-pre.sl-tr.is-idle .sl-pre-glow { animation: none; }
 .sl-pre-top .brand { color: #fff; }

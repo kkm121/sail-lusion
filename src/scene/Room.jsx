@@ -8,7 +8,7 @@ import { fillMatrices, paintInstances, seg, labState } from './shared';
 const H = 4.3;
 const LEN = ROOM_START - ROOM_END + 6;
 const CZ = ROOM_START - LEN / 2;
-const DECAL = ['#ffffff', '#ffffff', '#ffffff', '#ffffff', '#ffffff', '#eafcff', '#00f5d4', '#ff7bbd', '#ffd66b'];
+const DECAL = ['#ffffff', '#ffffff', '#ffffff', '#ffffff', '#ffffff', '#eafcff', '#ff5a1f', '#ff7bbd', '#ffd66b'];
 
 const HULL_V = `varying vec3 vP; void main(){ vec4 wp = modelMatrix * vec4(position, 1.); vP = wp.xyz; gl_Position = projectionMatrix * viewMatrix * wp; }`;
 const HULL_F = `uniform vec3 uA; uniform vec3 uFog; varying vec3 vP;
@@ -101,7 +101,7 @@ export default function Room({ touch }) {
     g.clearGroups();
     return g;
   }, []);
-  const hullMat = useMemo(() => new THREE.ShaderMaterial({ vertexShader: HULL_V, fragmentShader: HULL_F, uniforms: { uA: { value: new THREE.Color('#3a24ff') }, uFog: { value: new THREE.Color('#0d0640') } }, side: THREE.BackSide }), []);
+  const hullMat = useMemo(() => new THREE.ShaderMaterial({ vertexShader: HULL_V, fragmentShader: HULL_F, uniforms: { uA: { value: new THREE.Color('#3a24ff') }, uFog: { value: new THREE.Color('#2a0a1e') } }, side: THREE.BackSide }), []);
   useLayoutEffect(() => {
     fillMatrices(circles.current, data.circ);
     paintInstances(circles.current, data.circ, 'c', 0.9);

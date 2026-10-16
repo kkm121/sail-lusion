@@ -2,7 +2,7 @@
 @keyframes sl-fade { from { opacity: 0; } to { opacity: 1; } }
 .sl-cli-panel { position: relative; width: min(1080px, 100%); height: min(62vh, 560px); display: flex; flex-direction: column; border-radius: 18px 18px 0 0; background: rgba(4, 8, 10, 0.96); border: 1px solid rgba(255, 90, 31, 0.3); border-bottom: 0; box-shadow: 0 -30px 120px -30px rgba(255, 90, 31, 0.3); color: #b9c7cd; font-size: 12.5px; overflow: hidden; animation: sl-rise 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
 .sl-cli-panel::before { content: ""; position: absolute; inset: 0; pointer-events: none; background: repeating-linear-gradient(to bottom, rgba(255, 255, 255, 0.025) 0, rgba(255, 255, 255, 0.025) 1px, transparent 1px, transparent 3px); }
-.sl-cli-panel::after { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 2px; background: linear-gradient(90deg, transparent, #ff5a1f, #8b5cf6, transparent); }
+.sl-cli-panel::after { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 2px; background: linear-gradient(90deg, transparent, #ff5a1f, #b8336a, transparent); }
 @keyframes sl-rise { from { transform: translateY(100%); } to { transform: none; } }
 .sl-cli-bar { position: relative; display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 12px 18px; border-bottom: 1px solid rgba(255, 255, 255, 0.08); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: #ff5a1f; }
 .sl-cli-bar span:first-child { display: inline-flex; align-items: center; gap: 10px; font-weight: 600; }

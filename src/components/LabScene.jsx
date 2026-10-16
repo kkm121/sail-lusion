@@ -21,7 +21,7 @@ import { CAGE_END, ROOM_END, ROOM_START, START, Z0, ZTOT } from '../lib/journey'
 const BG = {
   cage: new THREE.Color('#040302'),
   vortex: new THREE.Color('#0a0206'),
-  room: new THREE.Color('#0d0640'),
+  room: new THREE.Color('#2a0a1e'),
   space: new THREE.Color('#030407'),
 };
 
@@ -93,8 +93,8 @@ function Rig({ progress, sp, bloomRef }) {
     }
     if (bloomRef.current) bloomRef.current.intensity = 0.9 * lerp(1, 0.62, rK) * lerp(1, 0.85, fK);
     // around the Discover core: the original scene's lighting and bloom (city-like reflections at 0.7, bloom from 0.5)
-    state.scene.environmentIntensity = lerp(0.85, 0.45, vK * (1 - rK));
-    if (bloomRef.current?.luminanceMaterial) bloomRef.current.luminanceMaterial.threshold = lerp(0.86, 0.9, vK * (1 - rK));
+    state.scene.environmentIntensity = lerp(0.85, 0.7, vK * (1 - rK));
+    if (bloomRef.current?.luminanceMaterial) bloomRef.current.luminanceMaterial.threshold = lerp(0.86, 0.5, vK * (1 - rK));
   }, -1);
   return null;
 }
@@ -131,7 +131,7 @@ function Flash() {
     mat.uniforms.uA.value = a * 0.92;
     // white as the camera passes through the pearl, turning to the violet of the Create room
     const fk = seg(z, BLOB_Z - 4, ROOM_START + 6);
-    mat.uniforms.uC.value.setRGB(lerp(1, 0.45, fk), lerp(1, 0.38, fk), 1);
+    mat.uniforms.uC.value.setRGB(lerp(0.55, 0.45, fk), lerp(1, 0.38, fk), lerp(0.9, 1, fk));
     if (mesh.current) mesh.current.visible = labState.warm || a > 0.002;
   });
   return (

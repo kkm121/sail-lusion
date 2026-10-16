@@ -32,7 +32,7 @@ function atomGeometry() {
 const MATS = {
   white: () => new THREE.MeshPhysicalMaterial({ color: 0xf2f5f7, roughness: 0.22, metalness: 0.05, clearcoat: 1, clearcoatRoughness: 0.12 }),
   black: () => new THREE.MeshPhysicalMaterial({ color: 0x0b0e12, roughness: 0.2, metalness: 0.15, clearcoat: 1, clearcoatRoughness: 0.08 }),
-  violet: () => new THREE.MeshPhysicalMaterial({ color: 0x5b2fe0, roughness: 0.52, metalness: 0.0, sheen: 0.6, sheenColor: new THREE.Color(0x9a80ff), sheenRoughness: 0.55 }),
+  violet: () => new THREE.MeshPhysicalMaterial({ color: 0xb8336a, roughness: 0.52, metalness: 0.0, sheen: 0.6, sheenColor: new THREE.Color(0xff8fb1), sheenRoughness: 0.55 }),
   teal: () => new THREE.MeshPhysicalMaterial({ color: 0xff5a1f, roughness: 0.34, metalness: 0.0, clearcoat: 0.6, emissive: 0x4a0f02, emissiveIntensity: 0.5 }),
   gold: () => new THREE.MeshPhysicalMaterial({ color: 0xe3b64a, roughness: 0.24, metalness: 1, clearcoat: 0.4 }),
 };
@@ -68,7 +68,7 @@ export default function HeroScene() {
     scene.add(key);
     const rimT = new THREE.PointLight(0xff6a2b, 55, 40, 2);
     rimT.position.set(9, 2, 5);
-    const rimV = new THREE.PointLight(0x8b5cf6, 60, 40, 2);
+    const rimV = new THREE.PointLight(0xb8336a, 60, 40, 2);
     rimV.position.set(-9, -4, 4);
     scene.add(rimT, rimV);
 

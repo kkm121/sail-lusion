@@ -65,7 +65,7 @@ html.is-scrolling .sl-pill { pointer-events: none; }
 .sl-mq--outline .sl-mq-item.alt { -webkit-text-fill-color: currentColor; -webkit-text-stroke: 0; }
 .sl-mq--mono { font-family: var(--f-mono); font-size: 12px; letter-spacing: 0.2em; text-transform: uppercase; padding: 14px 0; }
 .sl-mq--mono .sl-mq-sep { width: 7px; height: 7px; }
-.sl-mq--grad .sl-mq-item { background: linear-gradient(90deg, #ff7a3d, #8b5cf6 50%, #f5c84b); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.sl-mq--grad .sl-mq-item { background: linear-gradient(90deg, #ff7a3d, #b8336a 50%, #f5c84b); -webkit-background-clip: text; background-clip: text; color: transparent; }
 
 @media (max-width: 767px) {
   .sl-mq--solid, .sl-mq--outline { font-size: 13vw; }

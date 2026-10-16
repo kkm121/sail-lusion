@@ -120,7 +120,7 @@ function Frames({ onReady }) {
   return null;
 }
 
-export default function SubField({ accent = '#00f5d4', accent2, freq = 12, warp = 2.8, line = 0.07, speed = 1 }) {
+export default function SubField({ accent = '#ff5a1f', accent2, freq = 12, warp = 2.8, line = 0.07, speed = 1 }) {
   const box = useRef(null);
   const [visible, setVisible] = useState(true);
 

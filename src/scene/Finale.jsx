@@ -159,12 +159,12 @@ function paintAtlas() {
   cell(3, () => out(poly([[10, -92], [-52, 12], [-6, 12], [-18, 92], [52, -22], [4, -22]]), '#ffe14a'));
   cell(4, () => {
     out(() => { x.moveTo(-96, 0); x.quadraticCurveTo(0, -92, 96, 0); x.quadraticCurveTo(0, 92, -96, 0); }, '#ffffff');
-    dot(0, 0, 40, '#00f5d4');
+    dot(0, 0, 40, '#ff5a1f');
     dot(0, 0, 18, '#06242b');
     dot(-12, -12, 8, '#ffffff');
   });
   cell(5, () => {
-    out(ell(0, 0, 66, 66), '#8b5cf6');
+    out(ell(0, 0, 66, 66), '#b8336a');
     x.save();
     x.rotate(-0.4);
     x.beginPath();
@@ -200,7 +200,7 @@ function paintAtlas() {
       const a = (k / 24) * Math.PI * 2;
       pts.push([Math.cos(a) * r, Math.sin(a) * r]);
     }
-    out(poly(pts), '#38bdf8');
+    out(poly(pts), '#ffb347');
     dot(0, 0, 32, '#06242b');
   });
   cell(8, () => {
@@ -242,8 +242,8 @@ function paintAtlas() {
     dot(0, -108, 12, '#ff4d8d');
     out(() => x.roundRect(-84, -80, 168, 160, 40), '#f4f7ff');
     out(() => x.roundRect(-62, -46, 124, 68, 30), '#07131a', '#07131a');
-    dot(-28, -12, 14, '#00f5d4');
-    dot(28, -12, 14, '#00f5d4');
+    dot(-28, -12, 14, '#ff5a1f');
+    dot(28, -12, 14, '#ff5a1f');
   });
   cell(12, () => out(() => { x.moveTo(0, -100); x.quadraticCurveTo(10, -10, 100, 0); x.quadraticCurveTo(10, 10, 0, 100); x.quadraticCurveTo(-10, 10, -100, 0); x.quadraticCurveTo(-10, -10, 0, -100); }, '#38e8ff'));
   cell(13, () => {
@@ -267,7 +267,7 @@ function paintAtlas() {
     out(() => { x.moveTo(0, -104); x.quadraticCurveTo(52, -50, 44, 40); x.lineTo(-44, 40); x.quadraticCurveTo(-52, -50, 0, -104); }, '#ffffff');
     out(poly([[-44, 20], [-84, 76], [-24, 52]]), '#ff4d4d');
     out(poly([[44, 20], [84, 76], [24, 52]]), '#ff4d4d');
-    dot(0, -28, 20, '#38bdf8');
+    dot(0, -28, 20, '#ffb347');
     out(poly([[-22, 56], [0, 104], [22, 56]]), '#ffb02e');
     x.restore();
   });
