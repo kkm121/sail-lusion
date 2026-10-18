@@ -78,8 +78,13 @@ export default function TransitionProvider({ children }) {
   const go = useCallback(
     (href, opts = {}) => {
       if (busy.current) return;
+      const base = (import.meta.env.BASE_URL || '/').replace(/\/$/, '');
       const url = new URL(href, window.location.href);
-      if (url.pathname === window.location.pathname) {
+      let cleanPath = url.pathname;
+      if (base && cleanPath.startsWith(base)) {
+        cleanPath = cleanPath.slice(base.length) || '/';
+      }
+      if (cleanPath === pathname) {
         scrollState.lenis ? scrollState.lenis.scrollTo(0, { duration: 1.2 }) : window.scrollTo({ top: 0, behavior: 'smooth' });
         return;
       }
@@ -91,14 +96,14 @@ export default function TransitionProvider({ children }) {
       setCovered(true);
       setPhase('cover');
       later(() => {
-        expectRoute(url.pathname);
-        pending.current = url.pathname;
-        navigate(url.pathname + url.search + url.hash);
+        expectRoute(cleanPath);
+        pending.current = cleanPath;
+        navigate(cleanPath + url.search + url.hash);
         setPhase('count');
         count();
       }, 600);
     },
-    [navigate, later, count]
+    [pathname, navigate, later, count]
   );
 
   useEffect(() => {

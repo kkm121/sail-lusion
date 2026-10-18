@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import Ribbon from './Ribbon';
 import TransitionLink from './TransitionLink';
 import ReelCard from './ReelCard';
-import { HAVE, MEDIA } from '../data/media';
+import { HAVE, MEDIA, asset } from '../data/media';
 import { scrollState } from '../lib/scroll';
 import { useDocRect } from '../lib/measure';
 import { useTick } from '../lib/useTick';
@@ -15,7 +15,7 @@ const sm = (t) => t * t * (3 - 2 * t);
 const REAL = [HAVE.crew && MEDIA.crew.src, HAVE.build && MEDIA.build.src].filter(Boolean);
 const SLIDES = REAL.length
   ? REAL
-  : ['/media/crew.jpg', '/media/build.jpg', '/media/projects/engineering-handbook.jpg', '/media/projects/robotics-sim.jpg'];
+  : ['/media/crew.jpg', '/media/build.jpg', '/media/projects/engineering-handbook.jpg', '/media/projects/robotics-sim.jpg'].map(asset);
 
 function Slideshow({ tintRef }) {
   const [i, setI] = useState(0);

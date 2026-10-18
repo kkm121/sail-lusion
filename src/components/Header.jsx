@@ -104,6 +104,11 @@ export default function Header({ back }) {
         </nav>
 
         <div className="actions">
+          <nav className="ff-ver-switch" aria-label="Version Switcher" title="Switch between website versions">
+            <a href="/v1" className="ff-ver-link" data-cursor="V1">v1</a>
+            <a href="/v2" className="ff-ver-link is-active" data-cursor="V2">v2</a>
+            <a href="/v3" className="ff-ver-link" data-cursor="V3">v3</a>
+          </nav>
           <button className={`snd ${sound ? 'is-on' : ''}`} type="button" aria-label={sound ? 'Turn sound off' : 'Turn sound on'} aria-pressed={sound} data-cursor="SOUND" onClick={() => setSound(!isSoundOn())}>
             <b />
             <b />

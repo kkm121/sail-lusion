@@ -75,3 +75,9 @@ html.sl-nav-dark .sl-nav-bar .btn.cli { background: rgba(255, 255, 255, 0.12); c
 .sl-glstage { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: -1; pointer-events: none; }
 @media (max-width: 767px), (hover: none) { .sl-liquid, .sl-glstage { display: none; } }
 .sl-liquid { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 44; pointer-events: none; }
+
+.ff-ver-switch { display: inline-flex; align-items: center; gap: 2px; padding: 2px 4px; background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.14); border-radius: 999px; backdrop-filter: blur(8px); font-family: var(--f-mono, monospace); font-size: 11px; letter-spacing: 0.05em; }
+.ff-ver-link { padding: 4px 9px; border-radius: 999px; color: rgba(255, 255, 255, 0.6); text-decoration: none; font-weight: 500; transition: all 0.2s ease; line-height: 1; }
+.ff-ver-link:hover { color: #fff; background: rgba(255, 255, 255, 0.12); }
+.ff-ver-link.is-active { color: #000; background: var(--amber, #ffb347); font-weight: 700; box-shadow: 0 0 10px rgba(255, 179, 71, 0.4); }
+@media (max-width: 580px) { .ff-ver-switch { display: none; } }

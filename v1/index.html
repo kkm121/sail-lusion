@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/png" href="/brand/favicon.png" />
+    <link rel="apple-touch-icon" href="/brand/icon-192.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <script>
+      (function () {
+        var shortSide = Math.min(screen.width, screen.height);
+        if (shortSide < 700 && window.innerWidth > shortSide * 1.35 && matchMedia('(pointer: coarse)').matches) {
+          var meta = document.querySelector('meta[name="viewport"]');
+          if (!meta) {
+            meta = document.createElement('meta');
+            meta.name = 'viewport';
+            document.head.appendChild(meta);
+          }
+          meta.setAttribute('content', 'width=' + shortSide + ', initial-scale=1.0, viewport-fit=cover');
+        }
+      })();
+    </script>
+    <meta name="description" content="FireFly - student AI club, associated with AMIEE." />
+    <meta name="author" content="M Muthu Kumaran" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@300;400;500;600;700&display=swap"
+    />
+    <meta name="theme-color" content="#030407" />
+    <meta name="color-scheme" content="dark" />
+    <title>FireFly // Student AI Club</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>

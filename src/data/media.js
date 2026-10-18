@@ -24,12 +24,15 @@ export const HAVE = {
   ]),
 };
 
+const b = (import.meta.env.BASE_URL || '/').replace(/\/$/, '');
+export const asset = (p) => (p ? (p.startsWith('/') && b && !p.startsWith(b + '/') ? `${b}${p}` : p) : null);
+
 export const MEDIA = {
-  crew: { src: '/media/crew.jpg', fallback: '/media/crew.jpg' },
-  build: { src: '/media/build.jpg', fallback: '/media/build.jpg' },
-  reel: { desktop: '/media/reel.mp4', mobile: '/media/reel-mobile.mp4', fallbackDesktop: '/video/reel-desktop.mp4', fallbackMobile: '/video/reel-mobile.mp4', poster: '/media/lab-screen.jpg' },
-  lab: { src: '/media/lab-screen.jpg', fallback: '/media/build.jpg' },
-  navigator: '/models/navigator.glb',
+  crew: { src: asset('/media/crew.jpg'), fallback: asset('/media/crew.jpg') },
+  build: { src: asset('/media/build.jpg'), fallback: asset('/media/build.jpg') },
+  reel: { desktop: asset('/media/reel.mp4'), mobile: asset('/media/reel-mobile.mp4'), fallbackDesktop: asset('/video/reel-desktop.mp4'), fallbackMobile: asset('/video/reel-mobile.mp4'), poster: asset('/media/lab-screen.jpg') },
+  lab: { src: asset('/media/lab-screen.jpg'), fallback: asset('/media/build.jpg') },
+  navigator: asset('/models/navigator.glb'),
 };
 
-export const projectMedia = (p) => (HAVE.projects.has(p.id) ? `/media/projects/${p.id}.jpg` : null);
+export const projectMedia = (p) => (HAVE.projects.has(p.id) ? asset(`/media/projects/${p.id}.jpg`) : null);

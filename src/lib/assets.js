@@ -90,7 +90,11 @@ export function preloadVideo(src, timeout = 5000) {
   });
 }
 
-const routeKey = (pathname) => (BY_ROUTE[pathname] ? pathname : pathname.startsWith('/domains/') || pathname.startsWith('/projects/') ? '/projects' : pathname);
+const routeKey = (pathname) => {
+  const base = (import.meta.env.BASE_URL || '/').replace(/\/$/, '');
+  const clean = base && pathname.startsWith(base) ? (pathname.slice(base.length) || '/') : pathname;
+  return BY_ROUTE[clean] ? clean : clean.startsWith('/domains/') || clean.startsWith('/projects/') ? '/projects' : clean;
+};
 
 function mediaFor(pathname) {
   const k = routeKey(pathname);

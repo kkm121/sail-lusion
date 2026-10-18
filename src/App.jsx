@@ -28,6 +28,7 @@ function SmoothScroll() {
     if (!touch) {
       lenis = new Lenis({ lerp: 0.085, wheelMultiplier: 0.95, smoothWheel: true });
       scrollState.lenis = lenis;
+      if (typeof window !== 'undefined') window.__lenis = lenis;
     }
     const size = () => {
       scrollState.vh = window.innerHeight;
@@ -70,6 +71,7 @@ function SmoothScroll() {
       window.removeEventListener('resize', size);
       root.classList.remove('is-scrolling');
       scrollState.lenis = null;
+      if (typeof window !== 'undefined') window.__lenis = null;
       lenis?.destroy();
     };
   }, []);
@@ -77,8 +79,9 @@ function SmoothScroll() {
 }
 
 export default function App() {
+  const base = (import.meta.env.BASE_URL || '/').replace(/\/$/, '');
   return (
-    <BrowserRouter>
+    <BrowserRouter basename={base || undefined}>
       <SmoothScroll />
       <RecruitProvider>
         <TransitionProvider>

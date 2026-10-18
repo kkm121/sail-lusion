@@ -127,4 +127,5 @@ export const projects = [...base, ...flagship].map((p) => {
 
 export const projectById = (id) => projects.find((p) => p.id === id);
 export const projectsByDomain = (id) => projects.filter((p) => p.domain === id);
-export const artUrl = (p) => `/media/projects/${p.id}.jpg`;
+const b = (import.meta.env.BASE_URL || '/').replace(/\/$/, '');
+export const artUrl = (p) => (b ? `${b}/media/projects/${p.id}.jpg` : `/media/projects/${p.id}.jpg`);
