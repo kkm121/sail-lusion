@@ -32,7 +32,7 @@ export default function App() {
       <Routes>
         <Route element={<Layout />}>
           <Route index element={<Home />} />
-          <Route path="about" element={<About />} />
+          <Route path="about" element={<Home />} />
           <Route path="domains" element={<Domains />} />
           <Route path="events" element={<Events />} />
           <Route path="projects" element={<Projects />} />

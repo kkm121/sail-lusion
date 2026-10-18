@@ -457,53 +457,26 @@ export function useSectionProgress(ref, cb) {
 // SidePop: images pop in from left or right linked to scroll progress.
 // transform: translateX(±(1-k)*40vw) rotate(±(1-k)*8deg) scale(0.85+0.15k) and opacity
 // ---------------------------------------------------------------------------
-export function useSidePop(ref, side = 'left', { maxVw = 40, maxDeg = 8 } = {}) {
+export function useSidePop(ref, side = 'left') {
   useEffect(() => {
     const el = ref.current;
     if (!el) return undefined;
     if (reduced()) {
-      el.style.transform = '';
-      el.style.opacity = '1';
+      el.classList.add('is-in');
       return undefined;
     }
-    let on = false;
-    let docTop = 0;
-    const measure = () => {
-      const r = el.getBoundingClientRect();
-      docTop = r.top + window.scrollY;
-    };
-    measure();
-    window.addEventListener('resize', measure, { passive: true });
-    const io = new IntersectionObserver(([e]) => (on = e.isIntersecting), { rootMargin: '20% 0px' });
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          el.classList.add('is-in');
+          io.disconnect();
+        }
+      },
+      { rootMargin: '0px 0px -8% 0px', threshold: 0.12 }
+    );
     io.observe(el);
-
-    const sign = side === 'left' ? -1 : 1;
-    const stop = onFrame(() => {
-      if (!on) return;
-      if (reduced()) {
-        el.style.transform = '';
-        el.style.opacity = '1';
-        return;
-      }
-      const top = docTop - scroll.y;
-      const vh = scroll.vh || window.innerHeight;
-      const k = clamp((vh - top) / (vh * 0.72), 0, 1);
-      const tx = sign * (1 - k) * maxVw;
-      const rot = sign * (1 - k) * maxDeg;
-      const sc = 0.85 + 0.15 * k;
-      const op = clamp(k * 1.4, 0, 1);
-      const skew = clamp(-scroll.v * 0.002, -2.5, 2.5);
-
-      el.style.transform = `translate3d(${tx.toFixed(2)}vw, 0, 0) rotate(${rot.toFixed(2)}deg) scale(${sc.toFixed(3)}) skewY(${skew.toFixed(2)}deg)`;
-      el.style.opacity = op.toFixed(3);
-    });
-
-    return () => {
-      stop();
-      window.removeEventListener('resize', measure);
-      io.disconnect();
-    };
-  }, [ref, side, maxVw, maxDeg]);
+    return () => io.disconnect();
+  }, [ref]);
 }
 
 export function PopImage({ src, alt = '', side = 'left', className = '', ...props }) {

@@ -65,9 +65,85 @@
 .person .tag { justify-self: start; }
 .person-i { position: absolute; right: -4px; bottom: -36px; z-index: -1; font-family: var(--f-display); font-size: 150px; font-weight: 700; line-height: 1; color: transparent; -webkit-text-stroke: 1px var(--line-2); pointer-events: none; transition: -webkit-text-stroke-color 0.5s, transform 0.8s var(--ease); }
 .person:hover .person-i { -webkit-text-stroke-color: rgba(255, 106, 43, 0.5); transform: translate3d(-6px, -8px, 0); }
-.person.is-creator { --dc: var(--gold); border-color: rgba(230, 184, 74, 0.5); background: linear-gradient(160deg, rgba(245, 200, 75, 0.12), var(--glass)); }
-.person.is-creator h3 { background: linear-gradient(90deg, #d9a82f, #ffe08a 45%, #d9a82f); -webkit-background-clip: text; background-clip: text; color: transparent; }
-.person.is-creator .tag { background: linear-gradient(90deg, #d9a82f, #ffe08a); color: #2a1c00; border-color: transparent; }
+.person.is-creator {
+  --dc: #ffd700;
+  position: relative;
+  border: 1.5px solid rgba(255, 215, 0, 0.75);
+  background: linear-gradient(155deg, rgba(255, 215, 0, 0.16), rgba(255, 170, 0, 0.08) 45%, var(--glass));
+  box-shadow: 0 0 35px rgba(255, 191, 0, 0.35), 0 0 70px rgba(255, 140, 0, 0.15), inset 0 0 20px rgba(255, 215, 0, 0.12);
+  animation: goldAuraPulse 3.5s ease-in-out infinite alternate;
+}
+@keyframes goldAuraPulse {
+  0% {
+    box-shadow: 0 0 25px rgba(255, 191, 0, 0.3), 0 0 50px rgba(255, 140, 0, 0.12), inset 0 0 15px rgba(255, 215, 0, 0.1);
+    border-color: rgba(255, 215, 0, 0.65);
+  }
+  100% {
+    box-shadow: 0 0 45px rgba(255, 200, 0, 0.5), 0 0 85px rgba(255, 150, 0, 0.25), inset 0 0 28px rgba(255, 215, 0, 0.2);
+    border-color: rgba(255, 225, 60, 0.95);
+  }
+}
+.person.is-creator .person-i {
+  -webkit-text-stroke: 1.5px rgba(255, 215, 0, 0.65);
+  text-shadow: 0 0 30px rgba(255, 200, 0, 0.4);
+}
+.person.is-creator h3 {
+  background: linear-gradient(135deg, #ffffff 5%, #ffe277 35%, #f5b82e 70%, #ffd700 95%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  text-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+}
+.person.is-creator .tag {
+  background: linear-gradient(90deg, #ffd700, #ffe685 50%, #f5b82e);
+  color: #1a1200;
+  font-weight: 700;
+  border-color: rgba(255, 255, 255, 0.6);
+  box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+  letter-spacing: 0.08em;
+}
+.creator-gold-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 99px;
+  background: linear-gradient(90deg, #ffd700, #ffb347);
+  color: #1a0f00;
+  font-family: var(--f-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  box-shadow: 0 0 16px rgba(255, 215, 0, 0.6);
+}
+.creator-gold-pill {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 2px 8px;
+  border-radius: 99px;
+  background: linear-gradient(90deg, #ffd700, #f5a623);
+  color: #1b1200;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+}
+.creator-gold-name {
+  font-weight: 700;
+  color: #d99a1b !important;
+  text-shadow: 0 0 12px rgba(255, 215, 0, 0.45);
+}
+.member-is-creator {
+  background: rgba(255, 215, 0, 0.08) !important;
+  border-radius: 8px;
+  padding: 8px 12px !important;
+  border: 1px solid rgba(255, 215, 0, 0.35) !important;
+  box-shadow: 0 0 14px rgba(255, 215, 0, 0.15);
+}
 .crew-mq { margin-top: clamp(48px, 6vw, 80px); }
 
 /* ---------- home: domain deck ---------- */
@@ -226,12 +302,24 @@ a.spec:hover { padding-left: 10px; }
 html.calm .hero-ring, html.calm .hero-mark::before, html.calm .scroll-cue i, html.calm .ph-cue i, html.calm .pulse i::after, html.calm .slot { animation: none; }
 html.calm .hero-a, html.calm .hero-b, html.calm .hero-c, html.calm .hero-d, html.calm .hero-bird, html.calm .ph-mark, html.calm .pgrid > *, html.calm .pd-img img { animation: none; }
 
-/* ---------- side-popping scroll images ---------- */
+/* ---------- side-popping scroll images: automatic GPU glide-in ---------- */
 .pop-img-wrap {
   will-change: transform, opacity;
   overflow: hidden;
   border-radius: 18px;
   box-shadow: var(--shadow);
+  opacity: 0;
+  transition: opacity 0.95s cubic-bezier(0.16, 1, 0.3, 1), transform 1.15s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.pop-img-wrap.left {
+  transform: translate3d(-48px, 20px, 0) scale(0.95) rotate(-1.5deg);
+}
+.pop-img-wrap.right {
+  transform: translate3d(48px, 20px, 0) scale(0.95) rotate(1.5deg);
+}
+.pop-img-wrap.is-in {
+  opacity: 1;
+  transform: translate3d(0, 0, 0) scale(1) rotate(0deg);
 }
 .pop-img-wrap img {
   width: 100%;

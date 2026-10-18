@@ -4,11 +4,10 @@ import { Arrow, CharRise, Count, JoinBand, Logo, Reveal, ScrambleText, SectionHe
 import Backdrop from '../components/Backdrop';
 import Fluid from '../components/Fluid';
 import { Cycle, DragRail, Magnetic, Marquee, PopImage, Split, useSectionProgress, useTilt } from '../components/motion';
-import { PILLARS, FORMATS } from '../data/club';
+import { PILLARS, VALUES, FORMATS } from '../data/club';
 import { domains } from '../data/domains';
 import { artUrl, projects } from '../data/projects';
 import { coreTeam } from '../data/core';
-import { leadershipTeam } from '../data/team';
 import { onFrame, reduced, scroll, Spring } from '../lib/motion';
 
 const achievements = domains.flatMap((d) => d.achievements.map((a) => ({ ...a, domain: d }))).slice(0, 4);
@@ -263,9 +262,60 @@ export default function Home() {
 
       <LifeSection />
 
+      <section className="section">
+        <div className="wrap story">
+          <div className="story-text">
+            <Reveal as="span" className="eyebrow">
+              <b>02</b> Our story
+            </Reveal>
+            <Split className="h2">Why a firefly?</Split>
+            <Reveal as="p" delay={100}>
+              One firefly is a small light. A field of them changes the night. That is the idea behind the club: no one needs to be an expert to start, and every person who builds something makes it easier for the next one.
+            </Reveal>
+            <Reveal as="p" delay={180}>
+              FireFly brings students from every department into five domains, from engineering and research to design, partnerships and media. Each domain runs its own projects, and all of them meet at the end of term to show what they made.
+            </Reveal>
+            <Reveal as="p" delay={260}>
+              We are associated with AMIEE, and we work closely with faculty and the wider SRM community.
+            </Reveal>
+          </div>
+          <Reveal className="story-img" delay={120}>
+            <PopImage side="right" src="/media/crew.jpg" alt="Students working together at a table" loading="lazy" />
+          </Reveal>
+        </div>
+      </section>
+
+      <Marquee items={['Equal space', 'Learn by building', 'Open by default', 'Keep a record']} speed={40} />
+
+      <section className="section">
+        <div className="wrap">
+          <SectionHead n="03" label="What we value" title="Four things we hold to." />
+          <Reveal className="grid g4" stagger={100}>
+            {VALUES.map((v, i) => (
+              <article className="card tilt value" key={v.title}>
+                <span className="mono">0{i + 1}</span>
+                <h3 className="h3">{v.title}</h3>
+                <p className="small">{v.text}</p>
+              </article>
+            ))}
+          </Reveal>
+        </div>
+      </section>
+
+      <section className="section band">
+        <div className="wrap quote">
+          <Reveal as="span" className="eyebrow">
+            The idea
+          </Reveal>
+          <Split as="p">
+            One firefly is a small light. <span className="ember-text">A field of them changes the night.</span>
+          </Split>
+        </div>
+      </section>
+
       <section className="section band">
         <div className="wrap">
-          <SectionHead n="02" label="Domains" title="Five chapters, one crew." lede="Every member belongs to a domain. Scroll through them; each has its own team, stack and flagship work.">
+          <SectionHead n="04" label="Domains" title="Five chapters, one crew." lede="Every member belongs to a domain. Scroll through them; each has its own team, stack and flagship work.">
             <Link className="link" to="/domains" viewTransition>
               All domains <Arrow />
             </Link>
@@ -276,7 +326,7 @@ export default function Home() {
 
       <section className="section">
         <div className="wrap">
-          <SectionHead n="03" label="Projects" title="Work that ships." lede="Drag the row, flick it, or use the arrows. Each project is open about where it stands.">
+          <SectionHead n="05" label="Projects" title="Work that ships." lede="Drag the row, flick it, or use the arrows. Each project is open about where it stands.">
             <Link className="link" to="/projects" viewTransition>
               All {projects.length} projects <Arrow />
             </Link>
@@ -306,7 +356,7 @@ export default function Home() {
       <section className="section band">
         <div className="wrap tl-wrap">
           <div className="tl-head">
-            <SectionHead n="04" label="Every term" title="A rhythm you can count on." lede="Six formats run all term. Dates are announced on Instagram first." solo>
+            <SectionHead n="06" label="Every term" title="A rhythm you can count on." lede="Six formats run all term. Dates are announced on Instagram first." solo>
               <Link className="link" to="/events" viewTransition>
                 How a term works <Arrow />
               </Link>
@@ -318,7 +368,7 @@ export default function Home() {
 
       <section className="section">
         <div className="wrap">
-          <SectionHead n="05" label="Achievements" title="Flagship work across the domains." lede="Highlights from each domain. Full write-ups live on the project pages." />
+          <SectionHead n="07" label="Achievements" title="Flagship work across the domains." lede="Highlights from each domain. Full write-ups live on the project pages." />
           <Reveal className="grid g2" stagger={110}>
             {achievements.map((a) => (
               <Link className="card tilt ach" key={a.id} to={`/projects/${a.id}`} style={{ '--dc': a.domain.color }} viewTransition>
@@ -334,31 +384,6 @@ export default function Home() {
               </Link>
             ))}
           </Reveal>
-        </div>
-      </section>
-
-      <section className="section band">
-        <div className="wrap">
-          <SectionHead n="06" label="The crew" title={`${coreTeam.length} people, equal space.`} lede="FireFly is led by its members. A title is only a tag; everyone shares the work, the decisions and the credit.">
-            <Link className="link" to="/team" viewTransition>
-              Meet the whole team <Arrow />
-            </Link>
-          </SectionHead>
-          <Reveal className="grid g3" stagger={110}>
-            {leadershipTeam.map((m) => (
-              <article className="card tilt person" key={m.name}>
-                <span className="person-i" aria-hidden="true">
-                  {m.name[0]}
-                </span>
-                <span className="tag">{m.role}</span>
-                <h3 className="h3">{m.name}</h3>
-                <p className="small">{m.bio}</p>
-              </article>
-            ))}
-          </Reveal>
-        </div>
-        <div className="crew-mq">
-          <Marquee items={coreTeam.map((m) => m.name)} speed={34} className="small-mq" />
         </div>
       </section>
 
