@@ -36,8 +36,8 @@ export default function Vortex({ touch }) {
   const target = useMemo(() => new THREE.Object3D(), []);
   const colors = useMemo(() => ({ base: new THREE.Color(THEME), secondary: new THREE.Color(), mixed: new THREE.Color() }), []);
   const glow = useMemo(() => makeGlowMaterial(14, THEME, 0, 3), []);
-  // The glass refracts this buffer. It is only redrawn while the crystal is on screen, so the rest of the voyage pays nothing.
-  const fbo = useFBO(touch ? 256 : 512, touch ? 256 : 512);
+  // The glass refracts this buffer. Optimized to 256x256 for smooth 60fps rendering without fill-rate bottleneck.
+  const fbo = useFBO(256, 256);
 
   useFrame((s, dt) => {
     const g = group.current;
@@ -91,8 +91,8 @@ export default function Vortex({ touch }) {
     glow.uniforms.uColor.value.copy(colors.mixed);
     glow.uniforms.uGain.value = (touch ? 0.5 : 0.3) * fade;
 
-    // refraction buffer, drawn without the glass and the halo (skipped while the warm-up keeps the chapter hidden)
-    if (glass.current && g.parent?.visible) {
+    // refraction buffer, drawn without the glass and the halo (only when crystal is actively in view)
+    if (glass.current && g.parent?.visible && (fade > 0.08 || labState.warm)) {
       glass.current.visible = false;
       if (halo.current) halo.current.visible = false;
       s.gl.setRenderTarget(fbo);
@@ -123,8 +123,8 @@ export default function Vortex({ touch }) {
           <MeshTransmissionMaterial
             buffer={fbo.texture}
             backside
-            samples={touch ? 3 : 6}
-            resolution={touch ? 256 : 512}
+            samples={3}
+            resolution={256}
             thickness={2.0}
             chromaticAberration={0}
             anisotropy={0.2}

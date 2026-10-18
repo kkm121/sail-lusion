@@ -26,7 +26,7 @@ function SmoothScroll() {
     const root = document.documentElement;
     let lenis = null;
     if (!touch) {
-      lenis = new Lenis({ lerp: 0.085, wheelMultiplier: 0.95, smoothWheel: true });
+      lenis = new Lenis({ lerp: 0.14, wheelMultiplier: 1.0, smoothWheel: true, syncTouch: false });
       scrollState.lenis = lenis;
       if (typeof window !== 'undefined') window.__lenis = lenis;
     }
@@ -50,8 +50,7 @@ function SmoothScroll() {
       scrollState.y = y;
       const max = Math.max(document.documentElement.scrollHeight - window.innerHeight, 1);
       scrollState.progress = Math.min(1, Math.max(0, y / max));
-      // Hover effects pause while the page is moving so tiles do not flicker under a still pointer.
-      if (Math.abs(scrollState.velocity) > 0.7) {
+      if (Math.abs(scrollState.velocity) > 0.8) {
         calmSince = 0;
         if (!scrollState.scrolling) {
           scrollState.scrolling = true;
@@ -59,7 +58,7 @@ function SmoothScroll() {
         }
       } else if (scrollState.scrolling) {
         calmSince = calmSince || time;
-        if (time - calmSince > 140) {
+        if (time - calmSince > 120) {
           scrollState.scrolling = false;
           root.classList.remove('is-scrolling');
         }
