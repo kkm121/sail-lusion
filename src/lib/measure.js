@@ -59,7 +59,6 @@ export function useDocRect(ref) {
     live.add(item);
     const ro = new ResizeObserver(remeasure);
     ro.observe(el);
-    ro.observe(document.body);
     return () => {
       live.delete(item);
       ro.disconnect();

@@ -4,6 +4,7 @@ import SplitLine from './SplitLine';
 import TransitionLink from './TransitionLink';
 import { CHAPTERS, ROOM_START, pAtZ } from '../lib/journey';
 import LabScene from './LabScene';
+import { labState } from '../scene/shared';
 import { isResolved, subscribeAssets } from '../lib/assets';
 import '../styles/lab.css';
 
@@ -32,14 +33,14 @@ export default function Lab() {
   const rail = useRef(null);
   const introRef = useRef(null);
   const ribbonDraw = useRef(null);
-  const [visible, setVisible] = useState(true);
+  const visibleRef = useRef(true);
 
   useEffect(() => {
     const el = section.current;
     if (!el) return undefined;
     const io = new IntersectionObserver(
       ([entry]) => {
-        setVisible(entry.isIntersecting);
+        visibleRef.current = entry.isIntersecting;
       },
       { rootMargin: '100% 0px 100% 0px' }
     );
@@ -97,6 +98,7 @@ export default function Lab() {
       const mobile = vw < 768;
       const p = Math.min(1, Math.max(0, -rTop / Math.max(elHeight - vh, 1)));
       progress.current = p;
+      labState.active = p > 0.005 && p < 0.995;
       ribbonDraw.current?.(Math.min(1, 0.55 * Math.min(1, Math.max(0, 1 - rTop / vh)) + 0.45 * seg(p, 0, 0.18)));
 
       const tw = mobile ? vw * 0.9 : vw * 0.46;
@@ -158,9 +160,13 @@ export default function Lab() {
         const local = (p - ch.from) / Math.max(to - ch.from, 0.001);
         const on = local > 0 && local < 1;
         if (on) active = i;
+        if (local <= -0.05 || local >= 1.05) {
+          if (el.style.visibility !== 'hidden') el.style.visibility = 'hidden';
+          return;
+        }
+        el.style.visibility = 'visible';
         el.style.setProperty('--r', seg(local, 0.02, 0.2).toFixed(4));
         el.style.setProperty('--o', i === CHAPTERS.length - 1 ? '0' : seg(local, 0.8, 0.97).toFixed(4));
-        el.style.visibility = local > -0.02 && local < 1.02 ? 'visible' : 'hidden';
       });
       if (active !== lastActive) {
         lastActive = active;
@@ -235,7 +241,7 @@ export default function Lab() {
               <div className="sl-lab-still" />
               <Suspense fallback={null}>
                 <div className="sl-lab-canvas">
-                  {go && <LabScene progress={progress} visible={visible} />}
+                  {go && <LabScene progress={progress} visibleRef={visibleRef} />}
                 </div>
               </Suspense>
               <div className="sl-lab-ring" ref={ring} aria-hidden="true">

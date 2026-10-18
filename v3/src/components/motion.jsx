@@ -393,16 +393,29 @@ export function useParallax(ref, amount = 0.12) {
     const el = ref.current;
     if (!el || reduced()) return undefined;
     let on = false;
+    let parentTop = 0;
+    let parentH = 0;
+    const measure = () => {
+      const p = el.parentElement;
+      if (p) {
+        const r = p.getBoundingClientRect();
+        parentTop = r.top + window.scrollY;
+        parentH = r.height;
+      }
+    };
+    measure();
+    window.addEventListener('resize', measure, { passive: true });
     const io = new IntersectionObserver(([e]) => (on = e.isIntersecting), { rootMargin: '20% 0px' });
     io.observe(el);
     const stop = onFrame(() => {
       if (!on) return;
-      const r = el.parentElement.getBoundingClientRect();
-      const off = (r.top + r.height / 2 - scroll.vh / 2) * -amount;
+      const top = parentTop - scroll.y;
+      const off = (top + parentH / 2 - scroll.vh / 2) * -amount;
       el.style.transform = `translate3d(0, ${off.toFixed(1)}px, 0)`;
     });
     return () => {
       stop();
+      window.removeEventListener('resize', measure);
       io.disconnect();
     };
   }, [ref, amount]);
@@ -416,15 +429,25 @@ export function useSectionProgress(ref, cb) {
     const el = ref.current;
     if (!el) return undefined;
     let on = false;
+    let docTop = 0;
+    let elH = 0;
+    const measure = () => {
+      const r = el.getBoundingClientRect();
+      docTop = r.top + window.scrollY;
+      elH = r.height;
+    };
+    measure();
+    window.addEventListener('resize', measure, { passive: true });
     const io = new IntersectionObserver(([e]) => (on = e.isIntersecting), { rootMargin: '10% 0px' });
     io.observe(el);
     const stop = onFrame(() => {
       if (!on) return;
-      const r = el.getBoundingClientRect();
-      fn.current(clamp((scroll.vh - r.top) / (scroll.vh + r.height)), r);
+      const top = docTop - scroll.y;
+      fn.current(clamp((scroll.vh - top) / (scroll.vh + elH)), { top, height: elH });
     });
     return () => {
       stop();
+      window.removeEventListener('resize', measure);
       io.disconnect();
     };
   }, [ref]);
@@ -444,6 +467,13 @@ export function useSidePop(ref, side = 'left', { maxVw = 40, maxDeg = 8 } = {}) 
       return undefined;
     }
     let on = false;
+    let docTop = 0;
+    const measure = () => {
+      const r = el.getBoundingClientRect();
+      docTop = r.top + window.scrollY;
+    };
+    measure();
+    window.addEventListener('resize', measure, { passive: true });
     const io = new IntersectionObserver(([e]) => (on = e.isIntersecting), { rootMargin: '20% 0px' });
     io.observe(el);
 
@@ -455,9 +485,9 @@ export function useSidePop(ref, side = 'left', { maxVw = 40, maxDeg = 8 } = {}) 
         el.style.opacity = '1';
         return;
       }
-      const r = el.getBoundingClientRect();
+      const top = docTop - scroll.y;
       const vh = scroll.vh || window.innerHeight;
-      const k = clamp((vh - r.top) / (vh * 0.72), 0, 1);
+      const k = clamp((vh - top) / (vh * 0.72), 0, 1);
       const tx = sign * (1 - k) * maxVw;
       const rot = sign * (1 - k) * maxDeg;
       const sc = 0.85 + 0.15 * k;
@@ -470,6 +500,7 @@ export function useSidePop(ref, side = 'left', { maxVw = 40, maxDeg = 8 } = {}) 
 
     return () => {
       stop();
+      window.removeEventListener('resize', measure);
       io.disconnect();
     };
   }, [ref, side, maxVw, maxDeg]);

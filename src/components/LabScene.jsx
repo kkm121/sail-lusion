@@ -250,12 +250,12 @@ function Tunnel({ touch, sp, onGate }) {
 
 useGLTF.preload(MEDIA.navigator);
 
-export default function LabScene({ progress, visible = true }) {
+export default function LabScene({ progress, visibleRef }) {
   const touch = useRef(isTouch()).current;
   const sp = useRef(0);
   const bloomRef = useRef();
-  const [dpr, setDpr] = useState(() => Math.min(window.devicePixelRatio || 1, 1.25));
-  const [fx, setFx] = useState(touch ? 0 : 2);
+  const dpr = useMemo(() => Math.min(window.devicePixelRatio || 1, 1.25), []);
+  const fx = touch ? 0 : 2;
   const [postOn] = useState(true);
   const startPost = useCallback(() => {}, []);
   labState.post = fx > 0 && postOn;
@@ -282,16 +282,8 @@ export default function LabScene({ progress, visible = true }) {
       camera={{ position: [0, 0, 7.8], fov: 46, near: 0.1, far: 520 }}
       dpr={dpr}
       gl={{ antialias: touch, alpha: false, stencil: false, powerPreference: 'high-performance', toneMapping: THREE.ACESFilmicToneMapping, toneMappingExposure: 1.05 }}
-      frameloop={gated && (visible || warm) ? 'always' : 'never'}
+      frameloop={gated ? 'always' : 'never'}
     >
-      <PerformanceMonitor
-        flipflops={2}
-        onDecline={() => {
-          if (fx >= 2) setFx(1);
-          else if (dpr > 1.1) setDpr(1);
-          else setFx(0);
-        }}
-      />
       <color attach="background" args={['#030407']} />
       <fog attach="fog" args={['#040302', 14, 95]} />
       <ambientLight intensity={0.4} />
