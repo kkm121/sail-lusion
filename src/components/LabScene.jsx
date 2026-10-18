@@ -13,7 +13,7 @@ import Finale from '../scene/Finale';
 import Planet from '../scene/Planet';
 import Navigator from '../scene/Navigator';
 import { ease, labState, lerp, seg } from '../scene/shared';
-import { HAVE, MEDIA } from '../data/media';
+import { asset, HAVE, MEDIA } from '../data/media';
 import { hasWebGL, isTouch } from '../lib/device';
 import { isResolved, resolveAsset, warmGate } from '../lib/assets';
 import { CAGE_END, ROOM_END, ROOM_START, START, Z0, ZTOT } from '../lib/journey';
@@ -298,7 +298,7 @@ export default function LabScene({ progress, visible = true }) {
       <ambientLight intensity={0.4} />
       <ErrorBoundary fallback={null}>
         <Suspense fallback={null}>
-          <Environment files="/env/studio.hdr" environmentIntensity={0.85} />
+          <Environment files={asset('/env/studio.hdr')} environmentIntensity={0.85} />
           <Loaded name="env" />
         </Suspense>
       </ErrorBoundary>

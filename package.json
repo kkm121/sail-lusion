@@ -4,9 +4,16 @@
   "version": "0.1.0",
   "type": "module",
   "description": "FireFly (FireFly Club) - immersive local build",
+  "workspaces": [
+    "v1",
+    "v3"
+  ],
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "node scripts/build-all.mjs",
+    "build:v1": "cd v1 && vite build",
+    "build:v2": "vite build",
+    "build:v3": "cd v3 && vite build",
     "lint": "vite build",
     "test": "vite build",
     "preview": "vite preview",

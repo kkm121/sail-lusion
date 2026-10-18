@@ -6,6 +6,7 @@ import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeom
 import { seeded } from '../lib/three-utils';
 import { CAGE_END, Z0 } from '../lib/journey';
 import { fillMatrices, glowQuad, makeGlowMaterial, paintInstances, seg } from './shared';
+import { asset } from '../data/media';
 
 // Chapter I, Build: a golden corridor of thick, bevelled metal frames. Real brushed metal (ambientCG, CC0) lit by a
 // studio HDRI (Poly Haven, CC0), a polished dark floor, soft light shafts, drifting dust and a warm light at the end.
@@ -19,7 +20,11 @@ const SILVER = '#e6d6b8';
 
 function Frames() {
   const mesh = useRef();
-  const tex = useTexture({ map: '/env/metal-color.jpg', normalMap: '/env/metal-normal.jpg', roughnessMap: '/env/metal-rough.jpg' });
+  const tex = useTexture({
+    map: asset('/env/metal-color.jpg'),
+    normalMap: asset('/env/metal-normal.jpg'),
+    roughnessMap: asset('/env/metal-rough.jpg')
+  });
   const material = useMemo(() => {
     Object.values(tex).forEach((t) => {
       t.wrapS = t.wrapT = THREE.RepeatWrapping;
