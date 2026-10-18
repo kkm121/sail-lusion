@@ -11,8 +11,9 @@ const browser = await puppeteer.launch({
 const page = await browser.newPage();
 await page.setViewport({ width: 1440, height: 900 });
 
-console.log('[trace] Loading /v2...');
-await page.goto('http://127.0.0.1:4173/v2/', { waitUntil: 'domcontentloaded' });
+const target = (process.env.AUDIT_URL || 'http://127.0.0.1:5181') + '/v2/';
+console.log(`[trace] Loading ${target}...`);
+await page.goto(target, { waitUntil: 'domcontentloaded' });
 await new Promise(r => setTimeout(r, 2500));
 
 console.log('[trace] Starting trace during scroll...');

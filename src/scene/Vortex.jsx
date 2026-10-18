@@ -39,6 +39,8 @@ export default function Vortex({ touch }) {
   // The glass refracts this buffer. Optimized to 256x256 for smooth 60fps rendering without fill-rate bottleneck.
   const fbo = useFBO(256, 256);
 
+  const fboFrame = useRef(0);
+
   useFrame((s, dt) => {
     const g = group.current;
     if (!g) return;
@@ -91,15 +93,17 @@ export default function Vortex({ touch }) {
     glow.uniforms.uColor.value.copy(colors.mixed);
     glow.uniforms.uGain.value = (touch ? 0.5 : 0.3) * fade;
 
-    // refraction buffer, drawn without the glass and the halo (only when crystal is actively in view)
+    // refraction buffer: throttled to every 2nd frame to cut 50% redundant whole-scene render passes
     if (glass.current && g.parent?.visible && (fade > 0.08 || labState.warm)) {
-      glass.current.visible = false;
-      if (halo.current) halo.current.visible = false;
-      s.gl.setRenderTarget(fbo);
-      s.gl.render(s.scene, s.camera);
-      s.gl.setRenderTarget(null);
-      glass.current.visible = true;
-      if (halo.current) halo.current.visible = true;
+      if (++fboFrame.current % 2 === 0 || labState.warm) {
+        glass.current.visible = false;
+        if (halo.current) halo.current.visible = false;
+        s.gl.setRenderTarget(fbo);
+        s.gl.render(s.scene, s.camera);
+        s.gl.setRenderTarget(null);
+        glass.current.visible = true;
+        if (halo.current) halo.current.visible = true;
+      }
     }
   });
 

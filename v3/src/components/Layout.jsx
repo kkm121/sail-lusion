@@ -36,7 +36,15 @@ function Header() {
     let solid = false;
     let travel = 0;
     let lastY = window.scrollY;
-    return onFrame(() => {
+    let heroH = 700;
+    const measureHero = () => {
+      const hero = document.querySelector('.hero, .ph');
+      if (hero) heroH = hero.offsetHeight;
+    };
+    measureHero();
+    window.addEventListener('resize', measureHero, { passive: true });
+
+    const stop = onFrame(() => {
       const el = ref.current;
       if (!el) return;
       const y = scroll.y;
@@ -45,8 +53,7 @@ function Header() {
       travel = Math.sign(dy) === Math.sign(travel) ? travel + dy : dy;
       const wantSolid = y > 24;
       if (wantSolid !== solid) el.classList.toggle('is-solid', (solid = wantSolid));
-      const hero = document.querySelector('.hero, .ph');
-      const over = !!hero && hero.getBoundingClientRect().bottom > 70 && !el.classList.contains('is-open');
+      const over = heroH - y > 70 && !el.classList.contains('is-open');
       if (over !== el.classList.contains('is-over')) el.classList.toggle('is-over', over);
       if (over && solid) el.classList.remove('is-solid'), (solid = false);
       const wantHide = y > 320 && travel > 60;
@@ -54,6 +61,11 @@ function Header() {
       if (wantHide && !hidden) el.classList.add('is-hidden'), (hidden = true);
       else if (wantShow && hidden) el.classList.remove('is-hidden'), (hidden = false);
     });
+
+    return () => {
+      stop();
+      window.removeEventListener('resize', measureHero);
+    };
   }, []);
 
   // Spring-driven sliding pill under hovered/active nav link

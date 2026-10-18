@@ -60,45 +60,14 @@ export default function Cursor() {
         return;
       }
 
-      // 3. Fallback: inspect computed background color of target or ancestors
-      if (lightCache.has(target)) {
-        const cached = lightCache.get(target);
-        if (cached !== currentIsLight) {
-          currentIsLight = cached;
-          el.classList.toggle('is-on-light', cached);
-        }
-        return;
-      }
-      let isLight = true;
-      let curr = target;
-      while (curr && curr !== document.documentElement && curr !== document.body) {
-        const bg = window.getComputedStyle(curr).backgroundColor;
-        if (bg && bg !== 'transparent' && !bg.startsWith('rgba(0, 0, 0, 0)')) {
-          const match = bg.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?\)/);
-          if (match) {
-            const a = match[4] !== undefined ? parseFloat(match[4]) : 1;
-            if (a > 0.25) {
-              const r = parseInt(match[1], 10);
-              const g = parseInt(match[2], 10);
-              const b = parseInt(match[3], 10);
-              const lum = 0.299 * r + 0.587 * g + 0.114 * b;
-              isLight = lum > 140;
-              break;
-            }
-          }
-        }
-        curr = curr.parentElement;
-      }
-
-      lightCache.set(target, isLight);
-      if (isLight !== currentIsLight) {
-        currentIsLight = isLight;
-        el.classList.toggle('is-on-light', isLight);
+      // 3. Fallback: default to light landmark check
+      if (currentIsLight) {
+        currentIsLight = false;
+        el.classList.remove('is-on-light');
       }
     };
 
-    // One loop, and the page is probed for light or dark under the pointer a few times a second,
-    // not on every scroll event.
+    // Probe for light or dark under the pointer only when pointer moves, never during scroll
     let needProbe = false;
     let lastProbe = 0;
     const stopTick = onTick((time, dt) => {
@@ -106,7 +75,7 @@ export default function Cursor() {
       cx += (x - cx) * k;
       cy += (y - cy) * k;
       el.style.transform = `translate3d(${cx.toFixed(2)}px, ${cy.toFixed(2)}px, 0)`;
-      if ((needProbe || scrollState.velocity !== 0) && time - lastProbe > 120) {
+      if (needProbe && time - lastProbe > 150) {
         lastProbe = time;
         needProbe = false;
         lastTarget = null;

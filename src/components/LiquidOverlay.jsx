@@ -4,6 +4,7 @@ import { precompile } from '../lib/three-utils';
 import { onTick } from '../lib/ticker';
 import { scrollState } from '../lib/scroll';
 import { canGL } from '../lib/device';
+import { labState } from '../scene/shared';
 
 const VS = 'varying vec2 vUv;void main(){vUv=uv;gl_Position=vec4(position,1.);}';
 
@@ -159,7 +160,7 @@ export default function LiquidOverlay() {
     const stop = onTick((now) => {
       if (!compiled) return;
       // Skip overlay fluid simulation entirely while inside 3D voyage section
-      if (scrollState.y > window.innerHeight * 1.8 && scrollState.y < window.innerHeight * 7.5) {
+      if (labState.active || (scrollState.y > window.innerHeight * 1.5 && scrollState.y < window.innerHeight * 14)) {
         if (!cleared) {
           renderer.setRenderTarget(null);
           renderer.clear();
@@ -167,8 +168,6 @@ export default function LiquidOverlay() {
         }
         return;
       }
-      const speedScroll = Math.min(Math.abs(scrollState.velocity) / 30, 1.4);
-      if (speedScroll > 0.1) activeUntil = Math.max(activeUntil, now + 1000);
       if (now > activeUntil || !started) {
         if (!cleared) {
           renderer.setRenderTarget(null);
@@ -180,7 +179,7 @@ export default function LiquidOverlay() {
       cleared = false;
       prev.copy(head);
       head.lerp(target, 0.2);
-      sim.uniforms.rad.value = 0.07 * (1 + speedScroll * 0.55);
+      sim.uniforms.rad.value = 0.07;
       quad.material = sim;
       sim.uniforms.t.value = a.texture;
       renderer.setRenderTarget(b);
