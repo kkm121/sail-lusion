@@ -3,7 +3,7 @@ import PageHero from '../components/PageHero';
 import { JoinBand, Reveal, SectionHead } from '../components/ui';
 import { Marquee, useTilt } from '../components/motion';
 import { coreTeam } from '../data/core';
-import { teams } from '../data/team';
+import { CREATOR, teams } from '../data/team';
 
 export default function Team() {
   const page = useRef(null);
@@ -22,14 +22,18 @@ export default function Team() {
                   {m.name[0]}
                 </span>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 10 }}>
-                  <span className="mono" style={{ color: 'var(--muted)' }}>
+                  <span className="mono" style={{ color: m.creator ? 'var(--dc)' : 'var(--muted)', fontWeight: m.creator ? 700 : 400 }}>
                     {m.index}
                   </span>
-                  {m.tag && <span className="tag">{m.tag}</span>}
+                  {m.creator ? (
+                    <span className="creator-gold-badge">✨ CREATOR</span>
+                  ) : (
+                    m.tag && <span className="tag">{m.tag}</span>
+                  )}
                 </div>
                 <h3 className="h3">{m.name}</h3>
-                <p className="mono" style={{ color: m.creator ? 'var(--gold)' : 'var(--ember-1)', fontSize: 11 }}>
-                  {m.area}
+                <p className="mono" style={{ color: m.creator ? '#ffd700' : 'var(--ember-1)', fontSize: 11, fontWeight: m.creator ? 600 : 400 }}>
+                  {m.creator ? '★ Website Creator & Architect · Technical Team' : m.area}
                 </p>
                 <p className="small">{m.about}</p>
               </article>
@@ -55,8 +59,11 @@ export default function Team() {
                     </li>
                   )}
                   {t.members.map((n) => (
-                    <li key={n}>
-                      {n} <span>Member</span>
+                    <li key={n} className={n === CREATOR ? 'member-is-creator' : ''}>
+                      <span className={n === CREATOR ? 'creator-gold-name' : ''}>
+                        {n} {n === CREATOR && <span className="creator-gold-pill">★ CREATOR</span>}
+                      </span>
+                      <span>{n === CREATOR ? 'Creator' : 'Member'}</span>
                     </li>
                   ))}
                   {t.mentor && (

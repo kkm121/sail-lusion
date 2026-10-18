@@ -4,12 +4,13 @@ import { Magnetic } from './motion';
 import { Arrow, Logo, ScrambleText } from './ui';
 import Ambient from './Ambient';
 import Cursor from './Cursor';
+import Preloader from './Preloader';
 import { onFrame, scroll, reduced, setCalm, Spring } from '../lib/motion';
 import { SITE } from '../data/site';
 import { CREATOR } from '../data/team';
 
 export const NAV = [
-  { to: '/about', label: 'About' },
+  { to: '/', label: 'Home / About' },
   { to: '/domains', label: 'Domains' },
   { to: '/events', label: 'Events' },
   { to: '/projects', label: 'Projects' },
@@ -56,8 +57,9 @@ function Header() {
       const over = heroH - y > 70 && !el.classList.contains('is-open');
       if (over !== el.classList.contains('is-over')) el.classList.toggle('is-over', over);
       if (over && solid) el.classList.remove('is-solid'), (solid = false);
-      const wantHide = y > 320 && travel > 60;
-      const wantShow = travel < -24 || y < 120;
+      const nearBottom = window.innerHeight + y >= (document.documentElement.scrollHeight - 250);
+      const wantHide = !nearBottom && y > 320 && travel > 60;
+      const wantShow = nearBottom || travel < -24 || y < 120;
       if (wantHide && !hidden) el.classList.add('is-hidden'), (hidden = true);
       else if (wantShow && hidden) el.classList.remove('is-hidden'), (hidden = false);
     });
@@ -302,6 +304,7 @@ export default function Layout() {
   }, [pathname, hash]);
   return (
     <>
+      <Preloader />
       <Progress />
       <Cursor />
       <a className="skip" href="#main">
