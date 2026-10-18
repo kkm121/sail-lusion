@@ -189,14 +189,22 @@ export default function Fluid({ className = '' }) {
     const ro = new ResizeObserver(resize);
     ro.observe(el);
 
+    let elRect = { left: 0, top: 0, width: window.innerWidth, height: window.innerHeight };
+    const updateRect = () => {
+      const r = el.getBoundingClientRect();
+      elRect = { left: r.left, top: r.top, width: r.width, height: r.height };
+    };
+    updateRect();
+    window.addEventListener('resize', updateRect, { passive: true });
+    window.addEventListener('scroll', updateRect, { passive: true });
+
     const m = [-9, -9];
     const pm = [-9, -9];
     let hasMoved = false;
 
     const onMove = (e) => {
-      const r = el.getBoundingClientRect();
-      const x = (e.clientX - r.left) / Math.max(r.width, 1);
-      const y = 1.0 - (e.clientY - r.top) / Math.max(r.height, 1);
+      const x = (e.clientX - elRect.left) / Math.max(elRect.width, 1);
+      const y = 1.0 - (e.clientY - elRect.top) / Math.max(elRect.height, 1);
       if (!hasMoved) {
         pm[0] = x;
         pm[1] = y;

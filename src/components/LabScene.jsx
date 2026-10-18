@@ -42,7 +42,7 @@ function Rig({ progress, sp, bloomRef }) {
   const bg = useMemo(() => new THREE.Color(), []);
   useFrame((state, dt) => {
     const d = Math.min(dt, 0.05);
-    smooth.current += (progress.current - smooth.current) * (1 - Math.exp(-3.5 * d));
+    smooth.current += (progress.current - smooth.current) * (1 - Math.exp(-8.5 * d));
     const p = smooth.current;
     sp.current = p;
 
@@ -254,11 +254,10 @@ export default function LabScene({ progress, visible = true }) {
   const touch = useRef(isTouch()).current;
   const sp = useRef(0);
   const bloomRef = useRef();
-  const [dpr, setDpr] = useState(() => Math.min(window.devicePixelRatio || 1, touch ? 1.75 : 2));
+  const [dpr, setDpr] = useState(() => Math.min(window.devicePixelRatio || 1, 1.25));
   const [fx, setFx] = useState(touch ? 0 : 2);
-  // the post-processing passes compile their own shaders, so they join only when the warm-up starts (under the sail mark)
-  const [postOn, setPostOn] = useState(false);
-  const startPost = useCallback(() => setPostOn(true), []);
+  const [postOn] = useState(true);
+  const startPost = useCallback(() => {}, []);
   labState.post = fx > 0 && postOn;
   const aberration = useMemo(() => new THREE.Vector2(0.0007, 0.0006), []);
   const [warm, setWarm] = useState(true);
@@ -322,9 +321,7 @@ export default function LabScene({ progress, visible = true }) {
         <EffectComposer disableNormalPass multisampling={0}>
           <Bloom ref={bloomRef} luminanceThreshold={0.86} luminanceSmoothing={0.3} intensity={0.9} radius={0.65} mipmapBlur />
           <ChromaticAberration offset={aberration} radialModulation modulationOffset={0.35} />
-          
           <Vignette offset={0.3} darkness={0.5} />
-          {fx >= 1 ? <SMAA /> : <></>}
         </EffectComposer>
       )}
     </Canvas>

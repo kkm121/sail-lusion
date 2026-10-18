@@ -198,14 +198,14 @@ export default function TeamStage({ names, idxRef, creatorIdx, active }) {
   const touch = useRef(isTouch()).current;
   const [shapes, setShapes] = useState(null);
   const [fx, setFx] = useState(!touch);
-  const [dpr, setDpr] = useState(() => Math.min(window.devicePixelRatio || 1, touch ? 1.5 : 1.75));
+  const [dpr, setDpr] = useState(() => Math.min(window.devicePixelRatio || 1, 1.25));
   const [visible, setVisible] = useState(true);
   const box = useRef(null);
 
   useEffect(() => {
     let dead = false;
     const build = () => {
-      const count = touch ? 6500 : 15000;
+      const count = touch ? 5000 : 10000;
       const list = names.map((n, i) => nameShape(n, count, 100 + i * 7));
       if (!dead) setShapes(list);
     };

@@ -18,19 +18,8 @@ export default function Lab() {
   const stage = useRef(null);
   const world = useRef(null);
   const device = useRef(null);
-  // The voyage canvas mounts once the hero scene is ready, so the two never compile their shaders at the same moment.
-  const [go, setGo] = useState(false);
-  useEffect(() => {
-    if (go) return undefined;
-    const check = () => isResolved('hero') && setGo(true);
-    check();
-    const un = subscribeAssets(check);
-    const t = window.setTimeout(() => setGo(true), 5000);
-    return () => {
-      un();
-      window.clearTimeout(t);
-    };
-  }, [go]);
+  // The voyage canvas mounts under the preloader so all shaders compile before the page opens.
+  const [go] = useState(true);
   const ring = useRef(null);
   const words = useRef(null);
   const giant = useRef(null);
@@ -89,14 +78,26 @@ export default function Lab() {
     const el = section.current;
     if (!el) return undefined;
     let raf = 0;
+    let elTop = 0;
+    let elHeight = 0;
+    const measureEl = () => {
+      const box = el.getBoundingClientRect();
+      elTop = box.top + window.scrollY;
+      elHeight = box.height;
+    };
+    measureEl();
+    window.addEventListener('resize', measureEl, { passive: true });
+
+    let lastActive = -99;
     const update = () => {
-      const r = el.getBoundingClientRect();
-      const vw = window.innerWidth;
+      const y = window.scrollY || 0;
       const vh = window.innerHeight;
+      const vw = window.innerWidth;
+      const rTop = elTop - y;
       const mobile = vw < 768;
-      const p = Math.min(1, Math.max(0, -r.top / (r.height - vh)));
+      const p = Math.min(1, Math.max(0, -rTop / Math.max(elHeight - vh, 1)));
       progress.current = p;
-      ribbonDraw.current?.(Math.min(1, 0.55 * Math.min(1, Math.max(0, 1 - r.top / vh)) + 0.45 * seg(p, 0, 0.18)));
+      ribbonDraw.current?.(Math.min(1, 0.55 * Math.min(1, Math.max(0, 1 - rTop / vh)) + 0.45 * seg(p, 0, 0.18)));
 
       const tw = mobile ? vw * 0.9 : vw * 0.46;
       const s0 = tw / vw;
@@ -161,11 +162,22 @@ export default function Lab() {
         el.style.setProperty('--o', i === CHAPTERS.length - 1 ? '0' : seg(local, 0.8, 0.97).toFixed(4));
         el.style.visibility = local > -0.02 && local < 1.02 ? 'visible' : 'hidden';
       });
-      railEls.current.forEach((el, i) => {
-        if (!el) return;
-        el.classList.toggle('on', i === active);
-        el.classList.toggle('done', i < active);
-      });
+      if (active !== lastActive) {
+        lastActive = active;
+        railEls.current.forEach((el, i) => {
+          if (!el) return;
+          el.classList.toggle('on', i === active);
+          el.classList.toggle('done', i < active);
+        });
+        if (nextEl.current && active >= 0 && active < CHAPTERS.length - 1) {
+          const n = CHAPTERS[active + 1];
+          const bEl = nextEl.current.querySelector('b');
+          const smEl = nextEl.current.querySelector('small');
+          if (bEl) bEl.textContent = n.verb;
+          if (smEl) smEl.textContent = n.domain;
+          nextEl.current.style.setProperty('--nc', n.color);
+        }
+      }
       if (rail.current) rail.current.style.opacity = String(seg(p, 0.668, 0.69));
       if (nextEl.current) {
         const ch = CHAPTERS[Math.max(active, 0)];
@@ -173,12 +185,6 @@ export default function Lab() {
         const show = active >= 0 && active < CHAPTERS.length - 1 ? seg(local, 0.55, 0.72) * (1 - seg(local, 0.92, 1)) : 0;
         nextEl.current.style.opacity = String(show);
         nextEl.current.style.transform = `translate3d(${(1 - show) * 28}px, 0, 0)`;
-        if (active >= 0 && active < CHAPTERS.length - 1) {
-          const n = CHAPTERS[active + 1];
-          nextEl.current.querySelector('b').textContent = n.verb;
-          nextEl.current.querySelector('small').textContent = n.domain;
-          nextEl.current.style.setProperty('--nc', n.color);
-        }
       }
       const c = seg(p, 0.984, 0.998);
       if (hint.current) {

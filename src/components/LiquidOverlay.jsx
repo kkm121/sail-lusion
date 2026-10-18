@@ -158,8 +158,17 @@ export default function LiquidOverlay() {
     let cleared = false;
     const stop = onTick((now) => {
       if (!compiled) return;
+      // Skip overlay fluid simulation entirely while inside 3D voyage section
+      if (scrollState.y > window.innerHeight * 1.8 && scrollState.y < window.innerHeight * 7.5) {
+        if (!cleared) {
+          renderer.setRenderTarget(null);
+          renderer.clear();
+          cleared = true;
+        }
+        return;
+      }
       const speedScroll = Math.min(Math.abs(scrollState.velocity) / 30, 1.4);
-      if (speedScroll > 0.05) activeUntil = Math.max(activeUntil, now + 1800);
+      if (speedScroll > 0.1) activeUntil = Math.max(activeUntil, now + 1000);
       if (now > activeUntil || !started) {
         if (!cleared) {
           renderer.setRenderTarget(null);

@@ -16,9 +16,9 @@ const NO_SPARKLES = PARAMS.has('nosparkles');
 const PLAIN_GLASS = PARAMS.has('plainglass');
 
 const TIERS = {
-  high: { maxDpr: 1.5, pixelBudget: 5e6 },
-  low: { maxDpr: 1.25, pixelBudget: 1.1e6 },
-  mobile: { maxDpr: 1.5, pixelBudget: 1.6e6 },
+  high: { maxDpr: 1.25, pixelBudget: 3e6 },
+  low: { maxDpr: 1.1, pixelBudget: 1.1e6 },
+  mobile: { maxDpr: 1.25, pixelBudget: 1.6e6 },
   lite: { maxDpr: 1, pixelBudget: 0.8e6 },
 };
 
@@ -217,7 +217,6 @@ export function Scene({ themeColor = '#00F5D4', onReady }) {
                 radius={tier === 'high' ? 0.65 : 0.55}
                 mipmapBlur
               />
-              {tier === 'high' && <Noise opacity={0.015} />}
             </EffectComposer>
           )}
         </Canvas>
