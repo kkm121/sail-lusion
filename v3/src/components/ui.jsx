@@ -21,16 +21,20 @@ export function Reveal({ as: Tag = 'div', className = '', stagger = 0, delay = 0
   useEffect(() => {
     const el = ref.current;
     if (!el) return undefined;
-    const targets = stagger ? [...el.children] : [el];
+    const targets = stagger ? Array.from(el.children) : [el];
     const io = new IntersectionObserver(
-      (entries) => entries.forEach((e) => {
-        if (!e.isIntersecting) return;
-        targets.forEach((t) => t.classList.add('is-in'));
-        io.disconnect();
-      }),
-      { rootMargin: '0px 0px -8% 0px', threshold: 0.06 }
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) {
+            e.target.classList.add('is-in');
+          } else {
+            e.target.classList.remove('is-in');
+          }
+        });
+      },
+      { rootMargin: '0px 0px -4% 0px', threshold: 0.05 }
     );
-    io.observe(el);
+    targets.forEach((t) => io.observe(t));
     return () => io.disconnect();
   }, [stagger]);
   if (stagger) {

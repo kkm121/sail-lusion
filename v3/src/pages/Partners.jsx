@@ -18,7 +18,7 @@ export default function Partners() {
     <div ref={page}>
       <PageHero eyebrow="Partners" title={<>Build the next crew <span className="ember-text">with us.</span></>} lede="FireFly works with companies, labs and founders who want to support students learning AI by building it." />
 
-      <section className="section" style={{ paddingTop: 0 }}>
+      <section className="section" style={{ paddingTop: 'clamp(48px, 6vw, 80px)' }}>
         <div className="wrap">
           <SectionHead n="01" label="Why partner" title="What partners get from FireFly." />
           <Reveal className="grid g3" stagger={100}>

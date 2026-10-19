@@ -31,7 +31,7 @@ export function Projects() {
   return (
     <div ref={page}>
       <PageHero eyebrow="Projects" title={<>Work that <span className="ember-text">ships.</span></>} lede="Toolkits, research and products built by members, each marked with where it stands today." />
-      <section className="section" style={{ paddingTop: 0 }}>
+      <section className="section" style={{ paddingTop: 'clamp(48px, 6vw, 80px)' }}>
         <div className="wrap">
           <Reveal className="filters" role="group" aria-label="Filter by domain">
             <span className="filters-ink" ref={ink} aria-hidden="true" />
@@ -81,7 +81,7 @@ export function ProjectDetail() {
   return (
     <div ref={page} style={{ '--dc': d.color }}>
       <PageHero eyebrow={`${d.shortName} · ${p.status}`} title={p.title || p.name} lede={p.blurb} />
-      <section className="section" style={{ paddingTop: 0 }}>
+      <section className="section" style={{ paddingTop: 'clamp(48px, 6vw, 80px)' }}>
         <div className="wrap pd">
           <Reveal>
             <div className="pd-img">

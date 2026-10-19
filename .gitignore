@@ -7,3 +7,4 @@ dist
 shots
 .reel-tmp
 .vercel
+*.png

@@ -80,4 +80,10 @@ html.sl-nav-dark .sl-nav-bar .btn.cli { background: rgba(255, 255, 255, 0.12); c
 .ff-ver-link { padding: 4px 9px; border-radius: 999px; color: rgba(255, 255, 255, 0.6); text-decoration: none; font-weight: 500; transition: all 0.2s ease; line-height: 1; }
 .ff-ver-link:hover { color: #fff; background: rgba(255, 255, 255, 0.12); }
 .ff-ver-link.is-active { color: #000; background: var(--amber, #ffb347); font-weight: 700; box-shadow: 0 0 10px rgba(255, 179, 71, 0.4); }
-@media (max-width: 580px) { .ff-ver-switch { display: none; } }
+@media (max-width: 580px) {
+  .actions .ff-ver-switch { padding: 2px 3px; gap: 1px; font-size: 10px; }
+  .actions .ff-ver-link { padding: 3px 6px; }
+}
+.sl-menu-ver-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 0 16px; border-bottom: 1px solid rgba(255, 255, 255, 0.08); margin-bottom: 8px; }
+.sl-menu-ver-label { font-family: var(--f-mono, monospace); font-size: 11px; text-transform: uppercase; letter-spacing: 0.14em; opacity: 0.6; }
+

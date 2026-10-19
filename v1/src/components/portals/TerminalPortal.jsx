@@ -33,7 +33,7 @@ function staticCommand(cmd) {
       ];
       coreTeam.forEach((m) => {
         const creatorMark = m.name === CREATOR
-          ? ' ★ [CREATOR & ARCHITECT] (Designed & built this site with AI)'
+          ? ' [MEMBER · CREATOR] (Technical Team · Creator of this website)'
           : m.tag
           ? ` [${m.tag}]`
           : ' [MEMBER]';
@@ -56,7 +56,7 @@ function staticCommand(cmd) {
       return { type: 'output', text: `Instagram : ${SOCIAL_LINKS.instagram}\nLinkedIn  : ${SOCIAL_LINKS.linkedin}` };
     case 'creator':
     case 'whoami':
-      return { type: 'output', text: `This website was designed and built by ${CREATOR} (Technical Team).` };
+      return { type: 'output', text: `This website was designed and built by ${CREATOR} (Technical Team · Creator of this website).` };
     case 'status':
       return { type: 'output', text: 'SITE: ONLINE\nRECRUITMENT: IN PROGRESS\nSIGN-IN: IN PROGRESS' };
     case 'apply':
@@ -80,7 +80,7 @@ export function TerminalPortal({ isOpen, onClose, onOpenApply, onOpenAdmin, sess
   const [input, setInput] = useState('');
   const [commandHistory, setCommandHistory] = useState([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
-  const bottomRef = useRef(null);
+  const outRef = useRef(null);
   const inputRef = useRef(null);
 
   useEffect(() => {
@@ -100,7 +100,9 @@ export function TerminalPortal({ isOpen, onClose, onOpenApply, onOpenAdmin, sess
   }, [isOpen]);
 
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (outRef.current) {
+      outRef.current.scrollTop = outRef.current.scrollHeight;
+    }
   }, [history]);
 
   if (!isOpen) return null;
@@ -302,7 +304,7 @@ export function TerminalPortal({ isOpen, onClose, onOpenApply, onOpenAdmin, sess
         </div>
 
         {/* Output Screen */}
-        <div className="flex-1 overflow-y-auto py-4 space-y-2 select-text" onClick={() => inputRef.current?.focus()}>
+        <div ref={outRef} className="flex-1 overflow-y-auto py-4 space-y-2 select-text" onClick={() => inputRef.current?.focus()}>
           {history.map((h, i) => (
             <div
               key={i}
@@ -319,7 +321,6 @@ export function TerminalPortal({ isOpen, onClose, onOpenApply, onOpenAdmin, sess
               {h.text}
             </div>
           ))}
-          <div ref={bottomRef} />
         </div>
 
         {/* Command Line Input */}

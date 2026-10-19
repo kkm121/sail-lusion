@@ -143,10 +143,12 @@ export function Split({ as: Tag = 'h2', className = '', children, delay = 0, imm
       return undefined;
     }
     const io = new IntersectionObserver(([e]) => {
-      if (!e.isIntersecting) return;
-      el.classList.add('is-in');
-      io.disconnect();
-    }, { rootMargin: '0px 0px -10% 0px' });
+      if (e.isIntersecting) {
+        el.classList.add('is-in');
+      } else {
+        el.classList.remove('is-in');
+      }
+    }, { rootMargin: '0px 0px -8% 0px' });
     io.observe(el);
     return () => io.disconnect();
   }, [immediate]);
@@ -429,25 +431,17 @@ export function useSectionProgress(ref, cb) {
     const el = ref.current;
     if (!el) return undefined;
     let on = false;
-    let docTop = 0;
-    let elH = 0;
-    const measure = () => {
-      const r = el.getBoundingClientRect();
-      docTop = r.top + window.scrollY;
-      elH = r.height;
-    };
-    measure();
-    window.addEventListener('resize', measure, { passive: true });
-    const io = new IntersectionObserver(([e]) => (on = e.isIntersecting), { rootMargin: '10% 0px' });
+    const io = new IntersectionObserver(([e]) => {
+      on = e.isIntersecting;
+    }, { rootMargin: '30% 0px' });
     io.observe(el);
     const stop = onFrame(() => {
       if (!on) return;
-      const top = docTop - scroll.y;
-      fn.current(clamp((scroll.vh - top) / (scroll.vh + elH)), { top, height: elH });
+      const r = el.getBoundingClientRect();
+      fn.current(clamp((scroll.vh - r.top) / (scroll.vh + r.height)), { top: r.top, height: r.height });
     });
     return () => {
       stop();
-      window.removeEventListener('resize', measure);
       io.disconnect();
     };
   }, [ref]);
@@ -469,10 +463,11 @@ export function useSidePop(ref, side = 'left') {
       ([entry]) => {
         if (entry.isIntersecting) {
           el.classList.add('is-in');
-          io.disconnect();
+        } else {
+          el.classList.remove('is-in');
         }
       },
-      { rootMargin: '0px 0px -8% 0px', threshold: 0.12 }
+      { rootMargin: '0px 0px -4% 0px', threshold: 0.05 }
     );
     io.observe(el);
     return () => io.disconnect();

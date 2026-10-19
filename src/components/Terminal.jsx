@@ -6,11 +6,11 @@ import { CREATOR } from '../data/team';
 import { SITE } from '../data/site';
 import '../styles/portals.css';
 
-const BANNER = String.raw`  ____    _    ___ _
- / ___|  / \  |_ _| |
- \___ \ / _ \  | || |
-  ___) / ___ \ | || |___
- |____/_/   \_\___|_____|`;
+const BANNER = String.raw`  _____   ___   ____    _____   _____   _     __   __
+ |  ___| |_ _| |  _ \  | ____| |  ___| | |    \ \ / /
+ | |_     | |  | |_) | |  _|   | |_    | |     \ V / 
+ |  _|    | |  |  _ <  | |___  |  _|   | |___   | |  
+ |_|     |___| |_| \_\ |_____| |_|     |_____|  |_|  `;
 
 const IN_PROGRESS = 'Recruitment, sign-in and sign-up are currently being built. Check back soon.';
 
@@ -32,7 +32,7 @@ const HELP = `commands
 const BOOT = [
   { type: 'art', text: BANNER },
   { type: 'dim', text: 'FireFly Club · associated with AMIEE' },
-  { type: 'dim', text: "the ship's console · type a command or tap a chip below\n" },
+  { type: 'dim', text: "firefly console · type a command or tap a chip below\n" },
 ];
 
 function run(cmd) {
@@ -50,12 +50,12 @@ function run(cmd) {
           '',
           ...coreTeam.map((m) => {
             const role = m.creator
-              ? '★ [CREATOR & ARCHITECT]'
+              ? '[MEMBER · CREATOR]'
               : m.tag
               ? `[${m.tag}]`
               : '[MEMBER]';
-            const detail = m.creator ? ' (Built this site with AI)' : '';
-            return `  ${m.index}  ${m.name.padEnd(25)} ${role.padEnd(26)}${detail} — ${m.area}`;
+            const detail = m.creator ? ' (Technical Team · Creator of this website)' : '';
+            return `  ${m.index}  ${m.name.padEnd(25)} ${role.padEnd(24)}${detail} — ${m.area}`;
           }),
         ].join('\n'),
       };
@@ -68,7 +68,7 @@ function run(cmd) {
       return { type: 'out', text: `instagram  ${SITE.instagram}\nlinkedin   ${SITE.linkedin}` };
     case 'creator':
     case 'whoami':
-      return { type: 'out', text: `designed and built by ${CREATOR} (Technical Team).` };
+      return { type: 'out', text: `designed and built by ${CREATOR} (Technical Team · Creator of this website).` };
     case 'status':
       return { type: 'out', text: 'site            online\nrecruitment     currently building\nsign-in/up      currently building' };
     case 'apply':
@@ -89,7 +89,7 @@ export default function Terminal({ open, onClose }) {
   const [input, setInput] = useState('');
   const [past, setPast] = useState([]);
   const [idx, setIdx] = useState(-1);
-  const bottom = useRef(null);
+  const outRef = useRef(null);
   const field = useRef(null);
 
   useEffect(() => {
@@ -110,7 +110,9 @@ export default function Terminal({ open, onClose }) {
   }, [open, onClose]);
 
   useEffect(() => {
-    bottom.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+    if (outRef.current) {
+      outRef.current.scrollTop = outRef.current.scrollHeight;
+    }
   }, [history]);
 
   if (!open) return null;
@@ -162,26 +164,25 @@ export default function Terminal({ open, onClose }) {
       <div className="sl-cli-panel" onClick={(e) => e.stopPropagation()}>
         <div className="sl-cli-bar">
           <span>
-            <i /> sail@amiee
+            <i /> firefly@amiee
           </span>
           <span className="keys">tab complete · ↑ history · esc close</span>
           <button type="button" onClick={onClose} aria-label="Close console">
             ✕
           </button>
         </div>
-        <div className="sl-cli-out" onClick={() => field.current?.focus()}>
+        <div className="sl-cli-out" ref={outRef} onClick={() => field.current?.focus()}>
           {history.map((h, i) => (
             <div key={i} className={`ln ${h.type}`}>
               {h.type === 'cmd' ? (
                 <>
-                  <span className="p">sail@amiee:~$</span> {h.text}
+                  <span className="p">firefly@amiee:~$</span> {h.text}
                 </>
               ) : (
                 h.text
               )}
             </div>
           ))}
-          <div ref={bottom} />
         </div>
         <div className="sl-cli-chips">
           {COMMANDS.map((c) => (
@@ -191,7 +192,7 @@ export default function Terminal({ open, onClose }) {
           ))}
         </div>
         <label className="sl-cli-in">
-          <span>sail@amiee:~$</span>
+          <span>firefly@amiee:~$</span>
           <input ref={field} value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={onKeyDown} spellCheck={false} autoComplete="off" autoCapitalize="off" aria-label="Command" />
           <i aria-hidden="true" />
         </label>

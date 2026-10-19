@@ -133,26 +133,28 @@ function Timeline() {
 
 function LifeSection() {
   const root = useRef(null);
+  const headRef = useRef(null);
   const text = 'We build late into the night. We debug together, share what we learn, and turn research into live, working software.';
   const words = text.split(' ');
   const wordRefs = useRef([]);
 
-  useSectionProgress(root, (progress) => {
+  useSectionProgress(headRef, (progress, r) => {
+    const kProgress = Math.min(1, Math.max(0, (scroll.vh * 0.82 - r.top) / (scroll.vh * 0.48)));
     const total = words.length;
     wordRefs.current.forEach((el, idx) => {
       if (!el) return;
-      const start = idx / (total + 3);
-      const end = (idx + 3) / (total + 3);
-      const k = Math.min(1, Math.max(0, (progress - start) / (end - start)));
+      const start = idx / total;
+      const end = Math.min(1, (idx + 1) / total);
+      const k = Math.min(1, Math.max(0, (kProgress - start) / Math.max(0.01, end - start)));
       el.style.opacity = (0.2 + 0.8 * k).toFixed(2);
-      el.style.color = k > 0.6 ? 'var(--ink)' : 'var(--faint)';
+      el.style.color = k > 0.4 ? 'var(--ink)' : 'var(--faint)';
     });
   });
 
   return (
     <section className="life-section" ref={root}>
       <div className="wrap">
-        <div className="life-head">
+        <div className="life-head" ref={headRef}>
           <span className="eyebrow">
             <b>Life in the club</b> · Daily rhythm
           </span>
@@ -161,7 +163,7 @@ function LifeSection() {
               <span
                 key={i}
                 ref={(el) => (wordRefs.current[i] = el)}
-                style={{ display: 'inline-block', margin: '0 0.16em', transition: 'color 0.25s', opacity: 0.2 }}
+                style={{ display: 'inline-block', margin: '0 0.16em', transition: 'color 0.2s, opacity 0.2s', opacity: 0.18 }}
               >
                 {w}
               </span>

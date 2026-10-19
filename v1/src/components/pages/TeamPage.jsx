@@ -80,7 +80,7 @@ export function TeamPage({ onOpenApply }) {
                     </div>
                     {isCreator ? (
                       <span className="px-3 py-1 rounded-full text-[10px] font-mono border font-bold bg-amber-500/20 text-amber-300 border-amber-400/50 shadow-[0_0_12px_rgba(255,180,50,0.3)]">
-                        ★ CREATOR & ARCHITECT
+                        ★ CREATOR & TECHNICAL TEAM
                       </span>
                     ) : member.tag ? (
                       <span className="px-3 py-1 rounded-full text-[10px] font-mono border font-semibold bg-white/[0.06] text-gray-300 border-white/[0.15]">
