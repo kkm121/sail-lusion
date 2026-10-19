@@ -175,6 +175,11 @@ export default function Fluid({ className = '' }) {
       fbA = makeFB(texA);
       fbB = makeFB(texB);
 
+      currentFB = fbA;
+      currentTex = texA;
+      nextFB = fbB;
+      nextTex = texB;
+
       gl.bindFramebuffer(gl.FRAMEBUFFER, fbA);
       gl.clearColor(0, 0, 0, 1);
       gl.clear(gl.COLOR_BUFFER_BIT);
@@ -183,6 +188,11 @@ export default function Fluid({ className = '' }) {
       gl.clear(gl.COLOR_BUFFER_BIT);
       gl.bindFramebuffer(gl.FRAMEBUFFER, null);
     };
+
+    let currentFB = null;
+    let currentTex = null;
+    let nextFB = null;
+    let nextTex = null;
 
     resize();
     window.addEventListener('resize', resize, { passive: true });
@@ -218,11 +228,6 @@ export default function Fluid({ className = '' }) {
     };
 
     window.addEventListener('pointermove', onMove, { passive: true });
-
-    let currentFB = fbA;
-    let currentTex = texA;
-    let nextFB = fbB;
-    let nextTex = texB;
 
     let time = 0;
     let inView = true;
