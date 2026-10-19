@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef } from 'react';
 import { onTick } from '../lib/ticker';
 import { scrollState } from '../lib/scroll';
+import { useDocRect } from '../lib/measure';
 import { whenShown } from '../lib/ready';
 
 const GLYPHS = '!<>-_/[]{}=+*^?#%&01';
@@ -37,6 +38,7 @@ export default function Text({ as: Tag = 'span', type = 'lines', text, children,
   const str = text ?? (typeof children === 'string' ? children : '');
   const ref = useRef(null);
   const words = useMemo(() => str.split(' ').filter(Boolean), [str]);
+  const rect = useDocRect(ref);
 
   useEffect(() => {
     const el = ref.current;
