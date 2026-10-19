@@ -4,7 +4,8 @@ import PageHero from '../components/PageHero';
 import { Arrow } from '../components/ui';
 import { domains } from '../data/domains';
 import { projects } from '../data/projects';
-import { leadershipTeam } from '../data/team';
+import { CREATOR, leadershipTeam } from '../data/team';
+import { coreTeam } from '../data/core';
 import { VALUES } from '../data/club';
 import { SITE } from '../data/site';
 
@@ -81,7 +82,7 @@ export default function Cli() {
               <div><span className="cli-cmd-pill" onClick={() => runCommand('about')}>about</span> — Club mission, history, and AMIEE association</div>
               <div><span className="cli-cmd-pill" onClick={() => runCommand('domains')}>domains</span> — List all 5 technical domains</div>
               <div><span className="cli-cmd-pill" onClick={() => runCommand('projects')}>projects</span> — Flagship member projects and build status</div>
-              <div><span className="cli-cmd-pill" onClick={() => runCommand('team')}>team</span> — Executive leadership and crew breakdown</div>
+              <div><span className="cli-cmd-pill" onClick={() => runCommand('team')}>team</span> — All 17 crew members · Equal representation & creator spotlight</div>
               <div><span className="cli-cmd-pill" onClick={() => runCommand('join')}>join</span> — Recruitment steps and how to apply</div>
               <div><span className="cli-cmd-pill" onClick={() => runCommand('clear')}>clear</span> — Clear terminal window buffer</div>
               <div><span className="cli-cmd-pill" onClick={() => runCommand('help')}>help</span> — Print this manual</div>
@@ -144,15 +145,50 @@ export default function Cli() {
       case 'team':
         output = (
           <div className="cli-out">
-            <p><b>EXECUTIVE LEADERSHIP:</b></p>
-            <ul style={{ paddingLeft: 18, margin: '8px 0', display: 'grid', gap: 4 }}>
-              {leadershipTeam.map((m) => (
-                <li key={m.name}>
-                  <b>{m.name}</b> — {m.role}
+            <p>
+              <b>FIREFLY CORE CREW ({coreTeam.length} MEMBERS · EQUAL REPRESENTATION):</b>
+            </p>
+            <p style={{ fontSize: 11, opacity: 0.8, marginTop: 4 }}>
+              One team, equal space and shared responsibility. A title is only a tag; everyone here shares the work, decisions and credit.
+            </p>
+            <ul style={{ paddingLeft: 18, margin: '10px 0', display: 'grid', gap: 6 }}>
+              {coreTeam.map((m) => (
+                <li
+                  key={m.name}
+                  style={
+                    m.creator
+                      ? {
+                          color: '#ffd700',
+                          background: 'rgba(255, 215, 0, 0.08)',
+                          padding: '6px 10px',
+                          borderRadius: 6,
+                          border: '1px solid rgba(255, 215, 0, 0.35)',
+                          margin: '4px 0',
+                        }
+                      : {}
+                  }
+                >
+                  <span style={{ fontFamily: 'var(--f-mono)', opacity: 0.6, marginRight: 8 }}>{m.index}</span>
+                  <b>{m.name}</b>{' '}
+                  {m.creator ? (
+                    <span style={{ color: '#ffd700', fontWeight: 700 }}>
+                      ★ [WEBSITE CREATOR & ARCHITECT]
+                    </span>
+                  ) : m.tag ? (
+                    <span style={{ opacity: 0.8 }}>[{m.tag}]</span>
+                  ) : (
+                    <span style={{ opacity: 0.6 }}>[Member]</span>
+                  )}
+                  <span style={{ opacity: 0.85, fontSize: 11, marginLeft: 8 }}>— {m.area}</span>
+                  {m.creator && (
+                    <div style={{ fontSize: 11, color: '#ffc060', marginTop: 3, paddingLeft: 4 }}>
+                      ↳ Designed and engineered this platform alongside AI pair programmer (Antigravity).
+                    </div>
+                  )}
                 </li>
               ))}
             </ul>
-            <p style={{ marginTop: 8 }}>
+            <p style={{ marginTop: 8, fontSize: 11, opacity: 0.75 }}>
               <b>Associated Institution:</b> AMIEE SRMIST · Year {SITE.year}
             </p>
           </div>

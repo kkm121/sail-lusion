@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { DOMAINS } from '../../data/recruitment';
 import { CREATOR, leadershipTeam, teams } from '../../data/team';
+import { coreTeam } from '../../data/core';
 import { SOCIAL_LINKS } from '../../data/links';
 
 const IN_PROGRESS = '[IN PROGRESS] Recruitment and sign-in are being built. Check back soon.';
@@ -8,7 +9,7 @@ const IN_PROGRESS = '[IN PROGRESS] Recruitment and sign-in are being built. Chec
 const STATIC_HELP = `AVAILABLE COMMANDS:
   help                    - Display this command manual
   about                   - About FireFly
-  team                    - List the president, secretaries and every team
+  team                    - List all crew members with equal representation
   domains                 - List the lab domains
   projects                - List current projects
   socials                 - Instagram and LinkedIn links
@@ -25,13 +26,18 @@ function staticCommand(cmd) {
     case 'about':
       return { type: 'output', text: 'FireFly - student AI club, associated with AMIEE.\nEngineer. Innovate. Lead.' };
     case 'team': {
-      const lines = ['LEADERSHIP'];
-      leadershipTeam.forEach((m) => lines.push(`  ${m.role.padEnd(10)} : ${m.name}`));
-      teams.forEach((t) => {
-        lines.push('', t.name.toUpperCase());
-        if (t.lead) lines.push(`  ${t.lead.role.padEnd(10)} : ${t.lead.name}`);
-        lines.push(`  Members    : ${t.members.join(', ')}`);
-        if (t.mentor) lines.push(`  Mentor     : ${t.mentor}`);
+      const lines = [
+        `FIREFLY CORE CREW · ${coreTeam.length} MEMBERS (EQUAL REPRESENTATION)`,
+        'One team, equal space and shared responsibility. Titles are only tags; everyone shares the work.',
+        '',
+      ];
+      coreTeam.forEach((m) => {
+        const creatorMark = m.name === CREATOR
+          ? ' ★ [CREATOR & ARCHITECT] (Designed & built this site with AI)'
+          : m.tag
+          ? ` [${m.tag}]`
+          : ' [MEMBER]';
+        lines.push(`  ${m.index}  ${m.name.padEnd(25)} : ${m.area}${creatorMark}`);
       });
       return { type: 'output', text: lines.join('\n') };
     }

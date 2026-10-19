@@ -1,5 +1,6 @@
 import React from 'react';
-import { CREATOR, leadershipTeam, teams } from '../../data/team';
+import { CREATOR, teams } from '../../data/team';
+import { coreTeam } from '../../data/core';
 
 function SparkIcon() {
   return (
@@ -41,7 +42,7 @@ export function TeamPage({ onOpenApply }) {
         <div className="text-center space-y-5 max-w-3xl mx-auto">
           <div className="inline-flex items-center gap-2 text-[11px] font-mono tracking-[0.25em] uppercase text-gray-300 bg-white/[0.04] px-4 py-1.5 rounded-full border border-white/[0.1] backdrop-blur-xl">
             <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
-            <span>04 // Ecosystem Leadership & Fellows</span>
+            <span>04 // Core Crew · Equal Representation</span>
           </div>
           <h1 className="text-4xl sm:text-6xl md:text-7xl font-display font-black text-white tracking-tight leading-[1.08]">
             Architects behind <br />
@@ -50,40 +51,71 @@ export function TeamPage({ onOpenApply }) {
             </span>
           </h1>
           <p className="text-sm sm:text-base text-gray-400 leading-relaxed font-sans max-w-xl mx-auto">
-            Meet the students leading FireFly, the student AI club associated with AMIEE.
+            {coreTeam.length} members, equal space and shared responsibility. A title is only a tag; everyone here shares the work, decisions and credit.
           </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {leadershipTeam.map((member, idx) => (
-            <div
-              key={idx}
-              className="p-8 sm:p-10 rounded-3xl bg-gradient-to-b from-white/[0.05] via-black/80 to-black/95 backdrop-blur-3xl border border-white/[0.1] hover:border-white/[0.25] transition-all duration-500 space-y-6 flex flex-col justify-between group shadow-[0_20px_60px_rgba(0,0,0,0.6)]"
-            >
-              <div className="space-y-4">
-                <div className="flex justify-between items-start">
-                  <div className="w-12 h-12 rounded-2xl bg-white/[0.06] border border-white/[0.12] flex items-center justify-center font-display font-bold text-white text-lg group-hover:scale-105 transition-transform">
-                    {initial(member.name)}
+          {coreTeam.map((member, idx) => {
+            const isCreator = member.creator;
+            return (
+              <div
+                key={member.name}
+                className={`p-8 sm:p-10 rounded-3xl backdrop-blur-3xl border transition-all duration-500 space-y-6 flex flex-col justify-between group ${
+                  isCreator
+                    ? 'bg-gradient-to-b from-amber-500/[0.12] via-black/85 to-black/95 border-amber-400/50 shadow-[0_0_40px_rgba(255,180,50,0.25)] hover:border-amber-300'
+                    : 'bg-gradient-to-b from-white/[0.05] via-black/80 to-black/95 border-white/[0.1] hover:border-white/[0.25] shadow-[0_20px_60px_rgba(0,0,0,0.6)]'
+                }`}
+              >
+                <div className="space-y-4">
+                  <div className="flex justify-between items-start">
+                    <div
+                      className={`w-12 h-12 rounded-2xl flex items-center justify-center font-display font-bold text-lg group-hover:scale-105 transition-transform ${
+                        isCreator
+                          ? 'bg-amber-500/20 border border-amber-400/40 text-amber-300 shadow-[0_0_15px_rgba(255,180,50,0.4)]'
+                          : 'bg-white/[0.06] border border-white/[0.12] text-white'
+                      }`}
+                    >
+                      {initial(member.name)}
+                    </div>
+                    {isCreator ? (
+                      <span className="px-3 py-1 rounded-full text-[10px] font-mono border font-bold bg-amber-500/20 text-amber-300 border-amber-400/50 shadow-[0_0_12px_rgba(255,180,50,0.3)]">
+                        ★ CREATOR & ARCHITECT
+                      </span>
+                    ) : member.tag ? (
+                      <span className="px-3 py-1 rounded-full text-[10px] font-mono border font-semibold bg-white/[0.06] text-gray-300 border-white/[0.15]">
+                        {member.tag}
+                      </span>
+                    ) : (
+                      <span className="px-3 py-1 rounded-full text-[10px] font-mono border font-semibold bg-white/[0.03] text-gray-500 border-white/[0.08]">
+                        CORE MEMBER
+                      </span>
+                    )}
                   </div>
-                  <span className={`px-3 py-1 rounded-full text-[10px] font-mono border font-semibold ${member.badgeStyle}`}>
-                    {member.badge}
-                  </span>
-                </div>
 
-                <div>
-                  <h3 className="text-2xl font-display font-bold text-white group-hover:text-cyan-400 transition-colors">
-                    {member.name}
-                  </h3>
-                  <p className="text-xs font-mono text-gray-400 mt-1">{member.role}</p>
-                  <p className="text-[11px] font-mono text-gray-500">{member.division}</p>
-                </div>
+                  <div>
+                    <div className="text-[10px] font-mono text-gray-500 mb-1">{member.index}</div>
+                    <h3
+                      className={`text-2xl font-display font-bold transition-colors ${
+                        isCreator
+                          ? 'text-amber-200 group-hover:text-amber-100 drop-shadow-[0_0_12px_rgba(255,180,50,0.4)]'
+                          : 'text-white group-hover:text-cyan-400'
+                      }`}
+                    >
+                      {member.name}
+                    </h3>
+                    <p className={`text-xs font-mono mt-1 ${isCreator ? 'text-amber-300 font-semibold' : 'text-gray-400'}`}>
+                      {isCreator ? '★ Lead Website Creator & System Architect' : member.area}
+                    </p>
+                  </div>
 
-                <p className="text-xs text-gray-300 font-sans leading-relaxed pt-2">
-                  {member.bio}
-                </p>
+                  <p className="text-xs text-gray-300 font-sans leading-relaxed pt-2">
+                    {member.about || 'Contributes to club initiatives, technical programs, and collaborative research.'}
+                  </p>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         <div className="space-y-8">

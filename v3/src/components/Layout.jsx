@@ -10,7 +10,7 @@ import { SITE } from '../data/site';
 import { CREATOR } from '../data/team';
 
 export const NAV = [
-  { to: '/', label: 'Home / About' },
+  { to: '/', label: 'Home' },
   { to: '/domains', label: 'Domains' },
   { to: '/events', label: 'Events' },
   { to: '/projects', label: 'Projects' },

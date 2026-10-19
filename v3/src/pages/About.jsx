@@ -68,15 +68,16 @@ export default function About() {
 
       <section className="section">
         <div className="wrap">
-          <SectionHead n="03" label="How FireFly is run" title="Leadership, teams and records." lede="A president and two secretaries coordinate four teams. Every team has a clear job, and the Report Team keeps the club's memory.">
+          <SectionHead n="03" label="How FireFly is run" title="Teams, coordination and records." lede="Four teams carry FireFly with equal space and shared responsibility. Every member has an equal voice, and the Report Team keeps the club's memory.">
             <Link className="link" to="/team" viewTransition>
               Meet everyone <Arrow />
             </Link>
           </SectionHead>
           <Reveal className="org" stagger={80}>
             <article className="card tilt">
-              <span className="tag">Leadership</span>
-              <h3 className="h3">Executive</h3>
+              <span className="tag">Coordination</span>
+              <h3 className="h3">Operations</h3>
+              <p className="small">Coordinates logistics, cross-domain collaboration, finances, and club schedules.</p>
               <p className="who">
                 {leadershipTeam.map((m, i) => (
                   <span key={m.name}>
