@@ -105,9 +105,9 @@ export default function Header({ back }) {
 
         <div className="actions">
           <nav className="ff-ver-switch" aria-label="Version Switcher" title="Switch between website versions">
-            <a href="/v1" className="ff-ver-link" data-cursor="V1">v1</a>
-            <a href="/v2" className="ff-ver-link is-active" data-cursor="V2">v2</a>
-            <a href="/v3" className="ff-ver-link" data-cursor="V3">v3</a>
+            <a href="/v1/" className="ff-ver-link" data-cursor="V1">v1</a>
+            <a href="/v2/" className="ff-ver-link is-active" data-cursor="V2">v2</a>
+            <a href="/v3/" className="ff-ver-link" data-cursor="V3">v3</a>
           </nav>
           <button className={`snd ${sound ? 'is-on' : ''}`} type="button" aria-label={sound ? 'Turn sound off' : 'Turn sound on'} aria-pressed={sound} data-cursor="SOUND" onClick={() => setSound(!isSoundOn())}>
             <b />
@@ -136,6 +136,14 @@ export default function Header({ back }) {
 
       <nav id="sl-menu" className={`sl-menu ${open ? 'is-open' : ''}`} aria-hidden={!open}>
         <div className="sl-menu-links">
+          <div className="sl-menu-ver-row">
+            <span className="sl-menu-ver-label">Edition</span>
+            <div className="ff-ver-switch">
+              <a href="/v1/" className="ff-ver-link">v1</a>
+              <a href="/v2/" className="ff-ver-link is-active">v2</a>
+              <a href="/v3/" className="ff-ver-link">v3</a>
+            </div>
+          </div>
           {PAGES.map((l) => (
             <TransitionLink key={l.label} href={l.href} label={l.label} tabIndex={open ? 0 : -1} aria-current={isCurrent(l.href) ? 'page' : undefined} onClick={() => setOpen(false)}>
               {l.label}

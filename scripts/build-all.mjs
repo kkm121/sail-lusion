@@ -50,14 +50,21 @@ const rootHtml = `<!doctype html>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta http-equiv="refresh" content="0; url=/v2" />
     <title>FireFly // Student AI Club</title>
     <link rel="icon" type="image/png" href="/v2/brand/favicon.png" />
     <script>
-      // Immediate client-side redirect to default v2
-      if (window.location.pathname === '/' || window.location.pathname === '') {
-        window.location.replace('/v2');
-      }
+      (function() {
+        const p = window.location.pathname || '';
+        const search = window.location.search || '';
+        const hash = window.location.hash || '';
+        if (p.startsWith('/v1')) {
+          window.location.replace('/v1/' + search + hash);
+        } else if (p.startsWith('/v3')) {
+          window.location.replace('/v3/' + search + hash);
+        } else {
+          window.location.replace('/v2/' + search + hash);
+        }
+      })();
     </script>
     <style>
       :root { color-scheme: dark; }
@@ -94,11 +101,11 @@ const rootHtml = `<!doctype html>
   </head>
   <body>
     <h1>FireFly // Student AI Club</h1>
-    <p>Redirecting to <a href="/v2" style="color:#ffb347;">Version 2</a>...</p>
+    <p>Opening <a href="/v2/" style="color:#ffb347;">FireFly</a>...</p>
     <div class="links">
-      <a class="btn sec" href="/v1">Launch v1</a>
-      <a class="btn" href="/v2">Launch v2</a>
-      <a class="btn sec" href="/v3">Launch v3</a>
+      <a class="btn sec" href="/v1/">Launch v1</a>
+      <a class="btn" href="/v2/">Launch v2</a>
+      <a class="btn sec" href="/v3/">Launch v3</a>
     </div>
   </body>
 </html>

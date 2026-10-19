@@ -69,6 +69,7 @@ html.is-scrolling .sl-pill { pointer-events: none; }
 
 @media (max-width: 767px) {
   .sl-mq--solid, .sl-mq--outline { font-size: 13vw; }
+  .sl-voyage { padding: 48px 0 32px; }
 }
 
 

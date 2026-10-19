@@ -162,8 +162,12 @@ export default function Preloader() {
     };
   }, []);
 
-  // 2. Cinematic Loading Sequence Progression
+  // 2. Cinematic Loading Sequence Progression & Viewport Warm-up Lock
   useEffect(() => {
+    // Lock document scroll so mobile swipes don't prematurely trigger animations or cause stuttering
+    document.documentElement.style.overflow = 'hidden';
+    window.scrollTo(0, 0);
+
     let current = 0;
     const start = performance.now();
     const duration = 2200; // 2.2 seconds total immersive sequence
@@ -195,13 +199,19 @@ export default function Preloader() {
         setPercent(100);
         setStage(TELEMETRY.length - 1);
         setFlash(true);
-        setTimeout(() => setDismissed(true), 280);
+        setTimeout(() => {
+          setDismissed(true);
+          document.documentElement.style.overflow = '';
+        }, 280);
         setTimeout(() => setGone(true), 1250);
       }
     };
 
     const raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
+    return () => {
+      cancelAnimationFrame(raf);
+      document.documentElement.style.overflow = '';
+    };
   }, []);
 
   // Quick skip option on user click
@@ -209,7 +219,10 @@ export default function Preloader() {
     if (!dismissed) {
       setPercent(100);
       setFlash(true);
-      setTimeout(() => setDismissed(true), 120);
+      setTimeout(() => {
+        setDismissed(true);
+        document.documentElement.style.overflow = '';
+      }, 120);
       setTimeout(() => setGone(true), 850);
     }
   };

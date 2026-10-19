@@ -90,21 +90,78 @@ export default function Lab() {
     window.addEventListener('resize', measureEl, { passive: true });
 
     let lastActive = -99;
+    const WAVE_LOCK_P = 0.970;
+    let byeStartTime = 0;
+    let byeLocked = false;
+    let byeDone = false;
+    let byeLockY = 0;
+    let unlockTimer = null;
+    let touchStartY = 0;
+
     const update = () => {
       const y = window.scrollY || 0;
       const vh = window.innerHeight;
       const vw = window.innerWidth;
       const rTop = elTop - y;
       const mobile = vw < 768;
-      const p = Math.min(1, Math.max(0, -rTop / Math.max(elHeight - vh, 1)));
+      const maxScroll = Math.max(elHeight - vh, 1);
+      let rawP = Math.min(1, Math.max(0, -rTop / maxScroll));
+
+      // 1-second pause on the robot waving "bye" animation
+      const yWave = elTop + WAVE_LOCK_P * maxScroll;
+      const now = performance.now();
+
+      if (rawP < 0.92) {
+        byeDone = false;
+        byeLocked = false;
+        byeStartTime = 0;
+        if (unlockTimer) {
+          clearTimeout(unlockTimer);
+          unlockTimer = null;
+        }
+      } else if (!byeDone && y >= yWave) {
+        if (!byeLocked) {
+          byeLocked = true;
+          byeStartTime = now;
+          byeLockY = yWave;
+          if (typeof window !== 'undefined' && window.__lenis) {
+            window.__lenis.stop();
+          }
+          if (unlockTimer) clearTimeout(unlockTimer);
+          unlockTimer = setTimeout(() => {
+            byeLocked = false;
+            byeDone = true;
+            if (typeof window !== 'undefined' && window.__lenis) {
+              window.__lenis.start();
+            }
+          }, 1000);
+        }
+
+        if (byeLocked) {
+          if (now - byeStartTime < 1000) {
+            if (y > byeLockY) {
+              window.scrollTo({ top: byeLockY, behavior: 'instant' });
+            }
+            rawP = WAVE_LOCK_P;
+          } else {
+            byeLocked = false;
+            byeDone = true;
+            if (typeof window !== 'undefined' && window.__lenis) {
+              window.__lenis.start();
+            }
+          }
+        }
+      }
+
+      const p = rawP;
       progress.current = p;
       labState.active = p > 0.005 && p < 0.995;
       ribbonDraw.current?.(Math.min(1, 0.55 * Math.min(1, Math.max(0, 1 - rTop / vh)) + 0.45 * seg(p, 0, 0.18)));
 
-      const tw = mobile ? vw * 0.9 : vw * 0.46;
+      const tw = mobile ? vw * 0.86 : vw * 0.46;
       const s0 = tw / vw;
       const cx0 = mobile ? vw / 2 : vw * 0.065 + tw / 2;
-      const cy0 = mobile ? vh * 0.72 : vh * 0.7;
+      const cy0 = mobile ? Math.max(vh * 0.84, 380) : vh * 0.7;
       const e = ease(seg(p, 0.02, 0.27));
       const f = lerp(1, 1 / s0, e);
       const rot = -0.17 * Math.sin(e * Math.PI);
@@ -115,7 +172,10 @@ export default function Lab() {
         w.style.transform = `translate3d(${tx}px, ${ty}px, 0) translate(${cx0}px, ${cy0}px) rotate(${rot}rad) scale(${f}) translate(${-cx0}px, ${-cy0}px)`;
         if (stage.current) {
           stage.current.dataset.z = e >= 1 ? '1' : '0';
-          stage.current.toggleAttribute('data-dark', e > 0.5);
+          stage.current.toggleAttribute('data-dark', e > 0.4);
+        }
+        if (section.current) {
+          section.current.toggleAttribute('data-dark', e > 0.4);
         }
       }
       const dev = device.current;
@@ -203,13 +263,64 @@ export default function Lab() {
       cancelAnimationFrame(raf);
       raf = requestAnimationFrame(update);
     };
+
+    const onWheel = (e) => {
+      if (byeLocked && performance.now() - byeStartTime < 1000) {
+        if (e.deltaY > 0) {
+          e.preventDefault();
+        } else if (e.deltaY < 0) {
+          byeLocked = false;
+          if (unlockTimer) {
+            clearTimeout(unlockTimer);
+            unlockTimer = null;
+          }
+          if (typeof window !== 'undefined' && window.__lenis) {
+            window.__lenis.start();
+          }
+        }
+      }
+    };
+
+    const onTouchStart = (e) => {
+      if (e.touches && e.touches[0]) {
+        touchStartY = e.touches[0].clientY;
+      }
+    };
+
+    const onTouchMove = (e) => {
+      if (byeLocked && performance.now() - byeStartTime < 1000) {
+        if (e.touches && e.touches[0]) {
+          const dy = touchStartY - e.touches[0].clientY;
+          if (dy > 0 && e.cancelable) {
+            e.preventDefault();
+          } else if (dy < -10) {
+            byeLocked = false;
+            if (unlockTimer) {
+              clearTimeout(unlockTimer);
+              unlockTimer = null;
+            }
+          }
+        }
+      }
+    };
+
     update();
     window.addEventListener('scroll', onScroll, { passive: true });
     window.addEventListener('resize', onScroll);
+    window.addEventListener('wheel', onWheel, { passive: false });
+    window.addEventListener('touchstart', onTouchStart, { passive: true });
+    window.addEventListener('touchmove', onTouchMove, { passive: false });
     return () => {
+      if (unlockTimer) clearTimeout(unlockTimer);
       cancelAnimationFrame(raf);
       window.removeEventListener('scroll', onScroll);
       window.removeEventListener('resize', onScroll);
+      window.removeEventListener('wheel', onWheel);
+      window.removeEventListener('touchstart', onTouchStart);
+      window.removeEventListener('touchmove', onTouchMove);
+      if (typeof window !== 'undefined' && window.__lenis) {
+        window.__lenis.start();
+      }
     };
   }, []);
 

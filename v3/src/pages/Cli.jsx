@@ -14,7 +14,7 @@ export default function Cli() {
   const [input, setInput] = useState('');
   const [cmdIndex, setCmdIndex] = useState(-1);
   const [pastCmds, setPastCmds] = useState([]);
-  const bottomRef = useRef(null);
+  const bodyRef = useRef(null);
   const inputRef = useRef(null);
 
   // Auto-typing initial intro command
@@ -49,7 +49,13 @@ export default function Cli() {
   }, []);
 
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+    inputRef.current?.focus({ preventScroll: true });
+  }, []);
+
+  useEffect(() => {
+    if (bodyRef.current) {
+      bodyRef.current.scrollTop = bodyRef.current.scrollHeight;
+    }
   }, [history]);
 
   const runCommand = (raw) => {
@@ -153,38 +159,21 @@ export default function Cli() {
             </p>
             <ul style={{ paddingLeft: 18, margin: '10px 0', display: 'grid', gap: 6 }}>
               {coreTeam.map((m) => (
-                <li
-                  key={m.name}
-                  style={
-                    m.creator
-                      ? {
-                          color: '#ffd700',
-                          background: 'rgba(255, 215, 0, 0.08)',
-                          padding: '6px 10px',
-                          borderRadius: 6,
-                          border: '1px solid rgba(255, 215, 0, 0.35)',
-                          margin: '4px 0',
-                        }
-                      : {}
-                  }
-                >
+                <li key={m.name}>
                   <span style={{ fontFamily: 'var(--f-mono)', opacity: 0.6, marginRight: 8 }}>{m.index}</span>
                   <b>{m.name}</b>{' '}
                   {m.creator ? (
-                    <span style={{ color: '#ffd700', fontWeight: 700 }}>
-                      ★ [WEBSITE CREATOR & ARCHITECT]
+                    <span style={{ opacity: 0.9, color: 'var(--ember-1)', fontWeight: 600 }}>
+                      [Member · Creator]
                     </span>
                   ) : m.tag ? (
                     <span style={{ opacity: 0.8 }}>[{m.tag}]</span>
                   ) : (
                     <span style={{ opacity: 0.6 }}>[Member]</span>
                   )}
-                  <span style={{ opacity: 0.85, fontSize: 11, marginLeft: 8 }}>— {m.area}</span>
-                  {m.creator && (
-                    <div style={{ fontSize: 11, color: '#ffc060', marginTop: 3, paddingLeft: 4 }}>
-                      ↳ Designed and engineered this platform alongside AI pair programmer (Antigravity).
-                    </div>
-                  )}
+                  <span style={{ opacity: 0.85, fontSize: 11, marginLeft: 8 }}>
+                    — {m.creator ? 'Technical Team · Creator of this website' : m.area}
+                  </span>
                 </li>
               ))}
             </ul>
@@ -256,7 +245,7 @@ export default function Cli() {
         lede="Explore club architecture, research domains, active projects and team records directly from the terminal."
       />
 
-      <section className="section" style={{ paddingTop: 0 }}>
+      <section className="section" style={{ paddingTop: 'clamp(48px, 6vw, 80px)' }}>
         <div className="wrap">
           <div className="cli-window">
             <div className="cli-header">
@@ -269,7 +258,7 @@ export default function Cli() {
               <div className="cli-badge mono">zsh 5.9</div>
             </div>
 
-            <div className="cli-body mono" onClick={() => inputRef.current?.focus()}>
+            <div className="cli-body mono" ref={bodyRef} onClick={() => inputRef.current?.focus({ preventScroll: true })}>
               {history.map((item, idx) => (
                 <div key={idx} className="cli-entry">
                   <div className="cli-prompt-line">
@@ -289,13 +278,11 @@ export default function Cli() {
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   onKeyDown={handleKeyDown}
-                  autoFocus
                   spellCheck="false"
                   autoCapitalize="off"
                   autoComplete="off"
                 />
               </div>
-              <div ref={bottomRef} />
             </div>
           </div>
         </div>

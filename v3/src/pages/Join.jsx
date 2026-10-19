@@ -26,7 +26,7 @@ export default function Join() {
         </div>
       </PageHero>
 
-      <section className="section" style={{ paddingTop: 0 }}>
+      <section className="section" style={{ paddingTop: 'clamp(48px, 6vw, 80px)' }}>
         <div className="wrap">
           <SectionHead n="01" label="Who we want" title="People who like to make things." />
           <Reveal as="ul" className="want" stagger={80}>

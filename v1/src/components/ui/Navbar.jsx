@@ -83,9 +83,9 @@ export function Navbar({ activePage, onNavigate, session, onSignOut, onOpenApply
         {/* Action Buttons */}
         <div className="flex items-center gap-1.5 min-[400px]:gap-2 sm:gap-2.5">
           <nav className="inline-flex items-center gap-0.5 px-1 py-0.5 rounded-full bg-white/[0.06] border border-white/[0.14] backdrop-blur-md text-[11px] font-mono tracking-wider mr-1" aria-label="Version Switcher">
-            <a href="/v1" className="px-2 py-0.5 rounded-full text-black bg-accent font-bold shadow-[0_0_8px_rgba(0,245,212,0.4)]">v1</a>
-            <a href="/v2" className="px-2 py-0.5 rounded-full text-gray-400 hover:text-white transition-colors">v2</a>
-            <a href="/v3" className="px-2 py-0.5 rounded-full text-gray-400 hover:text-white transition-colors">v3</a>
+            <a href="/v1/" className="px-2 py-0.5 rounded-full text-black bg-accent font-bold shadow-[0_0_8px_rgba(0,245,212,0.4)]">v1</a>
+            <a href="/v2/" className="px-2 py-0.5 rounded-full text-gray-400 hover:text-white transition-colors">v2</a>
+            <a href="/v3/" className="px-2 py-0.5 rounded-full text-gray-400 hover:text-white transition-colors">v3</a>
           </nav>
           <button
             onClick={onOpenApply}

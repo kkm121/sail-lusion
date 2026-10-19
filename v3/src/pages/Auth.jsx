@@ -23,7 +23,7 @@ export function SignIn() {
         />
       </div>
 
-      <section className="section" style={{ paddingTop: 0 }}>
+      <section className="section" style={{ paddingTop: 'clamp(48px, 6vw, 80px)' }}>
         <div className="wrap">
           <div className="form-preview-wrap">
             <div className="coming-soon-badge">Coming Soon</div>
@@ -117,7 +117,7 @@ export function SignUp() {
         />
       </div>
 
-      <section className="section" style={{ paddingTop: 0 }}>
+      <section className="section" style={{ paddingTop: 'clamp(48px, 6vw, 80px)' }}>
         <div className="wrap">
           <div className="form-preview-wrap">
             <div className="coming-soon-badge">Coming Soon</div>

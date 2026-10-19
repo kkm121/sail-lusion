@@ -142,9 +142,9 @@ function Header() {
         </nav>
         <div className="hd-actions">
           <nav className="ff-ver-switch" aria-label="Version Switcher" title="Switch between website versions">
-            <a href="/v1" className="ff-ver-link">v1</a>
-            <a href="/v2" className="ff-ver-link">v2</a>
-            <a href="/v3" className="ff-ver-link is-active">v3</a>
+            <a href="/v1/" className="ff-ver-link">v1</a>
+            <a href="/v2/" className="ff-ver-link">v2</a>
+            <a href="/v3/" className="ff-ver-link is-active">v3</a>
           </nav>
           <Link className="btn btn-ghost hd-act-btn" to="/signin" viewTransition>
             Sign in
@@ -165,6 +165,14 @@ function Header() {
       </div>
       <div className="hd-drawer" id="hd-drawer" hidden={!open}>
         <nav aria-label="Mobile">
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 0 16px', borderBottom: '1px solid rgba(255, 255, 255, 0.08)', marginBottom: '12px' }}>
+            <span style={{ fontSize: '11px', fontFamily: 'monospace', opacity: 0.6, letterSpacing: '0.12em' }}>EDITION</span>
+            <nav className="ff-ver-switch" aria-label="Version Switcher">
+              <a href="/v1/" className="ff-ver-link">v1</a>
+              <a href="/v2/" className="ff-ver-link">v2</a>
+              <a href="/v3/" className="ff-ver-link is-active">v3</a>
+            </nav>
+          </div>
           {NAV.map((n, i) => (
             <NavLink key={n.to} to={n.to} style={{ '--d': `${60 + i * 45}ms` }}>
               <span className="mono">0{i + 1}</span> {n.label}

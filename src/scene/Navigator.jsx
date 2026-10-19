@@ -123,11 +123,11 @@ export default function Navigator({ sp }) {
     halo.uniforms.uGain.value = (Math.sin(k * Math.PI) * 1.4 + k * 0.35) * (warm ? 0 : 1);
 
     const wave = actions.Wave;
-    if (wave && pop > 0.6 && !waving.current) {
-      wave.reset().setLoop(THREE.LoopRepeat, Infinity).fadeIn(0.5).play();
+    if (wave && pop > 0.45 && !waving.current) {
+      wave.reset().setLoop(THREE.LoopRepeat, Infinity).fadeIn(0.25).play();
       wave.timeScale = 0.85;
       waving.current = true;
-    } else if (wave && pop < 0.3 && waving.current) {
+    } else if (wave && pop < 0.25 && waving.current) {
       wave.fadeOut(0.4);
       waving.current = false;
     }
