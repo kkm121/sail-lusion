@@ -19,7 +19,7 @@ const COMMANDS = ['help', 'team', 'domains', 'projects', 'socials', 'creator', '
 const HELP = `commands
   help        show this list
   about       what FireFly is
-  team        the core team
+  team        the core team (equal representation)
   domains     the five domains and who runs them
   projects    every project and its status
   socials     where to follow us
@@ -42,7 +42,23 @@ function run(cmd) {
     case 'about':
       return { type: 'out', text: `${SITE.name} is ${SITE.fullName}, associated with AMIEE.\nA student-run club for vision, language, robotics and interactive 3D.` };
     case 'team':
-      return { type: 'out', text: [`core team · ${coreTeam.length} members`, ...coreTeam.map((m) => `  ${m.index}  ${m.name.padEnd(26)}${m.tag ? `[${m.tag}]` : ''}`)].join('\n') };
+      return {
+        type: 'out',
+        text: [
+          `core team · ${coreTeam.length} members (equal representation)`,
+          'one team, equal space and shared responsibility; everyone shares the work.',
+          '',
+          ...coreTeam.map((m) => {
+            const role = m.creator
+              ? '★ [CREATOR & ARCHITECT]'
+              : m.tag
+              ? `[${m.tag}]`
+              : '[MEMBER]';
+            const detail = m.creator ? ' (Built this site with AI)' : '';
+            return `  ${m.index}  ${m.name.padEnd(25)} ${role.padEnd(26)}${detail} — ${m.area}`;
+          }),
+        ].join('\n'),
+      };
     case 'domains':
       return { type: 'out', text: domains.map((d) => `[${d.code}] ${d.name}\n     ${d.tagline}\n     team: ${d.members.join(', ')}`).join('\n\n') };
     case 'projects':
