@@ -10,6 +10,7 @@ const v1Dir = path.join(rootDir, 'v1');
 const v3Dir = path.join(rootDir, 'v3');
 
 console.log('[build-all] Cleaning root dist directory...');
+console.log('[build-all] Production Gateway: v2 (default) & v3. v4 deployment cancelled.');
 fs.rmSync(distDir, { recursive: true, force: true });
 fs.mkdirSync(distDir, { recursive: true });
 
