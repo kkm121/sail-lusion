@@ -1223,3 +1223,669 @@ button {
 .v4-footer-links a:hover {
   color: #fff;
 }
+
+/* ==========================================================================
+   EXPANDED CLUB SHOWCASE STYLES
+   Reverse engineered from Linear, Apple, Nothing & Antigravity
+   ========================================================================== */
+
+/* Kinetic Slogan Marquee */
+.v4-marquee-wrap {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  background: rgba(255, 90, 31, 0.03);
+  border-top: 1px solid var(--border-subtle);
+  border-bottom: 1px solid var(--border-subtle);
+  padding: 14px 0;
+  white-space: nowrap;
+}
+
+.v4-marquee-track {
+  display: inline-flex;
+  gap: 32px;
+  animation: v4Marquee 35s linear infinite;
+  will-change: transform;
+}
+
+.v4-marquee-track.is-reverse {
+  animation-direction: reverse;
+}
+
+.v4-marquee-text {
+  font-size: 12px;
+  letter-spacing: 0.16em;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  font-weight: 500;
+}
+
+@keyframes v4Marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* Playground Tabs & Layout */
+.v4-playground-tabs {
+  display: inline-flex;
+  gap: 8px;
+  padding: 4px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-full);
+  margin-top: 24px;
+}
+
+.v4-playground-tab {
+  background: none;
+  border: none;
+  padding: 8px 16px;
+  border-radius: var(--radius-full);
+  color: var(--text-muted);
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  transition: all 0.2s var(--ease-spring);
+}
+
+.v4-playground-tab:hover {
+  color: #fff;
+}
+
+.v4-playground-tab.is-active {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.v4-playground-display {
+  margin-top: 36px;
+  position: relative;
+}
+
+.v4-playground-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-top: 36px;
+}
+
+.v4-lab-panel {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+}
+
+.v4-lab-panel-header {
+  margin-bottom: 16px;
+}
+
+/* Neural Tensor Simulator */
+.v4-neural-box {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  backdrop-filter: blur(16px);
+  position: relative;
+  overflow: hidden;
+}
+
+.v4-neural-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.v4-neural-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  color: #fff;
+  font-weight: 600;
+}
+
+.v4-neural-telemetry {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.v4-neural-canvas-wrap {
+  position: relative;
+  width: 100%;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  border: 1px solid var(--border-subtle);
+  background: #020305;
+}
+
+.v4-neural-canvas {
+  width: 100%;
+  height: 320px;
+  display: block;
+}
+
+.v4-neural-overlay-controls {
+  position: absolute;
+  bottom: 14px;
+  left: 14px;
+  right: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  pointer-events: none;
+}
+
+.v4-act-selector,
+.v4-neural-actions {
+  display: flex;
+  gap: 6px;
+  pointer-events: auto;
+}
+
+.v4-act-chip,
+.v4-step-btn {
+  background: rgba(12, 14, 18, 0.85);
+  border: 1px solid var(--border-subtle);
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  font-size: 11px;
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+  transition: all 0.15s;
+}
+
+.v4-act-chip:hover,
+.v4-step-btn:hover {
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.v4-act-chip.is-active {
+  background: var(--ember);
+  color: #000;
+  border-color: var(--ember);
+  font-weight: 700;
+}
+
+.v4-neural-caption {
+  margin-top: 14px;
+  font-size: 11.5px;
+  color: var(--text-dim);
+}
+
+/* Projects Filters & Modal */
+.v4-project-filters {
+  display: inline-flex;
+  gap: 8px;
+  margin-top: 24px;
+  flex-wrap: wrap;
+}
+
+.v4-project-filter {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-muted);
+  padding: 6px 14px;
+  border-radius: var(--radius-full);
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s var(--ease-spring);
+}
+
+.v4-project-filter:hover {
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.v4-project-filter.is-active {
+  background: rgba(255, 90, 31, 0.15);
+  border-color: var(--ember);
+  color: #fff;
+}
+
+.v4-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(12px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.v4-modal-dialog {
+  background: #0d0f14;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  max-width: 600px;
+  width: 100%;
+  padding: 28px;
+  position: relative;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6);
+  animation: v4ModalPop 0.2s var(--ease-spring);
+}
+
+@keyframes v4ModalPop {
+  0% { opacity: 0; transform: scale(0.95); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+.v4-modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--border-subtle);
+  padding-bottom: 16px;
+}
+
+.v4-modal-close {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 16px;
+  cursor: pointer;
+  padding: 4px;
+}
+
+.v4-modal-close:hover {
+  color: #fff;
+}
+
+/* Initiatives & Formats */
+.v4-pillars-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.v4-pillar-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 24px;
+  position: relative;
+}
+
+.v4-pillar-num {
+  font-size: 11px;
+  color: var(--ember);
+  letter-spacing: 0.1em;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.v4-pillar-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #fff;
+}
+
+.v4-pillar-text {
+  font-size: 13.5px;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+.v4-formats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.v4-format-card {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 20px;
+  transition: all 0.2s var(--ease-spring);
+}
+
+.v4-format-card:hover {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.15);
+  transform: translateY(-2px);
+}
+
+.v4-format-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.v4-format-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 6px;
+}
+
+.v4-format-text {
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+/* Research Publications */
+.v4-research-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+.v4-paper-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 24px;
+  transition: all 0.2s var(--ease-spring);
+}
+
+.v4-paper-card:hover {
+  border-color: rgba(255, 90, 31, 0.3);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+}
+
+.v4-paper-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  margin-bottom: 12px;
+}
+
+.v4-paper-title {
+  font-size: 17px;
+  font-weight: 600;
+  color: #fff;
+  line-height: 1.4;
+  margin-bottom: 8px;
+}
+
+.v4-paper-authors {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+}
+
+.v4-paper-abstract {
+  font-size: 13.5px;
+  color: var(--text-sub);
+  line-height: 1.6;
+  margin-bottom: 16px;
+}
+
+.v4-paper-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.v4-paper-tag {
+  font-size: 11px;
+  color: var(--text-dim);
+}
+
+/* Admissions & Steps */
+.v4-steps-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.v4-step-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 24px;
+}
+
+.v4-step-num {
+  font-size: 11px;
+  color: var(--cyan);
+  letter-spacing: 0.1em;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.v4-step-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 8px;
+}
+
+.v4-step-text {
+  font-size: 13.5px;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+.v4-admissions-criteria-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+.v4-criteria-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 28px;
+}
+
+.v4-criteria-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 16px;
+}
+
+.v4-criteria-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.v4-criteria-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 13.5px;
+  color: var(--text-sub);
+  line-height: 1.5;
+}
+
+.v4-check-bullet {
+  color: var(--green);
+  font-weight: 700;
+}
+
+/* FAQ Accordion */
+.v4-faq-container {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 28px;
+}
+
+.v4-faq-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.v4-faq-item {
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.v4-faq-item:last-child {
+  border-bottom: none;
+}
+
+.v4-faq-question {
+  width: 100%;
+  background: none;
+  border: none;
+  padding: 14px 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  text-align: left;
+  color: #fff;
+  font-size: 14.5px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: color 0.15s;
+}
+
+.v4-faq-question:hover {
+  color: var(--ember);
+}
+
+.v4-faq-icon {
+  font-size: 16px;
+  color: var(--text-muted);
+  margin-left: 12px;
+}
+
+.v4-faq-answer {
+  display: none;
+  padding-bottom: 14px;
+  font-size: 13.5px;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+.v4-faq-item.is-open .v4-faq-answer {
+  display: block;
+}
+
+/* Partnerships & Ecosystem */
+.v4-sponsors-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 24px;
+}
+
+.v4-sponsor-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-subtle);
+  padding: 8px 16px;
+  border-radius: var(--radius-full);
+  font-size: 12px;
+  color: var(--text-sub);
+}
+
+.v4-sponsor-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--ember);
+}
+
+.v4-tiers-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.v4-tier-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 24px;
+}
+
+.v4-tier-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.v4-tier-name {
+  font-size: 18px;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 8px;
+}
+
+.v4-tier-desc {
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.5;
+  margin-bottom: 16px;
+}
+
+.v4-tier-perks ul {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.v4-tier-perks li {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 12.5px;
+  color: var(--text-sub);
+  line-height: 1.4;
+}
+
+/* Member Search Input */
+.v4-search-input {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border-subtle);
+  color: #fff;
+  padding: 6px 14px;
+  border-radius: var(--radius-full);
+  font-size: 12px;
+  outline: none;
+  width: 200px;
+  transition: all 0.2s;
+}
+
+.v4-search-input:focus {
+  border-color: var(--ember);
+  background: rgba(255, 255, 255, 0.07);
+}
+
+/* Responsive Overrides */
+@media (max-width: 900px) {
+  .v4-playground-grid,
+  .v4-pillars-grid,
+  .v4-formats-grid,
+  .v4-research-grid,
+  .v4-steps-grid,
+  .v4-admissions-criteria-grid,
+  .v4-tiers-grid {
+    grid-template-columns: 1fr;
+  }
+}

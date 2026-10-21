@@ -15,7 +15,7 @@ export default function Header() {
     <header className="v4-header">
       <div className="wrap">
         <div className="v4-nav-inner">
-          <div className="v4-nav-brand">
+          <div className="v4-nav-brand" onClick={() => scrollTo('hero')} style={{ cursor: 'pointer' }}>
             <div className="v4-brand-logo">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M12 2c.5 3 2.5 5 5.5 5.5-3 .5-5 2.5-5.5 5.5-.5-3-2.5-5-5.5-5.5 3-.5 5-2.5 5.5-5.5Z" fill="currentColor" />
@@ -30,8 +30,12 @@ export default function Header() {
             <button type="button" className="v4-nav-link" onClick={() => scrollTo('hero')}>Overview</button>
             <button type="button" className="v4-nav-link" onClick={() => scrollTo('philosophy')}>Mission</button>
             <button type="button" className="v4-nav-link" onClick={() => scrollTo('domains')}>Domains</button>
+            <button type="button" className="v4-nav-link" onClick={() => scrollTo('playground')}>Labs</button>
             <button type="button" className="v4-nav-link" onClick={() => scrollTo('projects')}>Projects</button>
+            <button type="button" className="v4-nav-link" onClick={() => scrollTo('initiatives')}>Formats</button>
+            <button type="button" className="v4-nav-link" onClick={() => scrollTo('research')}>Research</button>
             <button type="button" className="v4-nav-link" onClick={() => scrollTo('crew')}>Crew</button>
+            <button type="button" className="v4-nav-link" onClick={() => scrollTo('admissions')}>Join</button>
             <button type="button" className="v4-nav-link" onClick={() => scrollTo('terminal')}>Terminal</button>
           </nav>
 
@@ -46,7 +50,7 @@ export default function Header() {
             <button
               type="button"
               className="v4-apply-btn"
-              onClick={() => scrollTo('terminal')}
+              onClick={() => scrollTo('admissions')}
             >
               <span>Join Club</span>
               <span>→</span>
@@ -58,31 +62,37 @@ export default function Header() {
               onClick={() => setMobileOpen(!mobileOpen)}
               aria-label="Toggle Navigation"
             >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                {mobileOpen ? (
-                  <path d="M18 6L6 18M6 6l12 12" />
-                ) : (
-                  <path d="M3 12h18M3 6h18M3 18h18" />
-                )}
-              </svg>
+              <span />
+              <span />
             </button>
           </div>
         </div>
 
         {mobileOpen && (
-          <div style={{
-            padding: '16px 0 24px',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '12px',
-            borderTop: '1px solid var(--border-subtle)',
-          }}>
-            <button type="button" className="v4-nav-link" style={{ textAlign: 'left', padding: '8px 12px' }} onClick={() => scrollTo('hero')}>Overview</button>
-            <button type="button" className="v4-nav-link" style={{ textAlign: 'left', padding: '8px 12px' }} onClick={() => scrollTo('philosophy')}>Mission</button>
-            <button type="button" className="v4-nav-link" style={{ textAlign: 'left', padding: '8px 12px' }} onClick={() => scrollTo('domains')}>Domains</button>
-            <button type="button" className="v4-nav-link" style={{ textAlign: 'left', padding: '8px 12px' }} onClick={() => scrollTo('projects')}>Projects</button>
-            <button type="button" className="v4-nav-link" style={{ textAlign: 'left', padding: '8px 12px' }} onClick={() => scrollTo('crew')}>Crew</button>
-            <button type="button" className="v4-nav-link" style={{ textAlign: 'left', padding: '8px 12px' }} onClick={() => scrollTo('terminal')}>Terminal</button>
+          <div className="v4-mobile-menu">
+            <button type="button" className="v4-mobile-link" onClick={() => scrollTo('hero')}>01 // Overview</button>
+            <button type="button" className="v4-mobile-link" onClick={() => scrollTo('philosophy')}>02 // Mission</button>
+            <button type="button" className="v4-mobile-link" onClick={() => scrollTo('domains')}>03 // Domains</button>
+            <button type="button" className="v4-mobile-link" onClick={() => scrollTo('playground')}>04 // Interactive Labs</button>
+            <button type="button" className="v4-mobile-link" onClick={() => scrollTo('projects')}>05 // Projects</button>
+            <button type="button" className="v4-mobile-link" onClick={() => scrollTo('initiatives')}>06 // Formats & Sprints</button>
+            <button type="button" className="v4-mobile-link" onClick={() => scrollTo('research')}>07 // Research</button>
+            <button type="button" className="v4-mobile-link" onClick={() => scrollTo('crew')}>08 // The Crew (17)</button>
+            <button type="button" className="v4-mobile-link" onClick={() => scrollTo('admissions')}>09 // Recruitment</button>
+            <button type="button" className="v4-mobile-link" onClick={() => scrollTo('terminal')}>10 // Terminal</button>
+            <button type="button" className="v4-mobile-link" onClick={() => scrollTo('partners')}>11 // Ecosystem</button>
+
+            <div style={{ marginTop: '20px', paddingTop: '16px', borderTop: '1px solid var(--border)' }}>
+              <div className="mono" style={{ fontSize: '11px', color: 'var(--text-dim)', marginBottom: '8px' }}>
+                SWITCH PORTAL EDITION:
+              </div>
+              <div className="v4-version-switch" style={{ width: '100%', justifyContent: 'space-around' }}>
+                <a href="/v1/" className="v4-ver-btn mono">v1</a>
+                <a href="/v2/" className="v4-ver-btn mono">v2</a>
+                <a href="/v3/" className="v4-ver-btn mono">v3</a>
+                <a href="/v4/" className="v4-ver-btn mono is-active">v4</a>
+              </div>
+            </div>
           </div>
         )}
       </div>

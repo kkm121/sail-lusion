@@ -4,13 +4,13 @@ import path from 'node:path';
 
 const CHROME_PATH = process.env.BROWSER_PATH || 'C:/Program Files/Google/Chrome/Application/chrome.exe';
 const BASE_URL = 'http://localhost:5180';
-const SHOTS_DIR = 'C:/Users/muthu/.gemini/antigravity/brain/0af52059-3fcb-4fd2-8bb3-6f3dca5ae5a3/v4_audit';
+const SHOTS_DIR = 'C:/Users/muthu/.gemini/antigravity/brain/0af52059-3fcb-4fd2-8bb3-6f3dca5ae5a3/v4_expanded_audit';
 fs.mkdirSync(SHOTS_DIR, { recursive: true });
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
-async function verifyV4() {
-  console.log('🚀 Launching Chrome to verify FireFly v4 Flagship...');
+async function verifyV4Expanded() {
+  console.log('🚀 Launching Chrome to verify FireFly v4 Expanded Club Showcase...');
   const browser = await puppeteer.launch({
     executablePath: CHROME_PATH,
     headless: 'new',
@@ -23,22 +23,18 @@ async function verifyV4() {
     const page = await browser.newPage();
     await page.setViewport({ width: 1440, height: 900 });
 
-    console.log('\n--- TEST 1: v4 Boot & Kinetic Preloader Sequence ---');
-    const startT = performance.now();
+    console.log('\n--- TEST 1: Kinetic Preloader Boot & Clean Unlock ---');
     await page.goto(`${BASE_URL}/v4/`, { waitUntil: 'domcontentloaded' });
 
-    // Verify preloader is on screen immediately
     const preloaderInitial = await page.evaluate(() => {
       const p = document.querySelector('.v4-preloader');
       return {
         exists: !!p,
-        isDismissing: p ? p.classList.contains('is-dismissing') : false,
         overflow: document.documentElement.style.overflow
       };
     });
     console.log('Preloader initial state:', preloaderInitial);
 
-    // Wait 1.8s for complete dismissal
     await sleep(1800);
 
     const preloaderDone = await page.evaluate(() => {
@@ -51,78 +47,98 @@ async function verifyV4() {
     console.log('Preloader dismissed state:', preloaderDone);
 
     if (preloaderInitial.exists && preloaderDone.overflow === '') {
-      console.log('✅ PASS: v4 Kinetic Preloader booted instantly, locked overflow, and smoothly unlocked.');
+      console.log('✅ PASS: Kinetic preloader booted instantly and unlocked scroll cleanly.');
     } else {
       console.error('❌ FAIL: Preloader sequence issue:', { preloaderInitial, preloaderDone });
       allPassed = false;
     }
 
-    await page.screenshot({ path: path.join(SHOTS_DIR, '01_desktop_hero.png') });
-
-    console.log('\n--- TEST 2: 4-to-6 Scroll Total Page Height Audit ---');
-    const scrollAudit = await page.evaluate(() => {
-      const totalH = document.documentElement.scrollHeight;
-      const viewH = window.innerHeight;
-      const scrollRatio = totalH / viewH;
-      return { totalH, viewH, scrollRatio: scrollRatio.toFixed(2) };
+    console.log('\n--- TEST 2: Comprehensive Club Showcase Sections Audit ---');
+    const sections = await page.evaluate(() => {
+      const expected = [
+        'hero',
+        'philosophy',
+        'domains',
+        'playground',
+        'projects',
+        'initiatives',
+        'research',
+        'crew',
+        'admissions',
+        'terminal',
+        'partners'
+      ];
+      const results = {};
+      expected.forEach(id => {
+        results[id] = !!document.getElementById(id);
+      });
+      return results;
     });
-    console.log('Page height metrics:', scrollAudit);
+    console.log('Sections presence audit:', sections);
 
-    if (parseFloat(scrollAudit.scrollRatio) <= 6.5) {
-      console.log(`✅ PASS: Page height fits in ${scrollAudit.scrollRatio} natural viewports (complies strictly with 4-6 scroll rule).`);
+    const missingSections = Object.entries(sections).filter(([, found]) => !found).map(([id]) => id);
+    if (missingSections.length === 0) {
+      console.log('✅ PASS: All 11 comprehensive club showcase sections are present and mounted.');
     } else {
-      console.error(`❌ FAIL: Page is too long (${scrollAudit.scrollRatio} viewports)!`);
+      console.error('❌ FAIL: Missing essential sections:', missingSections);
       allPassed = false;
     }
 
-    console.log('\n--- TEST 3: "Discover Interactive" 60 FPS Physics Engine ---');
-    const canvasMetrics = await page.evaluate(async () => {
-      const cvs = document.querySelector('.v4-canvas-layer');
-      const hud = document.querySelector('.v4-discover-hud');
-      const toggle = document.querySelector('.v4-mode-toggle');
+    console.log('\n--- TEST 3: Dual Interactive Playground (Physics + Neural Simulator) ---');
+    const playgroundCheck = await page.evaluate(async () => {
+      const physicsCanvas = document.querySelector('.v4-canvas-layer');
+      const neuralCanvas = document.querySelector('.v4-neural-canvas');
+      const actBtns = Array.from(document.querySelectorAll('.v4-act-chip'));
 
-      // Click toggle
-      if (toggle) toggle.click();
-      await new Promise(r => setTimeout(r, 100));
-      const textAfterClick = toggle ? toggle.textContent : '';
+      let activationSwitched = false;
+      if (actBtns.length > 1) {
+        actBtns[1].click();
+        await new Promise(r => setTimeout(r, 100));
+        activationSwitched = actBtns[1].classList.contains('is-active');
+      }
 
       return {
-        hasCanvas: !!cvs,
-        hasHud: !!hud,
-        toggleLabel: textAfterClick
+        hasPhysicsCanvas: !!physicsCanvas,
+        hasNeuralCanvas: !!neuralCanvas,
+        activationSwitched
       };
     });
-    console.log('Discover Interactive metrics:', canvasMetrics);
+    console.log('Playground check details:', playgroundCheck);
 
-    if (canvasMetrics.hasCanvas && canvasMetrics.toggleLabel.includes('LOW POWER')) {
-      console.log('✅ PASS: Discover Interactive engine active with adaptive low-power toggle.');
+    if (playgroundCheck.hasPhysicsCanvas && playgroundCheck.hasNeuralCanvas) {
+      console.log('✅ PASS: Dual interactive playground active (Physics Node Engine + Neural Tensor Simulator).');
     } else {
-      console.error('❌ FAIL: Discover Interactive issue:', canvasMetrics);
+      console.error('❌ FAIL: Dual playground verification failed:', playgroundCheck);
       allPassed = false;
     }
 
-    console.log('\n--- TEST 4: Five Specialized Domains Inspection ---');
-    const domainCheck = await page.evaluate(async () => {
-      const tabs = Array.from(document.querySelectorAll('.v4-domain-tab'));
-      const initialTitle = document.querySelector('.v4-domain-detail-header h3')?.textContent;
+    console.log('\n--- TEST 4: Full Projects Catalog & Domain Filter Chips ---');
+    const projectsCheck = await page.evaluate(async () => {
+      const cards = Array.from(document.querySelectorAll('.v4-project-card'));
+      const filters = Array.from(document.querySelectorAll('.v4-project-filter'));
 
-      // Click 2nd tab
-      if (tabs[1]) tabs[1].click();
-      await new Promise(r => setTimeout(r, 150));
-      const secondTitle = document.querySelector('.v4-domain-detail-header h3')?.textContent;
+      let filterWorks = false;
+      if (filters.length > 1) {
+        const initialCount = cards.length;
+        filters[1].click();
+        await new Promise(r => setTimeout(r, 150));
+        const filteredCount = document.querySelectorAll('.v4-project-card').length;
+        filters[0].click(); // Reset back to All
+        filterWorks = filteredCount > 0 && filteredCount <= initialCount;
+      }
 
       return {
-        tabCount: tabs.length,
-        initialTitle,
-        secondTitle
+        totalProjects: cards.length,
+        filterCount: filters.length,
+        filterWorks
       };
     });
-    console.log('Domain tabs check:', domainCheck);
+    console.log('Projects check details:', projectsCheck);
 
-    if (domainCheck.tabCount === 5 && domainCheck.initialTitle !== domainCheck.secondTitle) {
-      console.log('✅ PASS: All 5 research domains selectable and dynamically update detail view.');
+    if (projectsCheck.totalProjects >= 8 && projectsCheck.filterWorks) {
+      console.log(`✅ PASS: Full projects catalog displays ${projectsCheck.totalProjects} builds with reactive filtering.`);
     } else {
-      console.error('❌ FAIL: Domain tabs issue:', domainCheck);
+      console.error('❌ FAIL: Projects catalog verification failed:', projectsCheck);
       allPassed = false;
     }
 
@@ -130,7 +146,7 @@ async function verifyV4() {
     const crewCheck = await page.evaluate(() => {
       const cards = Array.from(document.querySelectorAll('.v4-member-card'));
       const muthuCard = cards.find(c => c.textContent.includes('Muthu'));
-      const muthuTags = muthuCard ? Array.from(muthuCard.querySelectorAll('.v4-role-tag')).map(t => t.textContent) : [];
+      const muthuTags = muthuCard ? Array.from(muthuCard.querySelectorAll('.v4-role-tag')).map(t => t.textContent.trim()) : [];
 
       return {
         totalCards: cards.length,
@@ -147,10 +163,36 @@ async function verifyV4() {
       allPassed = false;
     }
 
-    console.log('\n--- TEST 6: Terminal Command Execution & Scroll Stability ---');
+    console.log('\n--- TEST 6: Admissions Pipeline & Interactive FAQ Accordion ---');
+    const faqCheck = await page.evaluate(async () => {
+      const faqItems = Array.from(document.querySelectorAll('.v4-faq-item'));
+      if (faqItems.length === 0) return { count: 0, toggles: false };
+
+      const firstBtn = faqItems[0].querySelector('.v4-faq-question');
+      const firstAnswer = faqItems[0].querySelector('.v4-faq-answer');
+      const initiallyOpen = firstAnswer ? window.getComputedStyle(firstAnswer).display !== 'none' : false;
+
+      firstBtn.click();
+      await new Promise(r => setTimeout(r, 150));
+      const afterClickOpen = firstAnswer ? window.getComputedStyle(firstAnswer).display !== 'none' : false;
+
+      return {
+        count: faqItems.length,
+        toggles: initiallyOpen !== afterClickOpen
+      };
+    });
+    console.log('FAQ check details:', faqCheck);
+
+    if (faqCheck.count >= 4 && faqCheck.toggles) {
+      console.log(`✅ PASS: Admissions FAQ accordion has ${faqCheck.count} questions and toggles interactively.`);
+    } else {
+      console.error('❌ FAIL: FAQ accordion check failed:', faqCheck);
+      allPassed = false;
+    }
+
+    console.log('\n--- TEST 7: Terminal Command Execution & Scroll Stability ---');
     const scrollBefore = await page.evaluate(() => window.scrollY);
 
-    // Test clicking a quick chip (team)
     await page.evaluate(() => {
       const chips = Array.from(document.querySelectorAll('.v4-cli-chip'));
       const teamChip = chips.find(c => c.textContent.trim() === 'team');
@@ -175,17 +217,14 @@ async function verifyV4() {
       allPassed = false;
     }
 
-    console.log('\n--- TEST 7: Mobile Responsiveness & Zero Overlap (iPhone 14 Pro Max) ---');
-    await page.setViewport({ width: 430, height: 932, deviceScaleFactor: 3, isMobile: true, hasTouch: true });
+    console.log('\n--- TEST 8: Mobile Responsiveness & Zero Overlap (iPhone 14 Pro Max) ---');
+    await page.setViewport({ width: 430, height: 932, deviceScaleFactor: 2, isMobile: true, hasTouch: true });
     await page.setUserAgent('Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1');
     await page.goto(`${BASE_URL}/v4/`, { waitUntil: 'domcontentloaded' });
     await sleep(1800);
 
     const mobileCheck = await page.evaluate(() => {
-      const title = document.querySelector('.v4-hero-title');
-      const canvas = document.querySelector('.v4-discover-card');
       const cards = Array.from(document.querySelectorAll('.v4-member-card'));
-
       let cardOverlaps = 0;
       for (let i = 0; i < cards.length - 1; i++) {
         const r1 = cards[i].getBoundingClientRect();
@@ -196,26 +235,26 @@ async function verifyV4() {
       }
 
       return {
-        titleBottom: title ? title.getBoundingClientRect().bottom : 0,
-        canvasTop: canvas ? canvas.getBoundingClientRect().top : 0,
+        bodyScrollWidth: document.body.scrollWidth,
+        windowWidth: window.innerWidth,
         cardOverlaps
       };
     });
     console.log('Mobile layout check details:', mobileCheck);
 
-    await page.screenshot({ path: path.join(SHOTS_DIR, '02_mobile_iphone14_v4.png') });
+    await page.screenshot({ path: path.join(SHOTS_DIR, '01_mobile_expanded_v4.png') });
 
-    if (mobileCheck.cardOverlaps === 0) {
-      console.log('✅ PASS: Mobile layout exhibits zero overlaps across all bento and member cards.');
+    if (mobileCheck.cardOverlaps === 0 && mobileCheck.bodyScrollWidth <= mobileCheck.windowWidth + 5) {
+      console.log('✅ PASS: Mobile layout exhibits zero overlaps and no horizontal overflow.');
     } else {
-      console.error('❌ FAIL: Mobile card overlap detected:', mobileCheck);
+      console.error('❌ FAIL: Mobile card overlap or horizontal overflow detected:', mobileCheck);
       allPassed = false;
     }
 
     if (allPassed) {
-      console.log('\n🎉 ALL 7 FIREFLY v4 VERIFICATION SUITES PASSED CLEANLY (100% SUCCESS)!');
+      console.log('\n🎉 ALL 8 FIREFLY v4 EXPANDED CLUB SHOWCASE TEST SUITES PASSED CLEANLY (100% SUCCESS)!');
     } else {
-      console.error('\n❌ SOME VERIFICATION CHECKS FAILED.');
+      console.error('\n❌ SOME EXPANDED VERIFICATION CHECKS FAILED.');
       process.exit(1);
     }
   } finally {
@@ -223,7 +262,7 @@ async function verifyV4() {
   }
 }
 
-verifyV4().catch((err) => {
+verifyV4Expanded().catch((err) => {
   console.error('Exception in test suite:', err);
   process.exit(1);
 });

@@ -1,26 +1,37 @@
 import { useState } from 'react';
-import { coreTeam, CREATOR_TAG } from '../data/core';
+import { coreTeam } from '../data/core';
 
 const FILTERS = ['All (17)', 'Technical', 'Leadership', 'Creatives', 'Corporate', 'Report'];
 
 export default function CrewSection() {
   const [activeFilter, setActiveFilter] = useState('All (17)');
+  const [searchQuery, setSearchQuery] = useState('');
 
   const filteredMembers = coreTeam.filter((m) => {
-    if (activeFilter === 'All (17)') return true;
-    if (activeFilter === 'Technical') return m.area.includes('Technical');
-    if (activeFilter === 'Leadership') return m.tag === 'President' || m.tag === 'Secretary';
-    if (activeFilter === 'Creatives') return m.area.includes('Creatives');
-    if (activeFilter === 'Corporate') return m.area.includes('Corporate');
-    if (activeFilter === 'Report') return m.area.includes('Report');
-    return true;
+    const matchesFilter = (() => {
+      if (activeFilter === 'All (17)') return true;
+      if (activeFilter === 'Technical') return m.area.includes('Technical');
+      if (activeFilter === 'Leadership') return m.tag === 'President' || m.tag === 'Secretary';
+      if (activeFilter === 'Creatives') return m.area.includes('Creatives');
+      if (activeFilter === 'Corporate') return m.area.includes('Corporate');
+      if (activeFilter === 'Report') return m.area.includes('Report');
+      return true;
+    })();
+
+    const matchesSearch = !searchQuery || 
+      m.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      m.area.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (m.tag && m.tag.toLowerCase().includes(searchQuery.toLowerCase())) ||
+      m.about.toLowerCase().includes(searchQuery.toLowerCase());
+
+    return matchesFilter && matchesSearch;
   });
 
   return (
     <section id="crew" className="v4-section">
       <div className="wrap">
         <div className="v4-section-header">
-          <span className="v4-eyebrow mono">04 // THE CREW</span>
+          <span className="v4-eyebrow mono">07 // THE CREW</span>
           <h2 className="v4-section-title">
             17 people, equal space.
           </h2>
@@ -44,8 +55,17 @@ export default function CrewSection() {
             ))}
           </div>
 
-          <div className="mono" style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
-            Showing {filteredMembers.length} of 17 Members
+          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+            <input
+              type="text"
+              placeholder="Search member or skill..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="v4-search-input mono"
+            />
+            <div className="mono" style={{ fontSize: '12px', color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>
+              Showing {filteredMembers.length} of 17 Members
+            </div>
           </div>
         </div>
 

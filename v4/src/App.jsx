@@ -2,11 +2,17 @@ import { useState } from 'react';
 import Preloader from './components/Preloader';
 import Header from './components/Header';
 import Hero from './components/Hero';
+import MarqueeTicker from './components/MarqueeTicker';
 import MissionBento from './components/MissionBento';
 import DomainsSection from './components/DomainsSection';
+import PlaygroundSection from './components/PlaygroundSection';
 import ProjectsSection from './components/ProjectsSection';
+import ClubInitiatives from './components/ClubInitiatives';
+import ResearchSection from './components/ResearchSection';
 import CrewSection from './components/CrewSection';
+import AdmissionsSection from './components/AdmissionsSection';
 import TerminalSection from './components/TerminalSection';
+import PartnersSection from './components/PartnersSection';
 import Footer from './components/Footer';
 import './styles/v4.css';
 
@@ -22,25 +28,45 @@ export default function App() {
     <div className="v4-root">
       <Preloader onComplete={() => setLoaded(true)} />
       <Header />
+      
       <main id="main">
-        {/* Scroll 1: Hero & Discover Interactive */}
+        {/* 01: Hero & Real-Time Physics Showcase */}
         <Hero onOpenCli={handleOpenCli} />
 
-        {/* Scroll 2: Philosophy & Bento Metrics */}
+        {/* Dynamic Kinetic Marquee Slogan */}
+        <MarqueeTicker text="WHERE CURIOSITY IGNITES INTELLIGENCE · ENGINEERING THE AUTONOMOUS FRONTIER · 17 MINDS · INFINITE COMPUTE · SRMIST × AMIEE" />
+
+        {/* 02: Philosophy & Core Metric Bento */}
         <MissionBento />
 
-        {/* Scroll 3: 5 Research Chapters */}
+        {/* 03: The 5 Specialized Domains & Lab Compute Specs */}
         <DomainsSection />
 
-        {/* Scroll 4: Flagship Builds */}
+        {/* 04: Interactive Labs (Dual Physics Node Engine & Neural Simulator) */}
+        <PlaygroundSection />
+
+        {/* 05: Full Systems & Projects Portfolio */}
         <ProjectsSection />
 
-        {/* Scroll 5: The Crew (17 Members, Equal Representation) */}
+        {/* 06: Formats, Build Sprints & Community Initiatives */}
+        <ClubInitiatives />
+
+        {/* 07: Academic Research Papers & Benchmark Datasets */}
+        <ResearchSection />
+
+        {/* 08: The Crew (17 Members, Equal Representation) */}
         <CrewSection />
 
-        {/* Scroll 6: Interactive Terminal & Admissions */}
+        {/* 09: Recruitment Roadmap & Interactive FAQ */}
+        <AdmissionsSection onOpenCli={handleOpenCli} />
+
+        {/* 10: Stationary Cyber CLI */}
         <TerminalSection />
+
+        {/* 11: Partnerships & Institutional Ecosystem */}
+        <PartnersSection />
       </main>
+
       <Footer />
     </div>
   );
