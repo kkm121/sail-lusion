@@ -108,6 +108,7 @@ export default function Header({ back }) {
             <a href="/v1/" className="ff-ver-link" data-cursor="V1">v1</a>
             <a href="/v2/" className="ff-ver-link is-active" data-cursor="V2">v2</a>
             <a href="/v3/" className="ff-ver-link" data-cursor="V3">v3</a>
+            <a href="/v4/" className="ff-ver-link" data-cursor="V4">v4</a>
           </nav>
           <button className={`snd ${sound ? 'is-on' : ''}`} type="button" aria-label={sound ? 'Turn sound off' : 'Turn sound on'} aria-pressed={sound} data-cursor="SOUND" onClick={() => setSound(!isSoundOn())}>
             <b />
@@ -142,6 +143,7 @@ export default function Header({ back }) {
               <a href="/v1/" className="ff-ver-link">v1</a>
               <a href="/v2/" className="ff-ver-link is-active">v2</a>
               <a href="/v3/" className="ff-ver-link">v3</a>
+              <a href="/v4/" className="ff-ver-link">v4</a>
             </div>
           </div>
           {PAGES.map((l) => (

@@ -77,14 +77,16 @@ node tools/shoot.mjs http://127.0.0.1:5180/ mobile
 
 ---
 
-## Pages & Routes
+## Available Editions & Routes
 
-| Route | Purpose & Content |
-| :--- | :--- |
-| `/` | Landing experience, hero physics, showreel, featured club systems, wormhole journey |
-| `/about` | Who we are: hero, statements, the pinned team stage, the Core Team (17 members as equal cards, with the tag as the only difference), expertise and tools |
-| `/domains`, `/domains/:id` | The five domains, each with its team, achievements, club profile, stack and projects |
-| `/projects`, `/projects/:id` | Every project with filters, status, tech stack and metrics |
+The portal maintains all evolutionary editions fully accessible via the top-bar version selector:
+
+| Edition | Route | Aesthetic & Architecture |
+| :--- | :--- | :--- |
+| **v4 (Flagship)** | `/v4/` (default root `/`) | Clean, minimal, premium design inspired by Linear, Apple, Nothing & Antigravity. 4-6 scroll narrative rule, lightweight kinetic preloader (~950ms), 60 FPS physics canvas (<6MB RAM, low-power toggle), equal 17-crew spotlight. |
+| **v3 (Editorial)** | `/v3/` | Editorial club site with dynamic WebGL interactive fluid backdrop, tactile typography, and custom cursor physics. |
+| **v2 (Immersive 3D)** | `/v2/` | Immersive 3D WebGL spatial voyage with golden particle lattice, CC0 robot mascot ("Nav"), and 5 scroll-driven cinematic chapters. |
+| **v1 (Classic)** | `/v1/` | Original classic club cyber portal with crystal shaders, recruitment application flow, and administrative tools. |
 
 ---
 

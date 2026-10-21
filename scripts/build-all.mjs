@@ -8,6 +8,7 @@ const rootDir = path.resolve(__dirname, '..');
 const distDir = path.join(rootDir, 'dist');
 const v1Dir = path.join(rootDir, 'v1');
 const v3Dir = path.join(rootDir, 'v3');
+const v4Dir = path.join(rootDir, 'v4');
 
 console.log('[build-all] Cleaning root dist directory...');
 fs.rmSync(distDir, { recursive: true, force: true });
@@ -35,7 +36,7 @@ execSync('npx vite build --base=/v2/ --outDir=dist/v2', {
 
 // 3. Build v3 (Editorial Club site with WebGL Fluid)
 console.log('\n========================================');
-console.log('[build-all] 3/3: Building Version 3 (v3)...');
+console.log('[build-all] 3/4: Building Version 3 (v3)...');
 console.log('========================================');
 execSync('npx vite build --base=/v3/ --outDir=../dist/v3', {
   cwd: v3Dir,
@@ -43,7 +44,17 @@ execSync('npx vite build --base=/v3/ --outDir=../dist/v3', {
   env: { ...process.env, BASE: '/v3/', OUT_DIR: '../dist/v3' }
 });
 
-// 4. Create root redirect and landing index.html
+// 4. Build v4 (Clean, Minimal, Premium Flagship Edition)
+console.log('\n========================================');
+console.log('[build-all] 4/4: Building Version 4 (v4)...');
+console.log('========================================');
+execSync('npx vite build --base=/v4/ --outDir=../dist/v4', {
+  cwd: v4Dir,
+  stdio: 'inherit',
+  env: { ...process.env, BASE: '/v4/', OUT_DIR: '../dist/v4' }
+});
+
+// 5. Create root redirect and landing index.html
 console.log('\n[build-all] Creating root redirect and gateway in dist/index.html...');
 const rootHtml = `<!doctype html>
 <html lang="en">
@@ -51,7 +62,7 @@ const rootHtml = `<!doctype html>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>FireFly // Student AI Club</title>
-    <link rel="icon" type="image/png" href="/v2/brand/favicon.png" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <script>
       (function() {
         const p = window.location.pathname || '';
@@ -59,10 +70,12 @@ const rootHtml = `<!doctype html>
         const hash = window.location.hash || '';
         if (p.startsWith('/v1')) {
           window.location.replace('/v1/' + search + hash);
+        } else if (p.startsWith('/v2')) {
+          window.location.replace('/v2/' + search + hash);
         } else if (p.startsWith('/v3')) {
           window.location.replace('/v3/' + search + hash);
         } else {
-          window.location.replace('/v2/' + search + hash);
+          window.location.replace('/v4/' + search + hash);
         }
       })();
     </script>
@@ -70,7 +83,7 @@ const rootHtml = `<!doctype html>
       :root { color-scheme: dark; }
       body {
         margin: 0;
-        background: #0a0605;
+        background: #07080a;
         color: #fffaf5;
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         display: flex;
@@ -83,29 +96,30 @@ const rootHtml = `<!doctype html>
       }
       h1 { font-size: 28px; margin: 0 0 12px; font-weight: 700; }
       p { color: rgba(255, 255, 255, 0.6); margin: 0 0 24px; }
-      .links { display: flex; gap: 12px; }
+      .links { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
       .btn {
         padding: 10px 20px;
         border-radius: 999px;
-        background: #ffb347;
+        background: #ff5a1f;
         color: #000;
         text-decoration: none;
         font-weight: 600;
         font-size: 14px;
       }
       .btn.sec {
-        background: rgba(255, 255, 255, 0.1);
+        background: rgba(255, 255, 255, 0.08);
         color: #fff;
       }
     </style>
   </head>
   <body>
     <h1>FireFly // Student AI Club</h1>
-    <p>Opening <a href="/v2/" style="color:#ffb347;">FireFly</a>...</p>
+    <p>Opening <a href="/v4/" style="color:#ff5a1f;">FireFly v4</a>...</p>
     <div class="links">
       <a class="btn sec" href="/v1/">Launch v1</a>
-      <a class="btn" href="/v2/">Launch v2</a>
+      <a class="btn sec" href="/v2/">Launch v2</a>
       <a class="btn sec" href="/v3/">Launch v3</a>
+      <a class="btn" href="/v4/">Launch v4 (Flagship)</a>
     </div>
   </body>
 </html>
@@ -124,8 +138,9 @@ if (fs.existsSync(favSrc)) {
   fs.copyFileSync(favSrc, favDest);
 }
 
-console.log('\n[build-all] All 3 versions built successfully into dist:');
+console.log('\n[build-all] All 4 versions built successfully into dist:');
 console.log(' - dist/v1/ (Classic SAIL Crystal)');
-console.log(' - dist/v2/ (Immersive 3D Voyage with Golden Lattice, Robot & 3D Particle Text)');
+console.log(' - dist/v2/ (Immersive 3D Voyage with Golden Lattice & Robot)');
 console.log(' - dist/v3/ (Editorial Club Site with Dynamic WebGL Fluid & Custom Cursor)');
-console.log(' - dist/index.html (Gateway with fast redirect to /v2)');
+console.log(' - dist/v4/ (Clean, Minimal, Premium Flagship Edition)');
+console.log(' - dist/index.html (Gateway with fast redirect to /v4)');

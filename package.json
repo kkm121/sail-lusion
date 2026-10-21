@@ -6,7 +6,8 @@
   "description": "FireFly (FireFly Club) - immersive local build",
   "workspaces": [
     "v1",
-    "v3"
+    "v3",
+    "v4"
   ],
   "scripts": {
     "dev": "vite",
@@ -14,8 +15,10 @@
     "build:v1": "cd v1 && vite build",
     "build:v2": "vite build",
     "build:v3": "cd v3 && vite build",
+    "build:v4": "cd v4 && vite build",
     "lint": "node -e \"console.log('[lint] all checks passed')\"",
-    "test": "node -e \"console.log('[test] all suites passed')\"",
+    "test": "node tools/verify_v4_flagship.mjs",
+    "test:v4": "node tools/verify_v4_flagship.mjs",
     "preview": "vite preview",
     "reel": "node tools/make-reel.mjs",
     "shoot": "node tools/shoot.mjs",

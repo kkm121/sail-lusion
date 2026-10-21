@@ -86,6 +86,7 @@ export function Navbar({ activePage, onNavigate, session, onSignOut, onOpenApply
             <a href="/v1/" className="px-2 py-0.5 rounded-full text-black bg-accent font-bold shadow-[0_0_8px_rgba(0,245,212,0.4)]">v1</a>
             <a href="/v2/" className="px-2 py-0.5 rounded-full text-gray-400 hover:text-white transition-colors">v2</a>
             <a href="/v3/" className="px-2 py-0.5 rounded-full text-gray-400 hover:text-white transition-colors">v3</a>
+            <a href="/v4/" className="px-2 py-0.5 rounded-full text-gray-400 hover:text-white transition-colors">v4</a>
           </nav>
           <button
             onClick={onOpenApply}

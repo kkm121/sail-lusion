@@ -145,6 +145,7 @@ function Header() {
             <a href="/v1/" className="ff-ver-link">v1</a>
             <a href="/v2/" className="ff-ver-link">v2</a>
             <a href="/v3/" className="ff-ver-link is-active">v3</a>
+            <a href="/v4/" className="ff-ver-link">v4</a>
           </nav>
           <Link className="btn btn-ghost hd-act-btn" to="/signin" viewTransition>
             Sign in
@@ -171,6 +172,7 @@ function Header() {
               <a href="/v1/" className="ff-ver-link">v1</a>
               <a href="/v2/" className="ff-ver-link">v2</a>
               <a href="/v3/" className="ff-ver-link is-active">v3</a>
+              <a href="/v4/" className="ff-ver-link">v4</a>
             </nav>
           </div>
           {NAV.map((n, i) => (
