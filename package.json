@@ -6,7 +6,8 @@
   "description": "FireFly (FireFly Club) - immersive local build",
   "workspaces": [
     "v1",
-    "v3"
+    "v3",
+    "v3p2"
   ],
   "scripts": {
     "dev": "vite",
@@ -19,7 +20,8 @@
     "preview": "vite preview",
     "reel": "node tools/make-reel.mjs",
     "shoot": "node tools/shoot.mjs",
-    "rollback": "node scripts/rollback-deploy.mjs"
+    "rollback": "node scripts/rollback-deploy.mjs",
+    "build:v3p2": "cd v3p2 && vite build"
   },
   "dependencies": {
     "@fontsource-variable/bricolage-grotesque": "^5.3.0",

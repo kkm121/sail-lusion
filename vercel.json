@@ -1,11 +1,5 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "redirects": [
-    { "source": "/", "destination": "/v2", "permanent": false },
-    { "source": "/about", "destination": "/v2/about", "permanent": false },
-    { "source": "/domains/:path*", "destination": "/v2/domains/:path*", "permanent": false },
-    { "source": "/projects/:path*", "destination": "/v2/projects/:path*", "permanent": false }
-  ],
   "rewrites": [
     {
       "source": "/v1/((?!assets/|brand/|.*\\.[\\w]+$).*)",
@@ -30,6 +24,10 @@
     {
       "source": "/v3",
       "destination": "/v3/index.html"
+    },
+    {
+      "source": "/((?!v1(?:/|$)|v2(?:/|$)|v3(?:/|$)|assets/|brand/|media/|env/|models/|.*\\.[\\w]+$).*)",
+      "destination": "/index.html"
     }
   ],
   "headers": [
@@ -44,6 +42,24 @@
     },
     {
       "source": "/:ver(v1|v2|v3)/(models|media|video)/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    },
+    {
+      "source": "/assets/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    },
+    {
+      "source": "/(models|env)/(.*)",
       "headers": [
         {
           "key": "Cache-Control",

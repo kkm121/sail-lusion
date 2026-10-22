@@ -8,11 +8,21 @@ const rootDir = path.resolve(__dirname, '..');
 const distDir = path.join(rootDir, 'dist');
 const v1Dir = path.join(rootDir, 'v1');
 const v3Dir = path.join(rootDir, 'v3');
+const v3p2Dir = path.join(rootDir, 'v3p2');
 
 console.log('[build-all] Cleaning root dist directory...');
-console.log('[build-all] Production Gateway: v2 (default) & v3. v4 deployment cancelled.');
 fs.rmSync(distDir, { recursive: true, force: true });
 fs.mkdirSync(distDir, { recursive: true });
+
+// 0. Build the main site (v3p2) at the root. It empties dist, so it goes before the versioned builds.
+console.log('\n========================================');
+console.log('[build-all] 0/3: Building the main site (v3p2) at /...');
+console.log('========================================');
+execSync('npx vite build --outDir=../dist', {
+  cwd: v3p2Dir,
+  stdio: 'inherit',
+  env: { ...process.env, SITE_BASE: '/', OUT_DIR: '../dist' }
+});
 
 // 1. Build v1 (Classical SAIL Cyan Crystal site)
 console.log('\n========================================');
@@ -44,89 +54,15 @@ execSync('npx vite build --base=/v3/ --outDir=../dist/v3', {
   env: { ...process.env, BASE: '/v3/', OUT_DIR: '../dist/v3' }
 });
 
-// 4. Create root redirect and landing index.html
-console.log('\n[build-all] Creating root redirect and gateway in dist/index.html...');
-const rootHtml = `<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>FireFly // Student AI Club</title>
-    <link rel="icon" type="image/png" href="/v2/brand/favicon.png" />
-    <script>
-      (function() {
-        const p = window.location.pathname || '';
-        const search = window.location.search || '';
-        const hash = window.location.hash || '';
-        if (p.startsWith('/v1')) {
-          window.location.replace('/v1/' + search + hash);
-        } else if (p.startsWith('/v3')) {
-          window.location.replace('/v3/' + search + hash);
-        } else {
-          window.location.replace('/v2/' + search + hash);
-        }
-      })();
-    </script>
-    <style>
-      :root { color-scheme: dark; }
-      body {
-        margin: 0;
-        background: #0a0605;
-        color: #fffaf5;
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        min-height: 100vh;
-        text-align: center;
-        padding: 24px;
-      }
-      h1 { font-size: 28px; margin: 0 0 12px; font-weight: 700; }
-      p { color: rgba(255, 255, 255, 0.6); margin: 0 0 24px; }
-      .links { display: flex; gap: 12px; }
-      .btn {
-        padding: 10px 20px;
-        border-radius: 999px;
-        background: #ffb347;
-        color: #000;
-        text-decoration: none;
-        font-weight: 600;
-        font-size: 14px;
-      }
-      .btn.sec {
-        background: rgba(255, 255, 255, 0.1);
-        color: #fff;
-      }
-    </style>
-  </head>
-  <body>
-    <h1>FireFly // Student AI Club</h1>
-    <p>Opening <a href="/v2/" style="color:#ffb347;">FireFly</a>...</p>
-    <div class="links">
-      <a class="btn sec" href="/v1/">Launch v1</a>
-      <a class="btn" href="/v2/">Launch v2</a>
-      <a class="btn sec" href="/v3/">Launch v3</a>
-    </div>
-  </body>
-</html>
-`;
-fs.writeFileSync(path.join(distDir, 'index.html'), rootHtml);
-
-// 5. Copy brand assets & favicon to dist root for fallback asset safety
-const brandSrc = path.join(rootDir, 'public', 'brand');
-const brandDest = path.join(distDir, 'brand');
-if (fs.existsSync(brandSrc)) {
-  fs.cpSync(brandSrc, brandDest, { recursive: true });
-}
+// 4. The root index.html and /brand come from v3p2 (step 0); there is no gateway page any more.
 const favSrc = path.join(rootDir, 'public', 'favicon.svg');
 const favDest = path.join(distDir, 'favicon.svg');
-if (fs.existsSync(favSrc)) {
+if (fs.existsSync(favSrc) && !fs.existsSync(favDest)) {
   fs.copyFileSync(favSrc, favDest);
 }
 
-console.log('\n[build-all] All 3 versions built successfully into dist:');
+console.log('\n[build-all] Built into dist:');
+console.log(' - dist/ (main site: v3p2, the quiet v3 with the v2 voyage)');
 console.log(' - dist/v1/ (Classic SAIL Crystal)');
-console.log(' - dist/v2/ (Immersive 3D Voyage with Golden Lattice, Robot & 3D Particle Text)');
-console.log(' - dist/v3/ (Editorial Club Site with Dynamic WebGL Fluid & Custom Cursor)');
-console.log(' - dist/index.html (Gateway with fast redirect to /v2)');
+console.log(' - dist/v2/ (Immersive 3D Voyage)');
+console.log(' - dist/v3/ (Editorial Club Site)');
