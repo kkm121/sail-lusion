@@ -1,0 +1,26 @@
+import puppeteer from 'puppeteer-core';
+// Debug: toggle motion off and on, and report what the crystal did.
+const base = process.env.BASE || 'http://127.0.0.1:4500';
+const browser = await puppeteer.launch({ executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe', headless: 'new', userDataDir: 'C:/Users/muthu/AppData/Local/Temp/pp-tools', args: ['--no-sandbox', '--no-first-run', '--ignore-gpu-blocklist'] });
+const page = await browser.newPage();
+const logs = [];
+page.on('console', (m) => logs.push(m.type() + ': ' + m.text().slice(0, 200)));
+page.on('pageerror', (e) => logs.push('pageerror: ' + e.message.slice(0, 200)));
+await page.setViewport({ width: 1440, height: 900 });
+await page.evaluateOnNewDocument(() => { try { localStorage.removeItem('ff4-lite'); localStorage.removeItem('ff4-motion'); sessionStorage.clear(); sessionStorage.setItem('ff4-seen', '1'); } catch (e) {} });
+await page.goto(base + '/', { waitUntil: 'networkidle2' });
+await page.waitForFunction('window.__ffReady === true');
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+await sleep(2500);
+const state = async (label) => console.log(label, JSON.stringify(await page.evaluate(() => ({ tier: document.documentElement.dataset.tier, canvas: !!document.querySelector('.crystal-canvas'), is3d: document.getElementById('stage').classList.contains('is-3d'), session: sessionStorage.getItem('ff4-tier'), calm: document.documentElement.classList.contains('calm') }))));
+await state('start      ');
+await page.click('#t-motion');
+await sleep(800);
+await state('motion off ');
+await page.click('#t-motion');
+await sleep(2500);
+await state('motion on  ');
+await sleep(4000);
+await state('+4s        ');
+console.log(logs.join('\n'));
+await browser.close();

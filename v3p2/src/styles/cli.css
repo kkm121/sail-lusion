@@ -1,0 +1,37 @@
+/* v2's console (from sail-lusion/src/styles/portals.css), plus an inline mode for the /cli page */
+@keyframes sl-pulse { 50% { opacity: 0.35; } }
+.sl-cli { position: fixed; inset: 0; z-index: 800; display: flex; align-items: flex-end; justify-content: center; background: linear-gradient(to top, rgba(0, 0, 0, 0.72), rgba(0, 0, 0, 0.18) 60%, transparent); animation: sl-fade 0.3s ease both; font-family: "JetBrains Mono", ui-monospace, monospace; }
+@keyframes sl-fade { from { opacity: 0; } to { opacity: 1; } }
+.sl-cli-panel { position: relative; width: min(1080px, 100%); height: min(62vh, 560px); display: flex; flex-direction: column; border-radius: 18px 18px 0 0; background: rgba(4, 8, 10, 0.96); border: 1px solid rgba(255, 90, 31, 0.3); border-bottom: 0; box-shadow: 0 -30px 120px -30px rgba(255, 90, 31, 0.3); color: #b9c7cd; font-size: 12.5px; overflow: hidden; animation: sl-rise 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+.sl-cli-panel::before { content: ""; position: absolute; inset: 0; pointer-events: none; background: repeating-linear-gradient(to bottom, rgba(255, 255, 255, 0.025) 0, rgba(255, 255, 255, 0.025) 1px, transparent 1px, transparent 3px); }
+.sl-cli-panel::after { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 2px; background: linear-gradient(90deg, transparent, #ff5a1f, #b8336a, transparent); }
+@keyframes sl-rise { from { transform: translateY(100%); } to { transform: none; } }
+.sl-cli-bar { position: relative; display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 12px 18px; border-bottom: 1px solid rgba(255, 255, 255, 0.08); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: #ff5a1f; }
+.sl-cli-bar span:first-child { display: inline-flex; align-items: center; gap: 10px; font-weight: 600; }
+.sl-cli-bar i { width: 8px; height: 8px; border-radius: 50%; background: #ff5a1f; box-shadow: 0 0 12px #ff5a1f; animation: sl-pulse 1.8s ease-in-out infinite; }
+.sl-cli-bar .keys { color: #5b6a72; font-size: 10px; }
+.sl-cli-bar button { color: #8a99a1; font-size: 14px; padding: 2px 6px; transition: color 0.2s; }
+.sl-cli-bar button:hover { color: #fff; }
+.sl-cli-out { position: relative; flex: 1; overflow-y: auto; padding: 16px 20px; scrollbar-width: thin; scrollbar-color: rgba(255, 255, 255, 0.2) transparent; user-select: text; }
+.sl-cli-out .ln { white-space: pre-wrap; line-height: 1.6; margin-bottom: 8px; }
+.sl-cli-out .art { color: #ff5a1f; line-height: 1.15; font-size: 13px; text-shadow: 0 0 14px rgba(255, 90, 31, 0.5); margin-bottom: 10px; }
+.sl-cli-out .dim { color: #6f7f88; margin-bottom: 2px; }
+.sl-cli-out .cmd { color: #fff; margin-top: 14px; }
+.sl-cli-out .cmd .p { color: #ff5a1f; }
+.sl-cli-out .out { color: #b9c7cd; }
+.sl-cli-out .err { color: #ff6b8b; }
+.sl-cli-chips { position: relative; display: flex; gap: 8px; padding: 10px 18px; overflow-x: auto; scrollbar-width: none; border-top: 1px solid rgba(255, 255, 255, 0.06); }
+.sl-cli-chips::-webkit-scrollbar { display: none; }
+.sl-cli-chips button { flex: none; padding: 6px 12px; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.12); color: #9fb0b8; font-size: 11px; transition: border-color 0.2s, color 0.2s, background 0.2s; }
+.sl-cli-chips button:hover { border-color: #ff5a1f; color: #ff5a1f; background: rgba(255, 90, 31, 0.08); }
+.sl-cli-in { position: relative; display: flex; align-items: center; gap: 10px; padding: 12px 20px 18px; border-top: 1px solid rgba(255, 255, 255, 0.08); }
+.sl-cli-in span { color: #ff5a1f; font-weight: 600; white-space: nowrap; }
+.sl-cli-in input { flex: 1; min-width: 0; background: transparent; border: 0; outline: 0; color: #fff; font: inherit; caret-color: #ff5a1f; }
+.sl-cli-in i { display: none; }
+@media (max-width: 767px) { .sl-cli-panel { height: 78vh; border-radius: 16px 16px 0 0; font-size: 11.5px; } .sl-cli-bar .keys { display: none; } .sl-cli-out .art { font-size: 10px; } }
+
+.sl-cli :where(button, input) { font: inherit; background: none; border: 0; cursor: pointer; margin: 0; padding: 0; }
+.sl-cli :where(input) { cursor: text; }
+.sl-cli.is-inline { position: relative; inset: auto; z-index: auto; display: block; background: none; animation: none; }
+.sl-cli.is-inline .sl-cli-panel { width: 100%; height: min(70vh, 620px); border-radius: 18px; border-bottom: 1px solid rgba(255, 90, 31, 0.3); box-shadow: 0 40px 120px -40px rgba(255, 90, 31, 0.35); animation: none; }
+html.calm .sl-cli, html.calm .sl-cli-panel { animation: none; }

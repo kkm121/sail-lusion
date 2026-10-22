@@ -95,3 +95,6 @@ We welcome contributions and adherence to open engineering standards:
 - [Code of Conduct](CODE_OF_CONDUCT.md)
 - [Security Policy](SECURITY.md)
 - [License (MIT)](LICENSE)
+
+## Main site: v3p2 (since 2026-10-23)
+The site root `/` is **v3p2** (`v3p2/`: the deployed v3, made quieter, with v2's full Inside FireFly voyage, the v4 opening screen and v2's console). The older versions stay at `/v1/`, `/v2/` and `/v3/`. `scripts/build-all.mjs` builds v3p2 into `dist/` first, then the versions into their folders; `vercel.json` sends every other path to v3p2's `index.html`. Test the combined build locally with `node tools/serve-dist.mjs` (port 4600), which routes like Vercel.
