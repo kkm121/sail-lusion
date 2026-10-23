@@ -119,7 +119,7 @@ export default function Planet({ sp, hi = true }) {
         const size = hi ? 2048 : 1024;
         const tDay = load.load(asset(`/env/earth-day-${size}.jpg`), done, undefined, done);
         tDay.colorSpace = THREE.SRGBColorSpace;
-        const tData = load.load(asset(`/env/earth-data-${size}.jpg`), done, undefined, done);
+        const tData = load.load(asset('/env/earth-data-1024.jpg'), done, undefined, done); // clouds and lights are soft anyway
         for (const t of [tDay, tData]) {
           t.anisotropy = 8;
           t.wrapS = THREE.RepeatWrapping;

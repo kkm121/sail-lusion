@@ -1,7 +1,6 @@
 import { Children, cloneElement, isValidElement, useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Magnetic, Marquee, Split } from './motion';
-import Glow from './Glow';
 
 export const Arrow = () => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -159,7 +158,6 @@ export function CharRise({ text, className = '', delay = 100 }) {
 export function JoinBand() {
   return (
     <section className="join-band">
-      <Glow />
       <div className="wrap join-band-in">
         <Logo className="join-band-logo" />
         <h2 className="display join-club-title">Join the club.</h2>

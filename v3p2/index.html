@@ -44,9 +44,9 @@
       #ldr .l-bar .t { background: rgba(255, 255, 255, 0.12); }
       #ldr .l-bar .f { background: linear-gradient(90deg, #ffb347, #ff6a2b 45%, #e8192c); box-shadow: 0 0 24px rgba(255, 90, 40, 0.55); transform-origin: left; transform: scaleX(0); }
       #ldr.is-form .l-bar, #ldr.is-open .l-bar { opacity: 0; transition-delay: 0.1s; }
-      #ldr .l-bird { position: absolute; left: -100px; top: -118px; width: 200px; height: 200px; object-fit: contain; max-width: none; opacity: 0; clip-path: inset(100% 0 0 0); transform: translate3d(0, 26px, 0) rotate(-6deg) scale(0.86); filter: drop-shadow(0 0 22px rgba(255, 80, 30, 0.55)); }
-      #ldr.is-word .l-bird { opacity: 1; clip-path: inset(-40px -40px -40px -40px); transform: none; transition: clip-path 0.85s cubic-bezier(0.7, 0, 0.2, 1) 0.1s, transform 1s cubic-bezier(0.2, 0.9, 0.2, 1) 0.1s, opacity 0.01s 0.1s; }
-      #ldr.is-open .l-bird { opacity: 0; clip-path: inset(-40px -40px -40px -40px); transform: translate3d(0, -40px, 0) scale(1.1); transition: transform 1s cubic-bezier(0.7, 0, 0.2, 1), opacity 0.5s ease 0.05s; }
+      #ldr .l-bird { position: absolute; left: -100px; top: -118px; width: 200px; height: 200px; object-fit: contain; max-width: none; opacity: 0; transform: translate3d(0, 34px, 0) rotate(-6deg) scale(0.82); will-change: transform, opacity; filter: drop-shadow(0 0 22px rgba(255, 80, 30, 0.55)); }
+      #ldr.is-word .l-bird { opacity: 1; transform: none; transition: transform 1s cubic-bezier(0.2, 0.9, 0.2, 1) 0.1s, opacity 0.6s ease 0.1s; }
+      #ldr.is-open .l-bird { opacity: 0; transform: translate3d(0, -40px, 0) scale(1.1); transition: transform 1s cubic-bezier(0.7, 0, 0.2, 1), opacity 0.5s ease 0.05s; }
       #ldr .l-digits { position: absolute; left: calc(var(--u) * 0.2); bottom: calc(var(--u) * 0.4); display: flex; z-index: 2; font-family: 'FF Word', 'Space Grotesk', sans-serif; font-weight: 600; font-size: calc(var(--u) * 6.7); line-height: 1; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; transition: opacity 0.35s; }
       #ldr.is-form .l-digits, #ldr.is-open .l-digits { opacity: 0; }
       #ldr .col { display: block; height: 1em; width: 0.7em; overflow: hidden; }
@@ -272,6 +272,7 @@
           el.className = cls || 'is-' + p;
           window.__ldPhase = p;
           window.dispatchEvent(new CustomEvent('ff:phase', { detail: p }));
+          if (p === 'word') setTimeout(function () { window.__ldSettled = true; window.dispatchEvent(new Event('ff:settled')); }, 1300);
         }
         // the page may ask the screen to stay on the word while it warms up (the voyage's shaders compile then,
         // when a stalled frame is invisible); it opens when that is done, or after nine seconds regardless
