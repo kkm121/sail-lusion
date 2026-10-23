@@ -25,13 +25,10 @@ createRoot(document.getElementById('root')).render(
 );
 ld.set(80);
 const fonts = document.fonts && document.fonts.ready ? Promise.race([document.fonts.ready, new Promise((r) => setTimeout(r, 1200))]) : Promise.resolve();
-fonts
-  .then(() => {
-    ld.set(needsLab ? 85 : 92);
-    return needsLab ? window.__labWarm : null;
-  })
-  .then(() => {
-    window.__labWarmMs = Math.round(performance.now() - t0);
-    ld.set(96);
-    ld.done();
-  });
+window.__labWarm.then(() => (window.__labWarmReady = true));
+if (!needsLab) window.__labWarmDone();
+// the count finishes as soon as the fonts are in; the voyage then warms up while the word is on screen
+fonts.then(() => {
+  ld.set(92);
+  ld.done();
+});
