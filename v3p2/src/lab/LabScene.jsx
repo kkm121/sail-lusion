@@ -190,7 +190,7 @@ function Tunnel({ touch, sp, onGate, onWarm }) {
   useFrame((state) => {
     const zc = state.camera.position.z;
     const groups = [cage, vortex, room, finale];
-    const loaded = labState.env && labState.cage && (labState.nav || !HAVE.navigator);
+    const loaded = labState.env && labState.cage && labState.earth && (labState.nav || !HAVE.navigator);
     if (step.current === 0) {
       if (loaded) {
         onGate?.();
@@ -269,6 +269,9 @@ export default function LabScene({ progress, active = true, tier = 'full', onWar
 
   return (
     <Canvas
+      // measure the layout size, not the on-screen box: the device is the full screen scaled down with a transform, so the
+      // on-screen box changes on every scroll and the canvas was being re-created at new sizes (the "sudden" Earth resize)
+      resize={{ scroll: false, offsetSize: true }}
       camera={{ position: [0, 0, 7.8], fov: 46, near: 0.1, far: 520 }}
       dpr={dpr}
       gl={{ antialias: touch, alpha: false, stencil: false, powerPreference: 'high-performance', toneMapping: THREE.ACESFilmicToneMapping, toneMappingExposure: 1.05 }}
@@ -292,7 +295,7 @@ export default function LabScene({ progress, active = true, tier = 'full', onWar
           </Suspense>
         </ErrorBoundary>
       )}
-      <Planet sp={sp} />
+      <Planet sp={sp} hi={tier === 'full'} />
       <Tunnel touch={touch} sp={sp} onGate={startPost} onWarm={warmDone} />
       <Curtain sp={sp} />
       <Flash />

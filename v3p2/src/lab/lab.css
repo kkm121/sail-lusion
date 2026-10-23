@@ -1,4 +1,4 @@
-.sl-lab { position: relative; height: 1500svh; background: var(--bg, #f6eee4); color: #fff; }
+.sl-lab { position: relative; height: 1800svh; background: var(--bg, #f6eee4); color: #fff; }
 .sl-lab[data-dark], .sl-lab.is-dark { background: #030407 !important; }
 .sl-lab-stage { position: sticky; top: 0; height: 100vh; height: 100dvh; min-height: 100vh; min-height: 100dvh; width: 100%; overflow: hidden; background: #030407; }
 .sl-lab-stage[data-dark], .sl-lab-stage.is-dark { background: #030407 !important; }
@@ -31,7 +31,7 @@
 .sl-lab-hint .hint { font-family: var(--f-mono); font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; opacity: 0.7; }
 
 @media (max-width: 767px) {
-  .sl-lab { height: 1600dvh; }
+  .sl-lab { height: 2200dvh; }
   .sl-lab-intro { padding-top: max(56px, 14vw); padding-inline: max(18px, 5vw); }
   .sl-lab-intro h2 { font-size: clamp(26px, 8vw, 36px); line-height: 1.08; }
   .sl-lab-intro .copy { position: static; width: 100%; margin-top: 12px; font-size: 13.5px; line-height: 1.45; padding-right: 0; }

@@ -85,7 +85,7 @@
 .tile-0::before { content: ''; position: absolute; right: -12%; top: -30%; width: 70%; aspect-ratio: 1; border-radius: 50%; background: radial-gradient(closest-side, rgba(255, 106, 43, 0.4), rgba(255, 106, 43, 0)); }
 .tile-1, .tile-2 { grid-column: span 3; }
 .tile-stat { grid-column: span 2; align-content: center; justify-items: start; }
-.tile-stat b { font-family: var(--f-display); font-size: clamp(64px, 7vw, 104px); font-weight: 600; line-height: 0.9; letter-spacing: -0.06em; background: var(--ember); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.tile-stat b { display: inline-block; padding: 0.08em 0.06em 0.04em 0; font-family: var(--f-display); font-size: clamp(64px, 7vw, 104px); font-weight: 600; line-height: 1; letter-spacing: -0.06em; background: var(--ember); -webkit-background-clip: text; background-clip: text; color: transparent; }
 .tile-stat span { font-size: 17px; font-weight: 500; color: var(--ink-2); }
 /* the two stats sit beside the big tile; the two habits share the row beneath */
 .bento > .tile-stat:nth-of-type(4) { grid-column: 5 / span 2; grid-row: 1; }
@@ -169,3 +169,33 @@ html.lite .ag-fig { animation: none; }
   .ah-stage { min-height: 34vh; }
   .ah-mark { width: 46vw; }
 }
+
+/* the big tile's top right: the ways we learn, in ember, stacked like a spec list */
+.tile-list { position: absolute; top: clamp(22px, 2.6vw, 34px); right: clamp(26px, 3vw, 40px); z-index: 1; margin: 0; padding: 0; list-style: none; display: grid; gap: 6px; text-align: right; }
+.tile-list li { font-family: var(--f-display); font-size: clamp(20px, 2vw, 30px); font-weight: 600; letter-spacing: -0.03em; line-height: 1.1; background: linear-gradient(90deg, #ffb347, #ff6a2b 55%, #e8192c); -webkit-background-clip: text; background-clip: text; color: transparent; opacity: 0.92; }
+.tile-list li:nth-child(n+3) { opacity: 0.55; }
+@media (max-width: 899px) { .tile-list li { font-size: 18px; } }
+
+/* ---------- light cursor (no canvas, moves only with the pointer) ---------- */
+.lc-dot, .lc-ring { position: fixed; left: 0; top: 0; z-index: 9000; pointer-events: none; display: none; }
+html.has-cursor .lc-dot, html.has-cursor .lc-ring { display: block; }
+.lc-dot { width: 6px; height: 6px; margin: -3px 0 0 -3px; border-radius: 50%; background: var(--ember-2); }
+.lc-ring { width: 34px; height: 34px; margin: -17px 0 0 -17px; border-radius: 50%; border: 1.5px solid rgba(242, 90, 29, 0.55); transition: transform 0.28s cubic-bezier(0.2, 0.8, 0.2, 1), width 0.3s, height 0.3s, margin 0.3s, background 0.3s, border-color 0.3s, opacity 0.3s; }
+.lc-ring.is-link { width: 58px; height: 58px; margin: -29px 0 0 -29px; background: rgba(255, 106, 43, 0.12); border-color: rgba(255, 155, 47, 0.7); }
+.lc-ring.is-down { width: 26px; height: 26px; margin: -13px 0 0 -13px; }
+.lc-ring.is-gone { opacity: 0; }
+
+/* ---------- ember glow behind the Join band and the footer (CSS, the look of v3's fluid) ---------- */
+.join-band, .ft { position: relative; isolation: isolate; }
+.glow { --gx: 0.5; --gy: 0.5; position: absolute; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; }
+.glow i { position: absolute; border-radius: 50%; filter: blur(60px); will-change: transform; }
+.glow .g-a { width: 46vw; height: 30vw; left: 6%; top: 18%; background: rgba(255, 106, 43, 0.38); animation: glow-a 18s ease-in-out infinite alternate; }
+.glow .g-b { width: 40vw; height: 26vw; right: 4%; top: 32%; background: rgba(232, 25, 44, 0.3); animation: glow-b 22s ease-in-out infinite alternate; }
+.glow .g-p { width: 30vw; height: 30vw; left: 0; top: 0; background: rgba(255, 155, 47, 0.32); transform: translate3d(calc(var(--gx) * 100cqw - 15vw), calc(var(--gy) * 100cqh - 15vw), 0); transition: transform 0.9s cubic-bezier(0.2, 0.8, 0.2, 1); }
+.glow { container-type: size; }
+@keyframes glow-a { to { transform: translate3d(14vw, 6vw, 0) scale(1.15) rotate(18deg); } }
+@keyframes glow-b { to { transform: translate3d(-12vw, -5vw, 0) scale(0.9) rotate(-14deg); } }
+.ft .glow i { opacity: 0.55; }
+html.lite .glow .g-a, html.lite .glow .g-b { animation: none; }
+html.lite .glow .g-p, html.calm .glow .g-p { display: none; }
+html.calm .glow i { animation: none; }

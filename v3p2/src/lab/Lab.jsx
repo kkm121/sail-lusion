@@ -67,7 +67,7 @@ export default function Lab() {
     }
     let idle = 0;
     const start = () => {
-      Object.assign(labState, { env: false, cage: false, nav: false, warm: false, dive: false });
+      Object.assign(labState, { env: false, cage: false, earth: false, nav: false, warm: false, dive: false });
       setGo(true);
     };
     // mount when within a screen and a half, after the browser is idle so the page's own entrance is never interrupted
@@ -75,7 +75,17 @@ export default function Lab() {
       ([e]) => {
         cancelAnimationFrame(idle);
         if (!e.isIntersecting) return;
-        if (!window.__ffReady) return start(); // still behind the opening screen: warm up there
+        if (!window.__ffReady) {
+          // behind the opening screen: warm up once it shows the solid word (a stall there cannot be seen)
+          if (window.__ldPhase === 'word' || window.__ldPhase === 'open') return start();
+          const onPhase = (ev) => {
+            if (ev.detail !== 'word') return;
+            window.removeEventListener('ff:phase', onPhase);
+            start();
+          };
+          window.addEventListener('ff:phase', onPhase);
+          return undefined;
+        }
         if ('requestIdleCallback' in window) idle = window.requestIdleCallback(start, { timeout: 2500 });
         else idle = window.setTimeout(start, 600);
       },

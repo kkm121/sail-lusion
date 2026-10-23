@@ -46,14 +46,7 @@ function Frames() {
       out.push({ p: [0, -W, z], s: [2 * W + T, T, T], c });
       out.push({ p: [-W, 0, z], s: [T, 2 * W, T], c });
       out.push({ p: [W, 0, z], s: [T, 2 * W, T], c });
-      if (k % 2 === 0) {
-        // inner brackets in the corners give each frame some engineering detail
-        const b = 1.3;
-        out.push({ p: [-W + b / 2, W - b / 2, z], s: [b * 1.4, T * 0.5, T * 0.5], r: [0, 0, -Math.PI / 4], c });
-        out.push({ p: [W - b / 2, W - b / 2, z], s: [b * 1.4, T * 0.5, T * 0.5], r: [0, 0, Math.PI / 4], c });
-        out.push({ p: [-W + b / 2, -W + b / 2, z], s: [b * 1.4, T * 0.5, T * 0.5], r: [0, 0, Math.PI / 4], c });
-        out.push({ p: [W - b / 2, -W + b / 2, z], s: [b * 1.4, T * 0.5, T * 0.5], r: [0, 0, -Math.PI / 4], c });
-      }
+      // (v3p2: the diagonal corner brackets were removed; they read as stray bars at the end of the corridor)
     }
     const len = Z0 + 1 - END;
     const mid = (Z0 + 1 + END) / 2;

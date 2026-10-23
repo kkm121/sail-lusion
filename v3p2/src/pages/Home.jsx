@@ -134,6 +134,14 @@ export default function Home() {
             {PILLARS.map((p, i) => (
               <article className={`tile tile-${i}`} key={p.n}>
                 <span className="tile-n">{p.n}</span>
+                {i === 0 && (
+                  <ul className="tile-list" aria-label="How we learn">
+                    <li>Workshops</li>
+                    <li>Reading groups</li>
+                    <li>Paper sprints</li>
+                    <li>Mentor hours</li>
+                  </ul>
+                )}
                 <h3>{p.title}</h3>
                 <p>{p.text}</p>
               </article>

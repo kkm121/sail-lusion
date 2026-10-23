@@ -270,7 +270,12 @@
         function setPhase(p, cls) {
           st.phase = p;
           el.className = cls || 'is-' + p;
+          window.__ldPhase = p;
+          window.dispatchEvent(new CustomEvent('ff:phase', { detail: p }));
         }
+        // the page may ask the screen to stay on the word while it warms up (the voyage's shaders compile then,
+        // when a stalled frame is invisible); it opens when that is done, or after nine seconds regardless
+        var heavyReady = function () { return !window.__labWarm || window.__labWarmReady; };
         var ease = function (x) { return x < 0 ? 0 : x > 1 ? 1 : x * x * (3 - 2 * x); };
 
         function frame(now) {
@@ -323,7 +328,7 @@
             st.f0 = now;
           } else if (phase === 'form' && now - st.f0 > 1650) {
             setPhase('word', 'is-form is-word');
-          } else if (phase === 'word' && now - st.f0 > 3000) {
+          } else if (phase === 'word' && now - st.f0 > 3000 && (heavyReady() || now - st.f0 > 9000)) {
             setPhase('open', 'is-open is-word');
             release();
             setTimeout(finish, 1400);
