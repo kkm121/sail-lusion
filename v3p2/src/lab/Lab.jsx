@@ -77,13 +77,12 @@ export default function Lab() {
         if (!e.isIntersecting) return;
         if (!window.__ffReady) {
           // behind the opening screen: warm up once it shows the solid word (a stall there cannot be seen)
-          if (window.__ldPhase === 'word' || window.__ldPhase === 'open') return start();
-          const onPhase = (ev) => {
-            if (ev.detail !== 'word') return;
-            window.removeEventListener('ff:phase', onPhase);
+          if (window.__ldSettled) return start();
+          const onSettled = () => {
+            window.removeEventListener('ff:settled', onSettled);
             start();
           };
-          window.addEventListener('ff:phase', onPhase);
+          window.addEventListener('ff:settled', onSettled);
           return undefined;
         }
         if ('requestIdleCallback' in window) idle = window.requestIdleCallback(start, { timeout: 2500 });

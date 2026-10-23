@@ -252,8 +252,9 @@ export default function LabScene({ progress, active = true, tier = 'full', onWar
   const sp = useRef(0);
   const bloomRef = useRef();
   // modest devices: one pixel per pixel, no post-processing, fewer stars (see tier in Lab.jsx)
-  // full: 1x. lite (v1's rule): at most 1x and within a 0.8-megapixel budget, so big tablets stay light too
-  const dpr = useMemo(() => (tier === 'full' ? Math.min(window.devicePixelRatio || 1, 1) : Math.min(1, Math.sqrt(0.8e6 / (window.innerWidth * window.innerHeight)))), [tier]);
+  // full: 0.75x (the canvas is always full screen now, so it never resizes mid-growth; bloom hides the softness).
+  // lite (v1's rule): at most 1x and within a 0.8-megapixel budget, so big tablets stay light too
+  const dpr = useMemo(() => (tier === 'full' ? Math.min(window.devicePixelRatio || 1, 1) * 0.75 : Math.min(1, Math.sqrt(0.8e6 / (window.innerWidth * window.innerHeight)))), [tier]);
   const fx = touch || tier !== 'full' ? 0 : 2;
   const postOn = true;
   const startPost = useCallback(() => {}, []);

@@ -185,17 +185,3 @@ html.has-cursor .lc-dot, html.has-cursor .lc-ring { display: block; }
 .lc-ring.is-down { width: 26px; height: 26px; margin: -13px 0 0 -13px; }
 .lc-ring.is-gone { opacity: 0; }
 
-/* ---------- ember glow behind the Join band and the footer (CSS, the look of v3's fluid) ---------- */
-.join-band, .ft { position: relative; isolation: isolate; }
-.glow { --gx: 0.5; --gy: 0.5; position: absolute; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; }
-.glow i { position: absolute; border-radius: 50%; filter: blur(60px); will-change: transform; }
-.glow .g-a { width: 46vw; height: 30vw; left: 6%; top: 18%; background: rgba(255, 106, 43, 0.38); animation: glow-a 18s ease-in-out infinite alternate; }
-.glow .g-b { width: 40vw; height: 26vw; right: 4%; top: 32%; background: rgba(232, 25, 44, 0.3); animation: glow-b 22s ease-in-out infinite alternate; }
-.glow .g-p { width: 30vw; height: 30vw; left: 0; top: 0; background: rgba(255, 155, 47, 0.32); transform: translate3d(calc(var(--gx) * 100cqw - 15vw), calc(var(--gy) * 100cqh - 15vw), 0); transition: transform 0.9s cubic-bezier(0.2, 0.8, 0.2, 1); }
-.glow { container-type: size; }
-@keyframes glow-a { to { transform: translate3d(14vw, 6vw, 0) scale(1.15) rotate(18deg); } }
-@keyframes glow-b { to { transform: translate3d(-12vw, -5vw, 0) scale(0.9) rotate(-14deg); } }
-.ft .glow i { opacity: 0.55; }
-html.lite .glow .g-a, html.lite .glow .g-b { animation: none; }
-html.lite .glow .g-p, html.calm .glow .g-p { display: none; }
-html.calm .glow i { animation: none; }

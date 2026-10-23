@@ -5,7 +5,6 @@ import { Arrow, Logo, ScrambleText } from './ui';
 import Ambient from './Ambient';
 import CliSheet from './CliSheet';
 import LiteCursor from './LiteCursor';
-import Glow from './Glow';
 import Lenis from 'lenis';
 import { onFrame, scroll, reduced, setCalm, Spring } from '../lib/motion';
 import { SITE } from '../data/site';
@@ -160,7 +159,6 @@ function Footer() {
 
   return (
     <footer className="ft">
-      <Glow />
       <div className="wrap">
         <div className="ft-big" aria-hidden="true">
           <span>FireFly</span>
@@ -265,17 +263,17 @@ export default function Layout() {
   useSmoothScroll();
   // the page mounts at once, behind the opening screen, so the voyage can download and warm up there;
   // its entrance animations stay paused until the screen opens (html.is-loading, see base.css)
-  // the page is built when the opening screen shows the solid word (the dots and counter stay smooth), then warms up there
-  const shown = () => !!window.__ffReady || window.__ldPhase === 'word' || window.__ldPhase === 'open' || !document.getElementById('ldr');
+  // the page is built once the opening screen shows the solid word and the bird has arrived (so neither stutters)
+  const shown = () => !!window.__ffReady || !!window.__ldSettled || !document.getElementById('ldr');
   const [ready, setReady] = useState(shown);
   useEffect(() => {
     if (ready) return undefined;
     const on = () => shown() && setReady(true);
-    window.addEventListener('ff:phase', on);
+    window.addEventListener('ff:settled', on);
     window.addEventListener('ff:ready', on);
     on();
     return () => {
-      window.removeEventListener('ff:phase', on);
+      window.removeEventListener('ff:settled', on);
       window.removeEventListener('ff:ready', on);
     };
   }, [ready]);
