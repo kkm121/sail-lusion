@@ -16,6 +16,8 @@ ld.set(30);
 // on Home the opening screen also waits until v2's voyage is downloaded, compiled and drawn once (Lab.jsx resolves this)
 const path = location.pathname.replace(/\/$/, '') || '/';
 const needsLab = path === '/' || path === '/about';
+// fetch the voyage's 3D code straight away too (it is otherwise requested only once the page has built)
+if (needsLab) import('./lab/LabScene').catch(() => {});
 window.__labWarm = new Promise((r) => (window.__labWarmDone = r));
 const t0 = performance.now();
 createRoot(document.getElementById('root')).render(

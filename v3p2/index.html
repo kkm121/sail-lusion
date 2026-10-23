@@ -7,6 +7,17 @@
     <link rel="apple-touch-icon" href="/brand/icon-192.png" />
     <meta name="theme-color" content="#0d0a08" />
     <link rel="preload" href="/brand/firefly-mark.png" as="image" />
+    <!-- the voyage's heavy files start downloading at once (Home only, not on phones in Lite or data saver), so a first visit is ready as early as a repeat one -->
+    <script>
+      (function () {
+        var p = location.pathname.replace(/\/$/, '') || '/';
+        var c = navigator.connection || {};
+        if ((p !== '/' && p !== '/about') || c.saveData || /(^|-)(2g|3g)$/.test(c.effectiveType || '')) return;
+        var lite = /[?&]lite/.test(location.search) || (matchMedia('(hover: none) and (pointer: coarse)').matches && innerWidth < 1024);
+        var files = ['/env/studio.hdr', '/models/navigator.glb', '/env/metal-color.jpg', '/env/metal-normal.jpg', '/env/metal-rough.jpg', '/env/earth-data-1024.jpg', lite ? '/env/earth-day-1024.jpg' : '/env/earth-day-2048.jpg'];
+        files.forEach(function (f) { var l = document.createElement('link'); l.rel = 'preload'; l.as = /\.jpg$/.test(f) ? 'image' : 'fetch'; l.crossOrigin = 'anonymous'; l.href = f; document.head.appendChild(l); });
+      })();
+    </script>
     <meta name="description" content="FireFly is a student-run AI club at SRM, associated with AMIEE. We learn, build and share intelligent systems together." />
     <meta property="og:title" content="FireFly · Student AI Club" />
     <meta property="og:description" content="Small lights, built together. A student-run AI club at SRM, associated with AMIEE." />
