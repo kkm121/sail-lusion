@@ -81,9 +81,25 @@ const PEOPLE = {
   },
 };
 
+// Public profiles. Only accounts confirmed as the right person are listed; a photo is the person's own GitHub picture,
+// served from /public/team. Anyone without a photo shows their initial.
+const PROFILES = {
+  [CREATOR]: { github: 'kkm121', linkedin: 'm-muthu-kumaran-expert', photo: '/team/muthu.jpg' },
+  Aarya: { github: 'Aarya21106', photo: '/team/aarya21106.jpg' },
+  Esakkimadan: { github: 'ESAKKIMADAN', photo: '/team/esakkimadan.jpg' },
+  Tharun: { github: 'Tharunoff' },
+  'Sai Srikanth': { linkedin: 'saisrikanths', photo: '/team/saisrikanth.jpg' },
+  'Bedabrata Bhattacharjee': { linkedin: 'bedabrata-bhattacharjee-b2b62437b', photo: '/team/bedabrata.jpg' },
+  Kiruthika: { linkedin: 'kiruthika-n-827b43381', photo: '/team/kiruthika.jpg' },
+  Monisha: { linkedin: 'monisha-n-7abb532b1', photo: '/team/monisha.jpg' },
+  Nethra: { linkedin: 'nethra-b-0925752a6', photo: '/team/nethra.jpg' },
+  Tamilselvan: { photo: '/team/tamilselvan.jpg' },
+};
+
 export const coreTeam = [...fellowsOrder, 'Harish'].map((name, i) => ({
   name,
   index: String(i + 1).padStart(2, '0'),
   creator: name === CREATOR,
   ...PEOPLE[name],
+  ...PROFILES[name],
 }));
