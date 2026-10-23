@@ -185,3 +185,13 @@ html.has-cursor .lc-dot, html.has-cursor .lc-ring { display: block; }
 .lc-ring.is-down { width: 26px; height: 26px; margin: -13px 0 0 -13px; }
 .lc-ring.is-gone { opacity: 0; }
 
+
+/* ---------- the crew cards (v3's layout) with a face and profile links ---------- */
+.person-face-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.person-face { width: 56px; height: 56px; border-radius: 50%; overflow: hidden; display: grid; place-items: center; flex: none; background: var(--ember); color: #fff; font-family: var(--f-display); font-size: 22px; font-weight: 600; box-shadow: 0 0 0 3px var(--card), 0 0 0 4px rgba(242, 90, 29, 0.25); }
+.person-face img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.person.is-creator .person-face { box-shadow: 0 0 0 3px var(--card), 0 0 0 5px #e0b04a; }
+.mate-links { display: flex; gap: 6px; }
+.mate-links a { width: 32px; height: 32px; display: grid; place-items: center; border-radius: 50%; color: var(--ink-2); background: rgba(27, 19, 13, 0.06); transition: background 0.2s, color 0.2s; }
+.mate-links a:hover { background: var(--ember-2); color: #fff; }
+.mate-links svg { width: 15px; height: 15px; }
