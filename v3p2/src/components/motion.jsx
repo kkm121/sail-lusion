@@ -1,123 +1,13 @@
 import { Children, cloneElement, isValidElement, useEffect, useRef, useState } from 'react';
 import { clamp, finePointer, onFrame, project, reduced, rubberband, scroll, Spring } from '../lib/motion';
 
-// ---------------------------------------------------------------------------
-// Magnetic: the element leans toward the pointer while hovered and springs home (damping 1, no overshoot).
-// Feedback is on pointer-down: a quick press-in, released on pointer-up.
-// ---------------------------------------------------------------------------
-export function Magnetic({ children, strength = 0.28 }) {
-  const ref = useRef(null);
-  useEffect(() => {
-    const el = ref.current?.firstElementChild;
-    if (!el || !finePointer() || reduced()) return undefined;
-    const x = new Spring(0, { damping: 1, response: 0.35 });
-    const y = new Spring(0, { damping: 1, response: 0.35 });
-    const s = new Spring(1, { damping: 1, response: 0.2 });
-    let stop = null;
-    const run = () => {
-      if (stop) return;
-      stop = onFrame((dt) => {
-        x.step(dt);
-        y.step(dt);
-        s.step(dt);
-        el.style.transform = `translate3d(${x.x.toFixed(2)}px, ${y.x.toFixed(2)}px, 0) scale(${s.x.toFixed(4)})`;
-        if (x.resting && y.resting && s.resting) {
-          stop();
-          stop = null;
-        }
-      });
-    };
-    const move = (e) => {
-      const r = el.getBoundingClientRect();
-      x.target = (e.clientX - r.left - r.width / 2) * strength;
-      y.target = (e.clientY - r.top - r.height / 2) * strength;
-      run();
-    };
-    const leave = () => {
-      x.target = 0;
-      y.target = 0;
-      s.target = 1;
-      run();
-    };
-    const down = () => {
-      s.target = 0.96;
-      run();
-    };
-    const up = () => {
-      s.target = 1;
-      run();
-    };
-    el.addEventListener('pointermove', move);
-    el.addEventListener('pointerleave', leave);
-    el.addEventListener('pointerdown', down);
-    el.addEventListener('pointerup', up);
-    return () => {
-      stop?.();
-      el.removeEventListener('pointermove', move);
-      el.removeEventListener('pointerleave', leave);
-      el.removeEventListener('pointerdown', down);
-      el.removeEventListener('pointerup', up);
-    };
-  }, [strength]);
-  return (
-    <span ref={ref} className="magnetic">
-      {children}
-    </span>
-  );
+// Magnetic (v3p2): kept as a plain wrapper. The pointer-following effect ran every frame; the quieter site drops it.
+export function Magnetic({ children }) {
+  return children;
 }
 
-// ---------------------------------------------------------------------------
-// Tilt: cards turn a few degrees toward the pointer and a light follows it across the surface.
-// Applied to every element matching `selector` inside the container, with one listener each.
-// ---------------------------------------------------------------------------
-export function useTilt(rootRef, selector = '.card', max = 5) {
-  useEffect(() => {
-    const root = rootRef.current;
-    if (!root || !finePointer() || reduced()) return undefined;
-    const cleanups = [];
-    root.querySelectorAll(selector).forEach((el) => {
-      const rx = new Spring(0, { damping: 1, response: 0.45 });
-      const ry = new Spring(0, { damping: 1, response: 0.45 });
-      let stop = null;
-      const run = () => {
-        if (stop) return;
-        stop = onFrame((dt) => {
-          rx.step(dt);
-          ry.step(dt);
-          el.style.transform = `perspective(900px) rotateX(${rx.x.toFixed(3)}deg) rotateY(${ry.x.toFixed(3)}deg)`;
-          if (rx.resting && ry.resting) {
-            stop();
-            stop = null;
-            if (!rx.target && !ry.target) el.style.transform = '';
-          }
-        });
-      };
-      const move = (e) => {
-        const r = el.getBoundingClientRect();
-        const px = (e.clientX - r.left) / r.width;
-        const py = (e.clientY - r.top) / r.height;
-        el.style.setProperty('--mx', `${(px * 100).toFixed(1)}%`);
-        el.style.setProperty('--my', `${(py * 100).toFixed(1)}%`);
-        ry.target = (px - 0.5) * 2 * max;
-        rx.target = -(py - 0.5) * 2 * max;
-        run();
-      };
-      const leave = () => {
-        rx.target = 0;
-        ry.target = 0;
-        run();
-      };
-      el.addEventListener('pointermove', move);
-      el.addEventListener('pointerleave', leave);
-      cleanups.push(() => {
-        stop?.();
-        el.removeEventListener('pointermove', move);
-        el.removeEventListener('pointerleave', leave);
-      });
-    });
-    return () => cleanups.forEach((c) => c());
-  });
-}
+// Tilt (v3p2): off. Cards no longer turn toward the pointer (one listener per card, a repaint per move).
+export function useTilt() {}
 
 // ---------------------------------------------------------------------------
 // Split heading: each word rises out of its own mask, line by line, when it scrolls into view.
@@ -183,13 +73,34 @@ export function Split({ as: Tag = 'h2', className = '', children, delay = 0, imm
 // ---------------------------------------------------------------------------
 export function Cycle({ words, every = 2600 }) {
   const [i, setI] = useState(0);
+  const box = useRef(null);
   useEffect(() => {
     if (reduced()) return undefined;
     const id = window.setInterval(() => setI((n) => (n + 1) % words.length), every);
     return () => clearInterval(id);
   }, [words.length, every]);
+  // the box takes the width of the word on show (a CSS transition), so a centred line stays centred
+  const iRef = useRef(0);
+  iRef.current = i;
+  useEffect(() => {
+    const el = box.current;
+    if (!el) return undefined;
+    let alive = true;
+    const fit = () => {
+      const on = alive && el.querySelectorAll('.cycle-w')[iRef.current];
+      if (on) el.style.width = `${on.scrollWidth}px`;
+    };
+    fit();
+    // the page mounts behind the opening screen, possibly before its fonts: measure again once they are in
+    document.fonts?.ready.then(fit);
+    window.addEventListener('resize', fit, { passive: true });
+    return () => {
+      alive = false;
+      window.removeEventListener('resize', fit);
+    };
+  }, [i]);
   return (
-    <span className="cycle" aria-live="off">
+    <span className="cycle" aria-live="off" ref={box}>
       <span className="cycle-sizer" aria-hidden="true">
         {words.reduce((a, b) => (b.length > a.length ? b : a), '')}
       </span>
@@ -207,31 +118,18 @@ export function Cycle({ words, every = 2600 }) {
 // ---------------------------------------------------------------------------
 export function Marquee({ items, speed = 40, className = '' }) {
   const track = useRef(null);
+  // pure CSS (v3p2): the band drifts with a compositor animation; its width is measured once to set the speed
   useEffect(() => {
     const el = track.current;
-    if (!el || reduced()) return undefined;
-    let x = 0;
-    let boost = 0;
-    let w = el.firstElementChild.getBoundingClientRect().width;
-    const ro = new ResizeObserver(() => (w = el.firstElementChild.getBoundingClientRect().width));
-    ro.observe(el.firstElementChild);
-    let on = true;
-    const io = new IntersectionObserver(([e]) => (on = e.isIntersecting), { rootMargin: '100px' });
-    io.observe(el);
-    const stop = onFrame((dt) => {
-      if (!on) return;
-      boost += (clamp(scroll.v / 6, -400, 400) - boost) * 0.08;
-      x -= (speed + Math.abs(boost)) * dt * (boost < -2 ? -1 : 1);
-      if (x <= -w) x += w;
-      if (x > 0) x -= w;
-      const skew = clamp(-scroll.v * 0.003, -4, 4);
-      el.style.transform = `translate3d(${x.toFixed(2)}px,0,0) skewX(${skew.toFixed(2)}deg)`;
-    });
-    return () => {
-      stop();
-      ro.disconnect();
-      io.disconnect();
+    if (!el) return undefined;
+    const set = () => {
+      const w = el.firstElementChild?.getBoundingClientRect().width || 1000;
+      el.style.setProperty('--mq-dur', `${(w / speed).toFixed(1)}s`);
     };
+    set();
+    const ro = new ResizeObserver(set);
+    ro.observe(el.firstElementChild);
+    return () => ro.disconnect();
   }, [speed]);
   const group = (k) => (
     <div className="mq-g" key={k} aria-hidden={k > 0 ? 'true' : undefined}>
@@ -387,43 +285,9 @@ export function DragRail({ children, className = '', label }) {
   );
 }
 
-// ---------------------------------------------------------------------------
-// Parallax: an element drifts against the scroll by `amount` (fraction of its distance from the viewport centre).
-// ---------------------------------------------------------------------------
-export function useParallax(ref, amount = 0.12) {
-  useEffect(() => {
-    const el = ref.current;
-    if (!el || reduced()) return undefined;
-    let on = false;
-    let parentTop = 0;
-    let parentH = 0;
-    const measure = () => {
-      const p = el.parentElement;
-      if (p) {
-        const r = p.getBoundingClientRect();
-        parentTop = r.top + window.scrollY;
-        parentH = r.height;
-      }
-    };
-    measure();
-    window.addEventListener('resize', measure, { passive: true });
-    const io = new IntersectionObserver(([e]) => (on = e.isIntersecting), { rootMargin: '20% 0px' });
-    io.observe(el);
-    const stop = onFrame(() => {
-      if (!on) return;
-      const top = parentTop - scroll.y;
-      const off = (top + parentH / 2 - scroll.vh / 2) * -amount;
-      el.style.transform = `translate3d(0, ${off.toFixed(1)}px, 0)`;
-    });
-    return () => {
-      stop();
-      window.removeEventListener('resize', measure);
-      io.disconnect();
-    };
-  }, [ref, amount]);
-}
+// Parallax (v3p2): off. Elements stay put instead of being moved every frame.
+export function useParallax() {}
 
-// Scroll progress for a section: 0 when its top meets the viewport bottom, 1 when its bottom meets the top.
 export function useSectionProgress(ref, cb) {
   const fn = useRef(cb);
   fn.current = cb;

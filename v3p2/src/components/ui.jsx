@@ -154,42 +154,24 @@ export function CharRise({ text, className = '', delay = 100 }) {
   );
 }
 
+// The closing band on every page (v3p2): one line, one sentence, two actions.
 export function JoinBand() {
   return (
     <section className="join-band">
       <div className="wrap join-band-in">
         <Logo className="join-band-logo" />
-        <Reveal as="span" className="eyebrow">
-          <ScrambleText text="Recruitment · Next cohort" />
-        </Reveal>
-        <h2 className="display join-club-title">
-          Join the club!
-        </h2>
-        <Split className="h2 join-club-sub">
-          Bring your curiosity. <span className="ember-text">We bring the crew.</span>
-        </Split>
-        <Reveal as="p" className="lede" delay={150}>
+        <h2 className="display join-club-title">Join the club.</h2>
+        <Reveal as="p" className="lede">
           No experience needed. Pick a domain, join a team and build something real this term.
         </Reveal>
-        <Reveal className="btn-row" delay={250}>
-          <Magnetic>
-            <Link className="btn btn-primary" to="/join" viewTransition>
-              How to join <Arrow />
-            </Link>
-          </Magnetic>
-          <Magnetic>
-            <Link className="btn btn-ghost" to="/events" viewTransition>
-              What happens each term
-            </Link>
-          </Magnetic>
+        <Reveal className="btn-row" delay={120}>
+          <Link className="btn btn-primary" to="/join" viewTransition>
+            How to join
+          </Link>
+          <Link className="btn btn-ghost" to="/events" viewTransition>
+            What happens each term
+          </Link>
         </Reveal>
-      </div>
-      <div className="join-band-strip" style={{ marginTop: 'clamp(36px, 5vw, 64px)' }}>
-        <Marquee
-          items={['JOIN THE CREW', 'FIVE DOMAINS', 'AMIEE LABS', 'BUILD REAL AI', 'SRMIST', 'FALL & SPRING COHORTS']}
-          speed={36}
-          className="small-mq"
-        />
       </div>
     </section>
   );

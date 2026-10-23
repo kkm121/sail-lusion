@@ -53,3 +53,9 @@ The teams are v3's stacking deck (`TeamDeck` in `src/pages/Team.jsx`): each card
 - The site's own Motion switch; it ignores the OS reduce-motion flag on purpose.
 - Sign in, Sign up and CLI stay "under construction".
 - Testing gotcha: v2's goodbye pause holds the scroll for one second at 97% of the voyage; scripted jump-scrolls must wait and go again.
+
+## The Apple pass (2026-10-23)
+- Slim frosted header (52 px, text links, no sliding pill), centred hero with one sentence and two actions, the bird shown at a three-quarter angle on a lit "stage" like a product shot, which lifts and recedes as you scroll.
+- Home after the voyage: a bento grid (one big dark tile, two stat tiles, two habit tiles), the sentence that lights word by word, a full-width photo that grows into place, a swipeable project carousel with scroll snapping, and a one-line Join band. All in `src/styles/apple.css`.
+- Motion is CSS: scroll-driven animations (`animation-timeline`) for the progress bar, the bird, the sentence and the photo; the marquee is a CSS animation. Removed: the custom cursor, magnetic buttons, card tilt, parallax, the header's spring pill, and the scrambling text.
+- **Lite mode, as in v1** (`src/lib/lite.js`): automatic on phones (touch screen under 1024 px), `?lite` in the address, or the footer's "Lite: auto/on/off" switch. Lite keeps the opening screen and the whole voyage, but the voyage draws within v1's 0.8-megapixel budget with no post-processing and fewer particles, and the page drops its decorative animations and the header's blur.
