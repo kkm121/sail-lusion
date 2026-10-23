@@ -85,7 +85,7 @@ const PEOPLE = {
 // served from /public/team. Anyone without a photo shows their initial.
 const PROFILES = {
   [CREATOR]: { github: 'kkm121', linkedin: 'm-muthu-kumaran-expert', photo: '/team/muthu.jpg' },
-  Aarya: { github: 'Aarya21106', photo: '/team/aarya21106.jpg' },
+  Aarya: { github: 'Aarya21106', linkedin: 'aarya-a-553a77324', photo: '/team/aarya.jpg' },
   Esakkimadan: { github: 'ESAKKIMADAN', photo: '/team/esakkimadan.jpg' },
   Tharun: { github: 'Tharunoff' },
   'Sai Srikanth': { linkedin: 'saisrikanths', photo: '/team/saisrikanth.jpg' },
