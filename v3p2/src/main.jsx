@@ -7,6 +7,7 @@ import '@fontsource/jetbrains-mono/500.css';
 import './styles/base.css';
 import './styles/layout.css';
 import './styles/pages.css';
+import './styles/apple.css';
 import App from './App';
 
 // opening-screen hand-off (the screen itself lives in index.html): report progress, then let it finish once the fonts are in

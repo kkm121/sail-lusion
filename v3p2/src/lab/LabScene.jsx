@@ -252,7 +252,8 @@ export default function LabScene({ progress, active = true, tier = 'full', onWar
   const sp = useRef(0);
   const bloomRef = useRef();
   // modest devices: one pixel per pixel, no post-processing, fewer stars (see tier in Lab.jsx)
-  const dpr = useMemo(() => (tier === 'full' ? Math.min(window.devicePixelRatio || 1, 1) : 1), [tier]);
+  // full: 1x. lite (v1's rule): at most 1x and within a 0.8-megapixel budget, so big tablets stay light too
+  const dpr = useMemo(() => (tier === 'full' ? Math.min(window.devicePixelRatio || 1, 1) : Math.min(1, Math.sqrt(0.8e6 / (window.innerWidth * window.innerHeight)))), [tier]);
   const fx = touch || tier !== 'full' ? 0 : 2;
   const postOn = true;
   const startPost = useCallback(() => {}, []);

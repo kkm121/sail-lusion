@@ -4,6 +4,7 @@ import SplitLine from './SplitLine';
 import { CHAPTERS, ROOM_START, pAtZ } from './journey';
 import { labState } from './labstate';
 import { onFrame, reduced } from '../lib/motion';
+import { isLite } from '../lib/lite';
 import './lab.css';
 
 // The 3D voyage is its own chunk (three.js, react-three-fiber, post-processing): it is only downloaded and mounted near the section.
@@ -26,6 +27,7 @@ function labTier() {
   const mem = nav.deviceMemory || 4;
   const cores = nav.hardwareConcurrency || 4;
   if (mem <= 1) return 'static';
+  if (isLite()) return 'lite'; // phones (auto), ?lite, or the footer switch: v1's lite tier
   if (mem <= 2 || cores <= 2) return 'lite';
   return 'full';
 }

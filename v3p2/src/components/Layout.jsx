@@ -3,13 +3,13 @@ import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
 import { Magnetic } from './motion';
 import { Arrow, Logo, ScrambleText } from './ui';
 import Ambient from './Ambient';
-import Cursor from './Cursor';
 import CliSheet from './CliSheet';
 import Lenis from 'lenis';
 import { onFrame, scroll, reduced, setCalm, Spring } from '../lib/motion';
 import { SITE } from '../data/site';
 import { CREATOR } from '../data/team';
 import { prefetchPage } from '../routes';
+import { isLite, litePref, setLitePref } from '../lib/lite';
 
 export const NAV = [
   { to: '/', label: 'Home' },
@@ -75,59 +75,6 @@ function Header() {
     };
   }, []);
 
-  // Spring-driven sliding pill under hovered/active nav link
-  useEffect(() => {
-    const nav = navRef.current;
-    const pill = pillRef.current;
-    if (!nav || !pill || reduced()) return undefined;
-
-    const springX = new Spring(0, { damping: 0.85, response: 0.3 });
-    const springW = new Spring(0, { damping: 0.85, response: 0.3 });
-    const springOp = new Spring(0, { damping: 0.9, response: 0.25 });
-
-    const updateTarget = (el) => {
-      if (el) {
-        springX.target = el.offsetLeft;
-        springW.target = el.offsetWidth;
-        springOp.target = 1;
-      } else {
-        const active = nav.querySelector('a.active');
-        if (active) {
-          springX.target = active.offsetLeft;
-          springW.target = active.offsetWidth;
-          springOp.target = 1;
-        } else {
-          springOp.target = 0;
-        }
-      }
-    };
-
-    updateTarget(null);
-
-    const links = nav.querySelectorAll('a');
-    const onEnter = (e) => updateTarget(e.currentTarget);
-    const onLeave = () => updateTarget(null);
-
-    links.forEach((l) => l.addEventListener('pointerenter', onEnter));
-    nav.addEventListener('pointerleave', onLeave);
-
-    let lastT = '', lastW = '', lastO = '';
-    const stop = onFrame((dt) => {
-      const t = `translate3d(${springX.step(dt).toFixed(1)}px, 0, 0)`;
-      const w = `${springW.step(dt).toFixed(1)}px`;
-      const o = springOp.step(dt).toFixed(3);
-      // write only while the pill moves: a width change means layout, and it used to happen every frame
-      if (t !== lastT) pill.style.transform = lastT = t;
-      if (w !== lastW) pill.style.width = lastW = w;
-      if (o !== lastO) pill.style.opacity = lastO = o;
-    });
-
-    return () => {
-      stop();
-      links.forEach((l) => l.removeEventListener('pointerenter', onEnter));
-      nav.removeEventListener('pointerleave', onLeave);
-    };
-  }, [pathname]);
 
   return (
     <header ref={ref} className={`hd ${open ? 'is-open' : ''}`.trim()}>
@@ -140,10 +87,9 @@ function Header() {
           </span>
         </Link>
         <nav className="hd-nav" ref={navRef} aria-label="Primary">
-          <span className="hd-nav-pill" ref={pillRef} aria-hidden="true" />
           {NAV.map((n) => (
             <NavLink key={n.to} to={n.to} viewTransition onPointerEnter={() => prefetchPage(n.to)} onFocus={() => prefetchPage(n.to)}>
-              <ScrambleText text={n.label} />
+              {n.label}
             </NavLink>
           ))}
         </nav>
@@ -189,20 +135,21 @@ function Header() {
   );
 }
 
+// The reading progress bar: a CSS scroll-driven animation (see apple.css), no JavaScript per frame.
 function Progress() {
-  const ref = useRef(null);
-  useEffect(() => {
-    let last = '';
-    return onFrame(() => {
-      const v = scroll.progress.toFixed(4);
-      if (ref.current && v !== last) ref.current.style.transform = `scaleX(${(last = v)})`;
-    });
-  }, []);
-  return <div className="progress" ref={ref} aria-hidden="true" />;
+  return <div className="progress" aria-hidden="true" />;
 }
 
 function Footer() {
   const [calmState, setCalmState] = useState(() => reduced());
+  const [lite, setLite] = useState(() => litePref() || 'auto');
+  const cycleLite = () => {
+    const next = lite === 'auto' ? 'on' : lite === 'on' ? 'off' : 'auto';
+    setLitePref(next === 'auto' ? null : next);
+    setLite(next);
+    // the voyage picks its tier when it mounts: reload so the choice applies everywhere
+    window.location.reload();
+  };
   const toggleMotion = () => {
     const next = !reduced();
     setCalm(next);
@@ -282,6 +229,9 @@ function Footer() {
             >
               Motion: {calmState ? 'off' : 'on'}
             </button>
+            <button type="button" className="ft-top-btn" onClick={cycleLite} aria-label={`Lite mode. Currently ${lite}${lite === 'auto' ? (isLite() ? ', on for this device' : ', off for this device') : ''}`}>
+              Lite: {lite}
+            </button>
             <button type="button" className="ft-top-btn" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
               Back to top ↑
             </button>
@@ -329,7 +279,6 @@ export default function Layout() {
   return (
     <>
       <Progress />
-      <Cursor />
       <a className="skip" href="#main">
         Skip to content
       </a>
