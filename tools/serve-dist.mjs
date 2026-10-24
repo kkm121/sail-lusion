@@ -9,7 +9,7 @@ http.createServer((req, res) => {
   const url = decodeURIComponent(req.url.split('?')[0]);
   let file = path.join(root, url);
   if (fs.existsSync(file) && fs.statSync(file).isFile()) return send(file);
-  const m = /^\/(v1|v2|v3|v4)(\/|$)/.exec(url);
+  const m = /^\/(v1|v2|v3|v3p2)(\/|$)/.exec(url);
   if (m) return send(path.join(root, m[1], 'index.html'));
   if (/\.[\w]+$/.test(url)) { res.writeHead(404); return res.end('404'); }
   return send(path.join(root, 'index.html'));
