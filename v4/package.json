@@ -1,0 +1,31 @@
+{
+  "name": "firefly-v4",
+  "private": true,
+  "version": "0.3.2",
+  "type": "module",
+  "description": "FireFly club website, v3 part 2: the deployed v3, quieter, with v2's Inside FireFly voyage and the v4 opening screen.",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@fontsource-variable/inter": "^5.3.0",
+    "@fontsource-variable/sora": "^5.3.0",
+    "@fontsource-variable/space-grotesk": "^5.3.0",
+    "@fontsource/jetbrains-mono": "^5.3.0",
+    "@react-three/drei": "^10.7.9",
+    "@react-three/fiber": "^9.8.2",
+    "@react-three/postprocessing": "^3.2.2",
+    "lenis": "^1.3.27",
+    "postprocessing": "^6.39.5",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "react-router-dom": "^7.9.0",
+    "three": "^0.185.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^6.0.4",
+    "vite": "^8.2.0"
+  }
+}

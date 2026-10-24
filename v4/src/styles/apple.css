@@ -1,0 +1,197 @@
+/* =========================================================================
+   v3p2, the Apple pass: fewer things, bigger type, more air, one idea per screen.
+   Motion here is CSS only (compositor animations and scroll-driven timelines), so none of it costs JavaScript per frame.
+   Loaded after base, layout and pages, so it overrides them.
+   ========================================================================= */
+:root { --apple-r: 28px; --apple-ease: cubic-bezier(0.25, 0.1, 0.25, 1); }
+
+/* ---------- global navigation: slim, frosted, quiet ---------- */
+.hd-in { height: 52px; gap: 20px; }
+.hd-brand .logo { width: 26px; height: 26px; }
+.hd-brand b { font-size: 16px; letter-spacing: -0.01em; }
+.hd-brand small { display: none; }
+.hd-nav { gap: 0; padding: 0; border: 0; background: none; }
+.hd-nav a { padding: 6px 12px; font-size: 13.5px; font-weight: 450; letter-spacing: -0.005em; opacity: 0.82; transition: opacity 0.2s var(--apple-ease); }
+.hd-nav a:hover, .hd-nav a.active { opacity: 1; }
+.hd-nav a.active { font-weight: 600; }
+.hd::before { background: rgba(247, 242, 234, 0.74); backdrop-filter: saturate(180%) blur(20px); -webkit-backdrop-filter: saturate(180%) blur(20px); border-bottom: 1px solid rgba(27, 19, 13, 0.08); }
+.hd-act-btn { height: 32px; padding: 0 10px; border: 0; background: none; font-size: 13px; }
+.hd-cli-btn { height: 30px; padding: 0 12px; font-size: 12px; }
+.hd-join { height: 32px; padding: 0 16px; font-size: 13px; }
+.hd-join::after { display: none; }
+.hd-drawer { inset: 52px 0 0 0; }
+.hd-burger { width: 38px; height: 38px; }
+.hd-burger i:first-child { top: 14px; }
+.hd-burger i:last-child { top: 22px; }
+
+/* reading progress: driven by the scroll itself, no JavaScript */
+.progress { height: 2px; }
+@supports (animation-timeline: scroll()) {
+  .progress { animation: ff-progress linear both; animation-timeline: scroll(root); }
+  @keyframes ff-progress { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+}
+
+/* ---------- buttons and links ---------- */
+.btn-primary::after { display: none; }
+.ah-link, .ab .ah-link { display: inline-flex; align-items: center; gap: 4px; font-size: 19px; font-weight: 500; letter-spacing: -0.01em; color: var(--ember-1); }
+.ah-link:hover { text-decoration: underline; text-underline-offset: 4px; }
+.chev { width: 0.62em; height: 0.62em; margin-top: 2px; }
+.ab-kicker { margin: 0 0 10px; font-size: 17px; font-weight: 600; letter-spacing: -0.01em; color: var(--ember-ink); }
+
+/* ---------- hero: centred headline, one sentence, two actions, the bird on a stage ---------- */
+.ah { display: flex; flex-direction: column; justify-content: flex-start; align-items: center; min-height: 100svh; padding: clamp(92px, 13vh, 132px) 0 0; text-align: center; }
+.ah::after { display: none; }
+.ah-in { display: grid; justify-items: center; gap: 22px; position: relative; z-index: 2; }
+.ah-eyebrow { margin: 0; font-size: 15px; font-weight: 500; letter-spacing: 0; color: var(--muted); }
+.ah-title { margin: 0; display: grid; font-family: var(--f-display); font-weight: 600; font-size: clamp(50px, 8vw, 118px); line-height: 0.96; letter-spacing: -0.055em; color: var(--ink); }
+.ah-line { display: block; }
+/* the cycling word's box follows the word on show, so the centred line stays centred */
+.ah .cycle { transition: width 0.55s var(--ease); justify-items: start; }
+.ah .cycle-w { justify-self: start; white-space: nowrap; }
+.ah .cycle-sizer { display: none; }
+.ah-sub { margin: 0; max-width: 32ch; font-size: clamp(19px, 1.7vw, 24px); line-height: 1.38; letter-spacing: -0.01em; color: var(--ink-2); }
+.ah-cta { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 26px; margin-top: 6px; }
+.ah-btn { height: 46px; padding: 0 24px; font-size: 16px; }
+/* the stage: the bird at a three-quarter angle, floating, with light pooling on the floor beneath it */
+.ah-stage { position: relative; z-index: 1; flex: 1; width: 100%; display: grid; place-items: center; min-height: clamp(220px, 32vh, 360px); padding-bottom: 3vh; perspective: 1400px; }
+.ah-mark { width: clamp(150px, 19vw, 270px); }
+.ah-bird { transform: rotateX(14deg) rotateY(-22deg) rotateZ(-4deg); transform-style: preserve-3d; animation: ah-float 7s ease-in-out infinite; }
+.ah-bird .logo { width: 100%; height: auto; filter: drop-shadow(0 30px 50px rgba(232, 25, 44, 0.45)); }
+.ah-floor { position: absolute; left: 50%; bottom: 6%; width: clamp(240px, 34vw, 520px); height: 70px; translate: -50% 0; border-radius: 50%; background: radial-gradient(closest-side, rgba(255, 106, 43, 0.38), rgba(255, 106, 43, 0)); filter: blur(6px); }
+@keyframes ah-float { 50% { transform: rotateX(14deg) rotateY(-16deg) rotateZ(-2deg) translateY(-14px); } }
+/* as the page scrolls, the bird rises and recedes (scroll-driven, CSS only) */
+@supports (animation-timeline: scroll()) {
+  .ah-mark { animation: ah-lift linear both; animation-timeline: scroll(root); animation-range: 0 100vh; }
+  @keyframes ah-lift { to { transform: translateY(-90px) scale(0.84); opacity: 0.15; } }
+}
+.hero-mark, .scroll-cue { display: none; }
+
+/* ---------- section heads ---------- */
+.ab-head { display: grid; justify-items: center; text-align: center; gap: 0; margin: 0 auto clamp(40px, 6vw, 72px); max-width: 880px; }
+.ab-h { margin: 0; font-family: var(--f-display); font-weight: 600; font-size: clamp(40px, 6vw, 80px); line-height: 1; letter-spacing: -0.05em; color: var(--ink); }
+.ab-sub { margin: 18px 0 0; max-width: 40ch; font-size: clamp(18px, 1.5vw, 21px); line-height: 1.45; letter-spacing: -0.01em; color: var(--muted); }
+
+/* ---------- bento: tiles of different sizes, each one idea ---------- */
+.bento { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 16px; }
+.tile { position: relative; overflow: hidden; display: grid; align-content: end; gap: 10px; min-height: 260px; padding: clamp(26px, 3vw, 40px); border-radius: var(--apple-r); background: var(--card); box-shadow: 0 1px 2px rgba(27, 19, 13, 0.04); transition: transform 0.5s var(--apple-ease), box-shadow 0.5s var(--apple-ease); }
+.tile:hover { transform: translateY(-4px); box-shadow: 0 24px 50px -30px rgba(60, 30, 10, 0.35); }
+.tile h3 { margin: 0; font-family: var(--f-display); font-size: clamp(26px, 2.4vw, 34px); font-weight: 600; letter-spacing: -0.035em; color: var(--ink); }
+.tile p { margin: 0; max-width: 36ch; font-size: 16px; line-height: 1.5; color: var(--muted); }
+.tile-n { position: absolute; top: clamp(22px, 2.6vw, 34px); left: clamp(26px, 3vw, 40px); font-family: var(--f-display); font-size: 15px; font-weight: 600; color: var(--ember-ink); }
+.tile-0 { grid-column: span 4; grid-row: span 2; min-height: 420px; background: var(--night); }
+.tile-0 h3 { font-size: clamp(40px, 4.6vw, 64px); color: #fbf1e7; }
+.tile-0 p { color: rgba(251, 241, 231, 0.66); font-size: 18px; }
+.tile-0 .tile-n { color: var(--ember-1); }
+.tile-0::before { content: ''; position: absolute; right: -12%; top: -30%; width: 70%; aspect-ratio: 1; border-radius: 50%; background: radial-gradient(closest-side, rgba(255, 106, 43, 0.4), rgba(255, 106, 43, 0)); }
+.tile-1, .tile-2 { grid-column: span 3; }
+.tile-stat { grid-column: span 2; align-content: center; justify-items: start; }
+.tile-stat b { display: inline-block; padding: 0.08em 0.06em 0.04em 0; font-family: var(--f-display); font-size: clamp(64px, 7vw, 104px); font-weight: 600; line-height: 1; letter-spacing: -0.06em; background: var(--ember); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.tile-stat span { font-size: 17px; font-weight: 500; color: var(--ink-2); }
+/* the two stats sit beside the big tile; the two habits share the row beneath */
+.bento > .tile-stat:nth-of-type(4) { grid-column: 5 / span 2; grid-row: 1; }
+.bento > .tile-stat:nth-of-type(5) { grid-column: 5 / span 2; grid-row: 2; }
+.bento > .tile-1 { grid-row: 3; }
+.bento > .tile-2 { grid-row: 3; }
+@media (max-width: 899px) {
+  .bento { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .tile-0, .tile-1, .tile-2 { grid-column: 1 / -1; grid-row: auto !important; min-height: 0; }
+  .tile-0 { min-height: 340px; }
+  .bento > .tile-stat:nth-of-type(4), .bento > .tile-stat:nth-of-type(5) { grid-column: span 1; grid-row: auto; }
+  .tile { min-height: 200px; }
+}
+
+/* ---------- the sentence that lights up as you read ---------- */
+.statement .wrap { gap: 18px; }
+.statement .ab-kicker { margin: 0; }
+@supports (animation-timeline: view()) {
+  .statement-text { view-timeline: --ff-st block; }
+  .statement-text span { opacity: 0.16; animation: ff-lit linear both; animation-timeline: --ff-st; animation-range: cover calc(18% + var(--w) * 32%) cover calc(22% + var(--w) * 32%); }
+  @keyframes ff-lit { to { opacity: 1; } }
+}
+
+/* ---------- story: a full-width photograph that grows into place as it arrives ---------- */
+.ag .ab-head { margin-bottom: clamp(40px, 5vw, 64px); }
+.ag-fig { margin: 0 auto; width: min(1280px, calc(100% - 2 * var(--pad))); aspect-ratio: 16 / 8; overflow: hidden; border-radius: var(--apple-r); }
+.ag-fig img { display: block; width: 100%; height: 100%; object-fit: cover; }
+@supports (animation-timeline: view()) {
+  .ag-fig { animation: ag-grow linear both; animation-timeline: view(); animation-range: entry 0% cover 42%; }
+  @keyframes ag-grow { from { transform: scale(0.82); } to { transform: none; } }
+}
+.ag-note { margin: clamp(28px, 4vw, 44px) auto 0; max-width: 46ch; text-align: center; font-size: clamp(18px, 1.5vw, 21px); line-height: 1.45; color: var(--muted); }
+@media (max-width: 760px) { .ag-fig { aspect-ratio: 4 / 5; } }
+
+/* ---------- projects: tall cards in a row you swipe ---------- */
+.ap-head { display: flex; align-items: end; justify-content: space-between; gap: 24px; margin-bottom: clamp(28px, 4vw, 44px); }
+.ap-head .ab-h { text-align: left; }
+.car-wrap { position: relative; }
+.car { display: grid; grid-auto-flow: column; grid-auto-columns: min(360px, 78vw); gap: 20px; overflow-x: auto; overscroll-behavior-x: contain; scroll-snap-type: x mandatory; scroll-padding-inline: var(--pad); padding: 6px var(--pad) 24px; scrollbar-width: none; }
+.car::-webkit-scrollbar { display: none; }
+.car-card { scroll-snap-align: start; display: grid; grid-template-rows: auto 1fr; overflow: hidden; border-radius: var(--apple-r); background: var(--card); box-shadow: 0 1px 2px rgba(27, 19, 13, 0.04); transition: transform 0.5s var(--apple-ease), box-shadow 0.5s var(--apple-ease); }
+.car-card:hover { transform: translateY(-4px); box-shadow: 0 24px 50px -30px rgba(60, 30, 10, 0.35); }
+.car-img { aspect-ratio: 4 / 3; overflow: hidden; background: var(--paper-2); }
+.car-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.car-body { display: grid; align-content: start; gap: 8px; padding: 22px 24px 26px; }
+.car-tag { font-size: 13px; font-weight: 600; color: var(--dc, var(--ember-ink)); filter: saturate(0.8) brightness(0.7); }
+.car-body h3 { margin: 0; font-family: var(--f-display); font-size: 24px; font-weight: 600; letter-spacing: -0.03em; color: var(--ink); }
+.car-body p { margin: 0; font-size: 15px; line-height: 1.5; color: var(--muted); }
+.car-status { margin-top: 6px; font-size: 13px; color: var(--ink-2); }
+.car-nav { display: flex; justify-content: flex-end; gap: 12px; padding: 0 var(--pad); }
+.car-nav button { width: 40px; height: 40px; display: grid; place-items: center; border: 0; border-radius: 50%; background: rgba(27, 19, 13, 0.08); color: var(--ink); cursor: pointer; transition: background 0.2s; }
+.car-nav button:hover { background: rgba(27, 19, 13, 0.14); }
+.car-nav button:first-child .chev { transform: scaleX(-1); }
+.car-nav .chev { width: 14px; height: 14px; margin: 0; }
+@media (hover: none) { .car-nav { display: none; } }
+
+/* ---------- closing band ---------- */
+.join-band { padding: clamp(100px, 12vw, 170px) 0; }
+.join-band-logo { width: clamp(64px, 7vw, 92px); animation: none; }
+.join-club-title { font-size: clamp(52px, 8vw, 116px); }
+.join-club-title:hover { transform: none; text-shadow: none; }
+
+/* ---------- marquee bands: a CSS animation (width measured once in Marquee) ---------- */
+.mq-t { animation: mq-run var(--mq-dur, 40s) linear infinite; }
+@keyframes mq-run { to { transform: translate3d(-33.3333%, 0, 0); } }
+html.calm .mq-t { animation: none; }
+
+/* ---------- Lite (phones by default, ?lite, or the footer switch), as in v1 ---------- */
+html.lite .ah-bird, html.lite .ah-mark, html.lite .hero-ring, html.lite .ambient i, html.lite .sky.is-css i, html.lite .mq-t, html.lite .join-band-logo { animation: none !important; }
+html.lite .hd::before { backdrop-filter: none; -webkit-backdrop-filter: none; background: rgba(247, 242, 234, 0.97); }
+html.lite .ah-floor { filter: none; }
+html.lite .tile, html.lite .car-card { transition: none; }
+html.lite .tile:hover, html.lite .car-card:hover { transform: none; }
+html.lite .ag-fig { animation: none; }
+
+/* phones */
+@media (max-width: 899px) {
+  .tile-0 { min-height: 300px; padding-top: 64px; }
+  .ap-head { flex-wrap: wrap; align-items: baseline; }
+  .ap-head .ah-link { white-space: nowrap; font-size: 17px; }
+  .ah-stage { min-height: 34vh; }
+  .ah-mark { width: 46vw; }
+}
+
+/* the big tile's top right: the ways we learn, in ember, stacked like a spec list */
+.tile-list { position: absolute; top: clamp(22px, 2.6vw, 34px); right: clamp(26px, 3vw, 40px); z-index: 1; margin: 0; padding: 0; list-style: none; display: grid; gap: 6px; text-align: right; }
+.tile-list li { font-family: var(--f-display); font-size: clamp(20px, 2vw, 30px); font-weight: 600; letter-spacing: -0.03em; line-height: 1.1; background: linear-gradient(90deg, #ffb347, #ff6a2b 55%, #e8192c); -webkit-background-clip: text; background-clip: text; color: transparent; opacity: 0.92; }
+.tile-list li:nth-child(n+3) { opacity: 0.55; }
+@media (max-width: 899px) { .tile-list li { font-size: 18px; } }
+
+/* ---------- light cursor (no canvas, moves only with the pointer) ---------- */
+.lc-dot, .lc-ring { position: fixed; left: 0; top: 0; z-index: 9000; pointer-events: none; display: none; }
+html.has-cursor .lc-dot, html.has-cursor .lc-ring { display: block; }
+.lc-dot { width: 6px; height: 6px; margin: -3px 0 0 -3px; border-radius: 50%; background: var(--ember-2); }
+.lc-ring { width: 34px; height: 34px; margin: -17px 0 0 -17px; border-radius: 50%; border: 1.5px solid rgba(242, 90, 29, 0.55); transition: transform 0.28s cubic-bezier(0.2, 0.8, 0.2, 1), width 0.3s, height 0.3s, margin 0.3s, background 0.3s, border-color 0.3s, opacity 0.3s; }
+.lc-ring.is-link { width: 58px; height: 58px; margin: -29px 0 0 -29px; background: rgba(255, 106, 43, 0.12); border-color: rgba(255, 155, 47, 0.7); }
+.lc-ring.is-down { width: 26px; height: 26px; margin: -13px 0 0 -13px; }
+.lc-ring.is-gone { opacity: 0; }
+
+
+/* ---------- the crew cards (v3's layout) with a face and profile links ---------- */
+.person-face-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.person-face { width: 56px; height: 56px; border-radius: 50%; overflow: hidden; display: grid; place-items: center; flex: none; background: var(--ember); color: #fff; font-family: var(--f-display); font-size: 22px; font-weight: 600; box-shadow: 0 0 0 3px var(--card), 0 0 0 4px rgba(242, 90, 29, 0.25); }
+.person-face img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.person.is-creator .person-face { box-shadow: 0 0 0 3px var(--card), 0 0 0 5px #e0b04a; }
+.mate-links { display: flex; gap: 6px; }
+.mate-links a { width: 32px; height: 32px; display: grid; place-items: center; border-radius: 50%; color: var(--ink-2); background: rgba(27, 19, 13, 0.06); transition: background 0.2s, color 0.2s; }
+.mate-links a:hover { background: var(--ember-2); color: #fff; }
+.mate-links svg { width: 15px; height: 15px; }

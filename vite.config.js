@@ -21,6 +21,10 @@ function multiVersionPreviewPlugin() {
           res.writeHead(302, { Location: '/v3/' });
           return res.end();
         }
+        if (url === '/v4') {
+          res.writeHead(302, { Location: '/v4/' });
+          return res.end();
+        }
 
         // Subroute SPA fallbacks for direct page refreshes on subpages
         if (url.startsWith('/v1/') && !path.extname(url)) {
@@ -42,6 +46,13 @@ function multiVersionPreviewPlugin() {
           if (fs.existsSync(v3Index)) {
             res.setHeader('Content-Type', 'text/html; charset=utf-8');
             return fs.createReadStream(v3Index).pipe(res);
+          }
+        }
+        if (url.startsWith('/v4/') && !path.extname(url)) {
+          const v4Index = path.resolve('dist/v4/index.html');
+          if (fs.existsSync(v4Index)) {
+            res.setHeader('Content-Type', 'text/html; charset=utf-8');
+            return fs.createReadStream(v4Index).pipe(res);
           }
         }
 

@@ -9,6 +9,7 @@ const distDir = path.join(rootDir, 'dist');
 const v1Dir = path.join(rootDir, 'v1');
 const v3Dir = path.join(rootDir, 'v3');
 const v3p2Dir = path.join(rootDir, 'v3p2');
+const v4Dir = path.join(rootDir, 'v4');
 
 console.log('[build-all] Cleaning root dist directory...');
 fs.rmSync(distDir, { recursive: true, force: true });
@@ -46,7 +47,7 @@ execSync('npx vite build --base=/v2/ --outDir=dist/v2', {
 
 // 3. Build v3 (Editorial Club site with WebGL Fluid)
 console.log('\n========================================');
-console.log('[build-all] 3/3: Building Version 3 (v3)...');
+console.log('[build-all] 3/4: Building Version 3 (v3)...');
 console.log('========================================');
 execSync('npx vite build --base=/v3/ --outDir=../dist/v3', {
   cwd: v3Dir,
@@ -54,7 +55,17 @@ execSync('npx vite build --base=/v3/ --outDir=../dist/v3', {
   env: { ...process.env, BASE: '/v3/', OUT_DIR: '../dist/v3' }
 });
 
-// 4. The root index.html and /brand come from v3p2 (step 0); there is no gateway page any more.
+// 4. Build v4 (Minimalist Platform with Hoagie Hierarchy, Non-Neon Crimson & 3D Discover Voyage)
+console.log('\n========================================');
+console.log('[build-all] 4/4: Building Version 4 (v4)...');
+console.log('========================================');
+execSync('npx vite build --base=/v4/ --outDir=../dist/v4', {
+  cwd: v4Dir,
+  stdio: 'inherit',
+  env: { ...process.env, BASE: '/v4/', OUT_DIR: '../dist/v4' }
+});
+
+// 5. The root index.html and /brand come from v3p2 (step 0); there is no gateway page any more.
 const favSrc = path.join(rootDir, 'public', 'favicon.svg');
 const favDest = path.join(distDir, 'favicon.svg');
 if (fs.existsSync(favSrc) && !fs.existsSync(favDest)) {
@@ -66,3 +77,4 @@ console.log(' - dist/ (main site: v3p2, the quiet v3 with the v2 voyage)');
 console.log(' - dist/v1/ (Classic SAIL Crystal)');
 console.log(' - dist/v2/ (Immersive 3D Voyage)');
 console.log(' - dist/v3/ (Editorial Club Site)');
+console.log(' - dist/v4/ (Minimalist Platform & 3D Discover Voyage)');
