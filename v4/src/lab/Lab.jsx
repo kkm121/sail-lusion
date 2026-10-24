@@ -47,6 +47,7 @@ export default function Lab() {
   const [tier] = useState(labTier);
   const [go, setGo] = useState(false); // the canvas exists only while the section is near the screen
   const [active, setActive] = useState(false); // it draws only while the section is on screen
+  const [warmed, setWarmed] = useState(false); // the canvas stays hidden while it warms up (it briefly draws every scene then)
   const ring = useRef(null);
   const words = useRef(null);
   const giant = useRef(null);
@@ -68,6 +69,7 @@ export default function Lab() {
     let idle = 0;
     const start = () => {
       Object.assign(labState, { env: false, cage: false, earth: false, nav: false, warm: false, dive: false });
+      setWarmed(false);
       setGo(true);
     };
     // mount when within a screen and a half, after the browser is idle so the page's own entrance is never interrupted
@@ -470,8 +472,18 @@ export default function Lab() {
             <div className="sl-lab-screen">
               <div className="sl-lab-still" />
               <Suspense fallback={null}>
-                <div className="sl-lab-canvas">
-                  {go && <LabScene progress={progress} active={active} tier={tier} onWarm={() => window.__labWarmDone?.()} />}
+                <div className={warmed ? 'sl-lab-canvas is-warm' : 'sl-lab-canvas'}>
+                  {go && (
+                    <LabScene
+                      progress={progress}
+                      active={active}
+                      tier={tier}
+                      onWarm={() => {
+                        window.__labWarmDone?.();
+                        setWarmed(true);
+                      }}
+                    />
+                  )}
                 </div>
               </Suspense>
               <div className="sl-lab-ring" ref={ring} aria-hidden="true">
