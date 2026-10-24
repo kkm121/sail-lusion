@@ -151,3 +151,10 @@ body::before { content: ''; position: fixed; inset: 0; z-index: -1; pointer-even
   .v4-why li { border-radius: 22px; padding: 16px 22px; }
 }
 html.lite .v4-bird { animation: none; }
+
+/* leftovers from the light v3 look */
+html.lite .hd::before { background: rgba(13, 13, 14, 0.97); }
+@media (max-width: 760px) { .hd::before { background: rgba(13, 13, 14, 0.96); } }
+.dom-nav-in { background: linear-gradient(rgba(13, 13, 14, 0.94) 75%, rgba(13, 13, 14, 0)); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+.dom-nav a { background: rgba(255, 255, 255, 0.05); border-color: rgba(255, 255, 255, 0.12); color: var(--ink-2); }
+.dom-nav a.is-on { background: color-mix(in srgb, var(--dc) 22%, #161617); color: var(--ink); }

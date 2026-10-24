@@ -15,12 +15,12 @@ console.log('[build-all] Cleaning root dist directory...');
 fs.rmSync(distDir, { recursive: true, force: true });
 fs.mkdirSync(distDir, { recursive: true });
 
-// 0. Build the main site (v3p2) at the root. It empties dist, so it goes before the versioned builds.
+// 0. Build the main site (v4) at the root. It empties dist, so it goes before the versioned builds.
 console.log('\n========================================');
-console.log('[build-all] 0/3: Building the main site (v3p2) at /...');
+console.log('[build-all] 0/4: Building the main site (v4) at /...');
 console.log('========================================');
-execSync('npx vite build --outDir=../dist', {
-  cwd: v3p2Dir,
+execSync('npx vite build --base=/ --outDir=../dist', {
+  cwd: v4Dir,
   stdio: 'inherit',
   env: { ...process.env, SITE_BASE: '/', OUT_DIR: '../dist' }
 });
@@ -55,14 +55,14 @@ execSync('npx vite build --base=/v3/ --outDir=../dist/v3', {
   env: { ...process.env, BASE: '/v3/', OUT_DIR: '../dist/v3' }
 });
 
-// 4. Build v4 (Minimalist Platform with Hoagie Hierarchy, Non-Neon Crimson & 3D Discover Voyage)
+// 4. The previous main site (v3p2) stays available at /v3p2/
 console.log('\n========================================');
-console.log('[build-all] 4/4: Building Version 4 (v4)...');
+console.log('[build-all] 4/4: Building the previous main site (v3p2) at /v3p2/...');
 console.log('========================================');
-execSync('npx vite build --base=/v4/ --outDir=../dist/v4', {
-  cwd: v4Dir,
+execSync('npx vite build --base=/v3p2/ --outDir=../dist/v3p2', {
+  cwd: v3p2Dir,
   stdio: 'inherit',
-  env: { ...process.env, BASE: '/v4/', OUT_DIR: '../dist/v4' }
+  env: { ...process.env, SITE_BASE: '/v3p2/', OUT_DIR: '../dist/v3p2' }
 });
 
 // 5. The root index.html and /brand come from v3p2 (step 0); there is no gateway page any more.
@@ -73,8 +73,8 @@ if (fs.existsSync(favSrc) && !fs.existsSync(favDest)) {
 }
 
 console.log('\n[build-all] Built into dist:');
-console.log(' - dist/ (main site: v3p2, the quiet v3 with the v2 voyage)');
+console.log(' - dist/ (main site: v4, poster look with the Discover voyage)');
 console.log(' - dist/v1/ (Classic SAIL Crystal)');
 console.log(' - dist/v2/ (Immersive 3D Voyage)');
 console.log(' - dist/v3/ (Editorial Club Site)');
-console.log(' - dist/v4/ (Minimalist Platform & 3D Discover Voyage)');
+console.log(' - dist/v3p2/ (previous main site)');
