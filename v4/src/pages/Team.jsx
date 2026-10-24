@@ -111,7 +111,6 @@ export default function Team() {
                 <p className="mono" style={{ color: 'var(--ember-1)', fontSize: 11 }}>
                   {m.creator ? 'Technical Team · Creator of this website' : m.area}
                 </p>
-                <p className="small">{m.about}</p>
               </article>
             ))}
           </Reveal>
