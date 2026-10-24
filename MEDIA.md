@@ -12,6 +12,10 @@ The site tells one story (see [STORY.md](STORY.md)). Everything below was downlo
 | The mission recording (reel card) | `public/video/reel-desktop.mp4`, `reel-mobile.mp4` | built from the clips below (see Rebuilding the reel) |
 | Console still before the 3D loads | `public/media/lab-screen.jpg` | `HAVE.lab` |
 | The Cargo (project tiles) | `public/media/projects/<project-id>.jpg` | `HAVE.projects` |
+| Brand poster: Amiee | `public/brand/poster-amiee.jpg` | Brand gallery asset |
+| Brand poster: Benefits | `public/brand/poster-benefits.jpg` | Brand gallery asset |
+| Brand poster: Credo | `public/brand/poster-credo.jpg` | Brand gallery asset |
+| Brand poster: Feather | `public/brand/poster-feather.jpg` | Brand gallery asset |
 
 ## Credits
 

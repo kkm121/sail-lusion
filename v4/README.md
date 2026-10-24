@@ -1,15 +1,22 @@
-# FireFly v3 part 2 (`firefly-v3p2`)
+# FireFly v4 (Expanded Production Release)
 
-The deployed v3 (from `sail-lusion/v3`, with all its fixes: unified Home/About, gold creator card and footer credit, equal team cards, dark footer with the giant FireFly, mobile pacing), made quieter, with **v2's whole "Inside FireFly" voyage** and the **v4 opening screen**. Local git only, never pushed.
+The primary production release of the FireFly Club web platform, serving the root `/` route. Built with the poster visual direction, brand poster galleries, refined typography, and the complete 5-chapter **"Inside FireFly"** 3D spatial voyage.
 
 Run: `npm install`, then `npx vite --host 127.0.0.1 --port 5190` (dev) or `npx vite build && npx vite preview --port 4190`.
-`vite.config.js` builds for `/` by default; set `SITE_BASE=/v3/` to build for the multi-version site.
+`vite.config.js` builds for `/` by default; set `SITE_BASE=/` to build for the multi-version root.
 
-## What it is
-- **Opening screen** (`index.html`, plain script, raw WebGL): a sphere of lights grows with the load, a counter rolls, then the lights form the word FireFly in Space Grotesk (a 1.5 KB subset embedded in the page, so it never waits for a font), the bird appears above it, and the screen splits open. The page mounts as it opens (`Layout.jsx` waits for `ff:ready`). It replaces v3's telemetry preloader.
-- **Inside FireFly** (`src/lab/`): v2's voyage, ported file for file from `sail-lusion/src` (Lab, LabScene, scene/Cage, Vortex, Room, Finale, Planet, Navigator): the device frame with Earth at sunrise, the ring and the words flying out, the golden Build corridor, the Discover core (orbit, then dive through), the violet Create room, the crossing into space, and the finale with the Navigator robot (v2's take on Lusion's astronaut) waving goodbye, with v2's one-second goodbye pause. 15 screens long, as in v2. No ribbon.
-- **Smooth scrolling** with Lenis (`lenis` package), as in v2; off on touch screens and when Motion is off.
-- **Quieter than v3**: no fluid-simulation canvases, no full-screen shader backgrounds (both are CSS now: `Backdrop.jsx`, `Ambient.jsx`), no scrambling text, no telemetry, no card tilt on Home. Home is hero, marquee, the voyage, What we do, one sentence lit word by word as you scroll, Why a firefly, Projects, Join.
+## What is FireFly v4
+- **Poster Aesthetic & Brand Posters**: Integration of high-definition brand posters (`poster-amiee.jpg`, `poster-benefits.jpg`, `poster-credo.jpg`, `poster-feather.jpg`) delivering a modern, clean visual direction.
+- **Hero Redesign**: Team-styled typography featuring pure white "Fire", subtle grey "Fly", brick accent buttons, and a quiet bird emblem.
+- **Streamlined Team Cards**: Focused layout displaying each core member's name, domain, and position.
+- **Opening Screen** (`index.html`, raw WebGL): A sphere of light expands during preloading, digits count to 100, the lights configure into the FireFly wordmark in Space Grotesk, the bird ascends, and the diagonal split opens smoothly into the site (`Layout.jsx` syncs with `ff:ready`).
+- **Inside FireFly Voyage** (`src/lab/`): Full 5-chapter interactive spatial odyssey ported from v2 (`Build`, `Discover`, `Create`, `Connect`, and `Record`):
+  1. *Build*: Steel cage corridor with glitching telemetry and golden ambient light.
+  2. *Discover*: Woven vortex of teal, violet, and gold light strands.
+  3. *Create*: Architectural violet room with luminous rings.
+  4. *Connect*: Glass transition into floating symbolic stickers.
+  5. *Record*: Nav robot waving goodbye with a calibrated 1-second goodbye lock.
+- **Mobile Optimizations**: Dedicated touch pacing, strict containment (`content-visibility: auto`), zero horizontal overflow, and full-viewport voyage scaling that prevents resize jumps during mobile scrolling.
 
 ## Smoothness of the voyage (keep it)
 - `Lab.jsx` runs one per-frame step on the site clock (`onFrame`, after Lenis) instead of scroll event -> next frame.
