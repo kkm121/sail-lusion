@@ -2,7 +2,7 @@ import http from 'node:http';
 import fs from 'node:fs';
 import path from 'node:path';
 // Serves dist/ the way vercel.json does: real files first, then each version's index.html, then the main site's.
-const root = path.resolve('dist');
+const root = path.resolve(process.argv[3] || 'dist');
 const port = Number(process.argv[2] || 4600);
 const types = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.png': 'image/png', '.jpg': 'image/jpeg', '.svg': 'image/svg+xml', '.woff2': 'font/woff2', '.glb': 'model/gltf-binary', '.hdr': 'application/octet-stream', '.mp4': 'video/mp4', '.json': 'application/json', '.webp': 'image/webp' };
 http.createServer((req, res) => {
