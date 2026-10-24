@@ -1,0 +1,153 @@
+/* =========================================================================
+   FireFly v4: the posters' look (near-black starry sky, muted brick crimson, thin wide white type) with the
+   structure of an Apple product page (one idea per screen, centred heads, generous space). Loaded last.
+   ========================================================================= */
+:root, .dark, .hero, .ph, .join-band, .ft, .deck-card, .hd.is-over {
+  --paper: #0d0d0e;
+  --paper-2: #141415;
+  --night: #0a0a0b;
+  --night-2: #111112;
+  --card: #161617;
+  --glass: rgba(255, 255, 255, 0.04);
+  --glass-2: rgba(255, 255, 255, 0.07);
+  --ink: #f3f1ee;
+  --ink-2: rgba(243, 241, 238, 0.82);
+  --muted: rgba(243, 241, 238, 0.58);
+  --faint: rgba(243, 241, 238, 0.36);
+  --line: rgba(255, 255, 255, 0.09);
+  --line-2: rgba(255, 255, 255, 0.16);
+  --stroke: rgba(255, 255, 255, 0.3);
+  --shadow: none;
+  --ember-1: #d9846f;
+  --ember-ink: #d9846f;
+  --ember-2: #b14a3b;
+  --ember-3: #8e3226;
+  --ember: linear-gradient(115deg, #c45f4c, #b14a3b 55%, #9b3b2e);
+  --crimson: #b14a3b;
+  --f-display: 'Sora Variable', 'Sora', 'Space Grotesk Variable', ui-sans-serif, system-ui, sans-serif;
+  color-scheme: dark;
+}
+html, body { background: #0d0d0e; color: var(--ink); }
+
+/* the sky: fixed, static stars (painted once) */
+body::before { content: ''; position: fixed; inset: 0; z-index: -1; pointer-events: none; background:
+  radial-gradient(1px 1px at 12% 18%, rgba(255, 255, 255, 0.5), transparent),
+  radial-gradient(1px 1px at 72% 12%, rgba(255, 255, 255, 0.35), transparent),
+  radial-gradient(1.4px 1.4px at 38% 68%, rgba(255, 236, 226, 0.4), transparent),
+  radial-gradient(1px 1px at 88% 58%, rgba(255, 255, 255, 0.3), transparent),
+  radial-gradient(1px 1px at 22% 86%, rgba(255, 255, 255, 0.35), transparent),
+  radial-gradient(1.2px 1.2px at 56% 40%, rgba(255, 255, 255, 0.28), transparent);
+  background-size: 340px 300px, 410px 360px, 290px 330px, 380px 420px, 450px 310px, 520px 470px; }
+.ambient, .sky.is-css .g1, .sky.is-css .g2 { display: none; }
+.hero, .ph, .join-band, .ft, .section.band { background: transparent; }
+
+/* header: Apple's dark frosted bar */
+.hd::before { background: rgba(13, 13, 14, 0.72); border-bottom: 1px solid rgba(255, 255, 255, 0.07); }
+.hd.is-open::before { background: #0d0d0e; }
+.hd-drawer { background: #0d0d0e; }
+.hd-brand b { font-family: var(--f-display); font-weight: 400; letter-spacing: 0; }
+.hd-cli-btn { background: transparent; border-color: rgba(255, 255, 255, 0.16); }
+.hd-bolt { color: var(--crimson); filter: none; }
+
+/* buttons: solid muted crimson pills, no glow */
+.btn-primary { background: var(--crimson); box-shadow: none; }
+.btn-primary:hover { background: #c05645; box-shadow: none; }
+.btn-ghost { border-color: rgba(255, 255, 255, 0.18); background: transparent; }
+
+/* type: thin, wide display; the rest stays Inter */
+.display, .h2, .h3, .ab-h, .v4-h, .mq-i { font-family: var(--f-display); }
+.display, .ab-h { font-weight: 300; letter-spacing: -0.02em; }
+.ember-text { background: none; -webkit-text-fill-color: currentColor; color: var(--ember-1); }
+
+/* ---------- v4 Home ---------- */
+.v4 { position: relative; }
+.v4-sec { padding: clamp(96px, 13vw, 168px) var(--pad) 0; max-width: 1180px; margin: 0 auto; }
+.v4-head { display: grid; justify-items: center; text-align: center; max-width: 820px; margin: 0 auto clamp(40px, 6vw, 64px); }
+.v4-kicker { margin: 0 0 12px; font-size: 15px; font-weight: 600; letter-spacing: 0.02em; color: var(--ember-1); }
+.v4-h { margin: 0; font-weight: 300; font-size: clamp(40px, 6vw, 76px); line-height: 1.04; letter-spacing: -0.02em; color: var(--ink); }
+.v4-sub { margin: 18px 0 0; max-width: 40ch; font-size: clamp(17px, 1.5vw, 21px); line-height: 1.5; color: var(--muted); }
+.v4-left { text-align: left; justify-self: start; }
+.v4-center { text-align: center; }
+.v4-link { display: inline-flex; align-items: center; gap: 4px; font-size: 19px; color: var(--ember-1); }
+.v4-link:hover { text-decoration: underline; text-underline-offset: 4px; }
+.v4-link.small { font-size: 15px; }
+.v4-btn { height: 46px; padding: 0 24px; font-size: 16px; }
+.v4-cta { display: flex; align-items: center; flex-wrap: wrap; gap: 26px; }
+.v4-cta-c { justify-content: center; margin-top: 28px; }
+
+/* hero: the poster */
+.v4-hero { position: relative; min-height: 100svh; overflow: hidden; }
+.v4-hero-in { position: relative; max-width: 1180px; min-height: 100svh; margin: 0 auto; padding: clamp(96px, 14vh, 140px) var(--pad) clamp(40px, 7vh, 72px); display: grid; align-content: space-between; }
+.v4-mark { margin: 0; display: grid; font-family: var(--f-display); font-weight: 200; font-size: clamp(110px, 22vw, 330px); line-height: 0.92; letter-spacing: -0.03em; color: #f3f1ee; }
+.v4-mark span:last-child { padding-left: 0.42em; }
+.v4-bird { position: absolute; right: max(-4vw, -60px); bottom: -6vh; width: clamp(300px, 52vw, 760px); pointer-events: none; animation: v4-bird 1.6s cubic-bezier(0.2, 0.9, 0.2, 1) 0.2s both; }
+@keyframes v4-bird { from { opacity: 0; transform: translate3d(40px, 60px, 0) rotate(-8deg); } }
+.v4-hero-foot { position: relative; z-index: 1; display: grid; gap: 22px; }
+.v4-hero-foot p { margin: 0; font-size: 15px; color: var(--muted); }
+
+/* credo */
+.v4-credo { padding: clamp(110px, 16vw, 200px) var(--pad); }
+.v4-credo-text { max-width: 15ch; margin: 0 auto; text-align: center; font-family: var(--f-display); font-weight: 300; font-size: clamp(44px, 7.4vw, 104px); line-height: 1.06; letter-spacing: -0.02em; }
+.v4-credo-text span { opacity: 0.18; }
+@supports (animation-timeline: view()) {
+  .v4-credo-text { view-timeline: --v4c block; }
+  .v4-credo-text span { animation: v4-lit linear both; animation-timeline: --v4c; animation-range: cover calc(20% + var(--w) * 30%) cover calc(26% + var(--w) * 30%); }
+  @keyframes v4-lit { to { opacity: 1; } }
+}
+
+/* cards */
+.v4-three { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.v4-card, .v4-dom { display: grid; align-content: start; gap: 10px; padding: clamp(26px, 3vw, 38px); border-radius: 28px; background: var(--card); border: 1px solid var(--line); }
+.v4-card h3, .v4-dom h3 { margin: 0; font-family: var(--f-display); font-weight: 400; font-size: 26px; letter-spacing: -0.01em; color: var(--ink); }
+.v4-card p, .v4-dom p { margin: 0; font-size: 16px; line-height: 1.5; color: var(--muted); }
+.v4-card-n, .v4-dom-n { font-family: var(--f-display); font-size: 15px; color: var(--ember-1); }
+
+/* AMIEE */
+.v4-amiee-in { display: grid; gap: 26px; max-width: 820px; }
+.v4-amiee-logo { width: min(240px, 60vw); height: auto; border-radius: 10px; }
+
+/* why join: the poster's pill list */
+.v4-why { list-style: none; margin: 0 auto; padding: 0; max-width: 720px; display: grid; gap: 14px; }
+.v4-why li { padding: 20px 28px; border-radius: 999px; border: 1px solid rgba(255, 255, 255, 0.28); font-size: clamp(17px, 1.6vw, 20px); color: var(--ink); }
+.v4-why li::before { content: '•'; margin-right: 12px; color: var(--crimson); }
+
+/* domains */
+.v4-domains { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 16px; }
+.v4-dom { grid-column: span 2; transition: border-color 0.3s, transform 0.4s var(--apple-ease, ease); }
+.v4-dom:nth-child(4), .v4-dom:nth-child(5) { grid-column: span 3; }
+.v4-dom:hover { border-color: rgba(177, 74, 59, 0.6); transform: translateY(-3px); }
+.v4-dom .v4-link { margin-top: 8px; }
+
+/* discover panel */
+.v4-discover { position: relative; display: grid; grid-template-columns: minmax(0, 0.8fr) minmax(0, 1fr); align-items: center; gap: clamp(24px, 4vw, 60px); padding: clamp(36px, 5vw, 64px); border-radius: 32px; overflow: hidden; background: radial-gradient(80% 90% at 15% 80%, rgba(177, 74, 59, 0.22), transparent 70%), var(--card); border: 1px solid var(--line); }
+.v4-discover img { width: 100%; max-width: 380px; justify-self: center; }
+.v4-discover .v4-link { margin-top: 22px; }
+
+/* crew faces */
+.v4-faces { display: flex; flex-wrap: wrap; justify-content: center; gap: 14px; max-width: 760px; margin: 0 auto 30px; }
+.v4-faces img { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; box-shadow: 0 0 0 2px #0d0d0e, 0 0 0 3px rgba(177, 74, 59, 0.5); }
+
+/* discover page head */
+.v4-disc-head { text-align: center; display: grid; justify-items: center; padding-bottom: clamp(40px, 6vw, 72px); }
+
+/* the voyage's opening paper goes dark to match */
+.sl-lab { --bg: #0d0d0e !important; --ink: #f3f1ee !important; }
+.v4 .sl-lab .sl-lab-intro h2 { color: #f3f1ee; font-family: var(--f-display); font-weight: 300; letter-spacing: -0.02em; }
+.sl-lab-intro .copy { color: var(--muted); }
+
+/* team cards on dark */
+.person.is-creator { background: linear-gradient(135deg, rgba(201, 150, 43, 0.14), rgba(201, 150, 43, 0.04)) !important; }
+.mate-links a { background: rgba(255, 255, 255, 0.08); color: var(--ink-2); }
+.person-face { box-shadow: 0 0 0 3px var(--card), 0 0 0 4px rgba(177, 74, 59, 0.4); }
+
+/* phones */
+@media (max-width: 899px) {
+  .v4-three, .v4-domains { grid-template-columns: 1fr; }
+  .v4-dom, .v4-dom:nth-child(4), .v4-dom:nth-child(5) { grid-column: auto; }
+  .v4-discover { grid-template-columns: 1fr; }
+  .v4-discover img { max-width: 220px; }
+  .v4-mark { font-size: 34vw; }
+  .v4-bird { width: 92vw; right: -18vw; bottom: 4vh; opacity: 0.9; }
+  .v4-why li { border-radius: 22px; padding: 16px 22px; }
+}
+html.lite .v4-bird { animation: none; }

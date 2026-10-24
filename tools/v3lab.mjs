@@ -14,7 +14,7 @@ if (mode === 'mobile') {
   await page.setViewport({ width: 390, height: 844, deviceScaleFactor: 2, isMobile: true, hasTouch: true });
 } else await page.setViewport({ width: 1440, height: 900 });
 await page.evaluateOnNewDocument(() => { try { sessionStorage.setItem('ff3-seen', '1'); } catch (e) {} });
-await page.goto(base + '/', { waitUntil: 'networkidle2' });
+await page.goto(base + (process.env.ROUTE || '/'), { waitUntil: 'networkidle2' });
 if (process.env.V2) await new Promise((r) => setTimeout(r, 11000));
 else await page.waitForFunction('window.__ffReady === true', { timeout: 30000 });
 const info = await page.evaluate(() => {

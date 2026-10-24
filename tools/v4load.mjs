@@ -24,7 +24,7 @@ await page.evaluateOnNewDocument(() => {
   try { sessionStorage.removeItem('ff4-seen'); sessionStorage.removeItem('ff3-seen'); } catch (e) {}
 });
 const t0 = Date.now();
-page.goto(base + '/').catch(() => {});
+page.goto(base + (process.env.ROUTE || '/')).catch(() => {});
 let i = 0;
 for (const t of times) {
   const wait = t - (Date.now() - t0);
