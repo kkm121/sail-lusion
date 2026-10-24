@@ -11,6 +11,7 @@ export class ErrorBoundary extends Component {
   }
 
   componentDidCatch(error) {
+    this.props.onError?.(error);
     try {
       console.warn('Canvas ErrorBoundary caught:', error?.message || 'render error');
     } catch {
