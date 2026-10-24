@@ -182,6 +182,7 @@ function Tunnel({ touch, sp, onGate, onWarm }) {
   const finale = useRef();
   const frames = useRef(0);
   const step = useRef(0);
+  const t0 = useRef(0);
   // Warm-up, all while the loader is on screen:
   // 1. once the textures, lighting map and robot have loaded, every chapter is switched on inside hidden groups;
   // 2. the next frame the whole scene is handed to compileAsync, which compiles the shaders on the GPU driver's own
@@ -190,7 +191,8 @@ function Tunnel({ touch, sp, onGate, onWarm }) {
   useFrame((state) => {
     const zc = state.camera.position.z;
     const groups = [cage, vortex, room, finale];
-    const loaded = labState.env && labState.cage && labState.earth && (labState.nav || !HAVE.navigator);
+    if (!t0.current) t0.current = performance.now();
+    const loaded = (labState.env && labState.cage && labState.earth && (labState.nav || !HAVE.navigator)) || performance.now() - t0.current > 8000;
     if (step.current === 0) {
       if (loaded) {
         onGate?.();
@@ -247,7 +249,8 @@ function Tunnel({ touch, sp, onGate, onWarm }) {
 
 useGLTF.preload(MEDIA.navigator);
 
-export default function LabScene({ progress, active = true, tier = 'full', onWarm }) {
+// safe: a retry after a file failed to load, without the optional extras (lighting map, robot)
+export default function LabScene({ progress, active = true, tier = 'full', onWarm, safe = false }) {
   const touch = useRef(tier !== 'full' || matchMedia('(hover: none), (pointer: coarse)').matches).current;
   const sp = useRef(0);
   const bloomRef = useRef();
@@ -281,16 +284,21 @@ export default function LabScene({ progress, active = true, tier = 'full', onWar
       <color attach="background" args={['#030407']} />
       <fog attach="fog" args={['#040302', 14, 95]} />
       <ambientLight intensity={0.4} />
-      <ErrorBoundary fallback={null}>
-        <Suspense fallback={null}>
-          <Environment files={asset('/env/studio.hdr')} environmentIntensity={0.85} />
-          <Loaded name="env" />
-        </Suspense>
-      </ErrorBoundary>
+      {safe ? (
+        <Loaded name="env" />
+      ) : (
+        <ErrorBoundary fallback={<Loaded name="env" />}>
+          <Suspense fallback={null}>
+            <Environment files={asset('/env/studio.hdr')} environmentIntensity={0.85} />
+            <Loaded name="env" />
+          </Suspense>
+        </ErrorBoundary>
+      )}
 
       <FollowStars count={tier !== 'full' ? 700 : touch ? 1200 : 2600} />
-      {HAVE.navigator && (
-        <ErrorBoundary fallback={null}>
+      {safe && <Loaded name="nav" />}
+      {HAVE.navigator && !safe && (
+        <ErrorBoundary fallback={<Loaded name="nav" />}>
           <Suspense fallback={null}>
             <Navigator sp={sp} />
           </Suspense>

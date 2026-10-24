@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import SplitLine from './SplitLine';
 import { CHAPTERS, ROOM_START, pAtZ } from './journey';
 import { labState } from './labstate';
+import { ErrorBoundary } from './ErrorBoundary';
 import { onFrame, reduced } from '../lib/motion';
 import { isLite } from '../lib/lite';
 import './lab.css';
@@ -47,7 +48,14 @@ export default function Lab() {
   const [tier] = useState(labTier);
   const [go, setGo] = useState(false); // the canvas exists only while the section is near the screen
   const [active, setActive] = useState(false); // it draws only while the section is on screen
+  const [fails, setFails] = useState(0); // a file failed: retry once without the extras, then keep the still sky
   const [warmed, setWarmed] = useState(false); // the canvas stays hidden while it warms up (it briefly draws every scene then)
+  // safety net: show it after 10 s even if the warm-up never reported in (a slow phone, a failed file)
+  useEffect(() => {
+    if (!go || warmed) return undefined;
+    const id = window.setTimeout(() => setWarmed(true), 10000);
+    return () => clearTimeout(id);
+  }, [go, warmed]);
   const ring = useRef(null);
   const words = useRef(null);
   const giant = useRef(null);
@@ -87,7 +95,7 @@ export default function Lab() {
           window.addEventListener('ff:settled', onSettled);
           return undefined;
         }
-        if ('requestIdleCallback' in window) idle = window.requestIdleCallback(start, { timeout: 2500 });
+        if ('requestIdleCallback' in window) idle = window.requestIdleCallback(start, { timeout: 300 });
         else idle = window.setTimeout(start, 600);
       },
       { rootMargin: '150% 0px 150% 0px' }
@@ -473,8 +481,10 @@ export default function Lab() {
               <div className="sl-lab-still" />
               <Suspense fallback={null}>
                 <div className={warmed ? 'sl-lab-canvas is-warm' : 'sl-lab-canvas'}>
-                  {go && (
+                  {go && fails < 2 && (
+                    <ErrorBoundary key={fails} fallback={null} onError={() => setFails((n) => n + 1)}>
                     <LabScene
+                      safe={fails > 0}
                       progress={progress}
                       active={active}
                       tier={tier}
@@ -483,6 +493,7 @@ export default function Lab() {
                         setWarmed(true);
                       }}
                     />
+                    </ErrorBoundary>
                   )}
                 </div>
               </Suspense>
