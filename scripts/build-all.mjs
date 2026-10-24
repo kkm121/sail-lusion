@@ -57,7 +57,7 @@ execSync('npx vite build --base=/v3/ --outDir=../dist/v3', {
 
 // 4. The previous main site (v3p2) stays available at /v3p2/
 console.log('\n========================================');
-console.log('[build-all] 4/4: Building the previous main site (v3p2) at /v3p2/...');
+console.log('[build-all] 4/5: Building the previous main site (v3p2) at /v3p2/...');
 console.log('========================================');
 execSync('npx vite build --base=/v3p2/ --outDir=../dist/v3p2', {
   cwd: v3p2Dir,
@@ -65,7 +65,17 @@ execSync('npx vite build --base=/v3p2/ --outDir=../dist/v3p2', {
   env: { ...process.env, SITE_BASE: '/v3p2/', OUT_DIR: '../dist/v3p2' }
 });
 
-// 5. The root index.html and /brand come from v3p2 (step 0); there is no gateway page any more.
+// 5. Version 4 also available directly at /v4/
+console.log('\n========================================');
+console.log('[build-all] 5/5: Building Version 4 (v4) at /v4/...');
+console.log('========================================');
+execSync('npx vite build --base=/v4/ --outDir=../dist/v4', {
+  cwd: v4Dir,
+  stdio: 'inherit',
+  env: { ...process.env, SITE_BASE: '/v4/', OUT_DIR: '../dist/v4' }
+});
+
+// 6. The root index.html and /brand come from v4 (step 0); there is no gateway page any more.
 const favSrc = path.join(rootDir, 'public', 'favicon.svg');
 const favDest = path.join(distDir, 'favicon.svg');
 if (fs.existsSync(favSrc) && !fs.existsSync(favDest)) {
@@ -78,3 +88,4 @@ console.log(' - dist/v1/ (Classic SAIL Crystal)');
 console.log(' - dist/v2/ (Immersive 3D Voyage)');
 console.log(' - dist/v3/ (Editorial Club Site)');
 console.log(' - dist/v3p2/ (previous main site)');
+console.log(' - dist/v4/ (Version 4 dedicated route)');

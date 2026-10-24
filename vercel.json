@@ -34,13 +34,21 @@
       "destination": "/v3p2/index.html"
     },
     {
-      "source": "/((?!v1(?:/|$)|v2(?:/|$)|v3(?:/|$)|v3p2(?:/|$)|assets/|brand/|media/|env/|models/|team/|.*\\.[\\w]+$).*)",
+      "source": "/v4/((?!assets/|brand/|.*\\.[\\w]+$).*)",
+      "destination": "/v4/index.html"
+    },
+    {
+      "source": "/v4",
+      "destination": "/v4/index.html"
+    },
+    {
+      "source": "/((?!v1(?:/|$)|v2(?:/|$)|v3(?:/|$)|v3p2(?:/|$)|v4(?:/|$)|assets/|brand/|media/|env/|models/|team/|.*\\.[\\w]+$).*)",
       "destination": "/index.html"
     }
   ],
   "headers": [
     {
-      "source": "/:ver(v1|v2|v3|v3p2)/assets/(.*)",
+      "source": "/:ver(v1|v2|v3|v3p2|v4)/assets/(.*)",
       "headers": [
         {
           "key": "Cache-Control",
@@ -49,7 +57,7 @@
       ]
     },
     {
-      "source": "/:ver(v1|v2|v3|v3p2)/(models|media|video)/(.*)",
+      "source": "/:ver(v1|v2|v3|v3p2|v4)/(models|media|video)/(.*)",
       "headers": [
         {
           "key": "Cache-Control",
