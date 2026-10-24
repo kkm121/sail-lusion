@@ -100,7 +100,7 @@ function Header() {
             Sign in
           </Link>
           <button type="button" className="btn hd-cli-btn" onClick={() => window.dispatchEvent(new Event('ff:cli'))} aria-label="Open the FireFly console">
-            <span className="hd-bolt">⚡</span> CLI
+            CLI
           </button>
           <Magnetic>
             <Link className="btn btn-primary hd-join" to="/join" viewTransition>
@@ -125,7 +125,7 @@ function Header() {
               Sign in
             </Link>
             <button type="button" className="btn hd-cli-btn" onClick={() => { setOpen(false); window.dispatchEvent(new Event('ff:cli')); }} style={{ flex: 1, justifyContent: 'center' }}>
-              <span className="hd-bolt">⚡</span> CLI
+              CLI
             </button>
           </div>
           <Link className="btn btn-primary" to="/join" style={{ '--d': '420ms' }}>

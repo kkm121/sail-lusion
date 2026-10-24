@@ -35,7 +35,7 @@
       #ldr .b { clip-path: polygon(66% 0, 100% 0, 100% 100%, 34% 100%); }
       #ldr.is-open .a { transform: translate3d(-105%, 0, 0); }
       #ldr.is-open .b { transform: translate3d(105%, 0, 0); }
-      #ldr .l-glow { position: absolute; left: 50%; top: 50%; width: min(80vw, 80vh); aspect-ratio: 1; translate: -50% -50%; border-radius: 50%; pointer-events: none; background: radial-gradient(closest-side, rgba(177, 74, 59, 0.16), rgba(120, 36, 28, 0.1) 55%, transparent 74%); filter: blur(12px); animation: lglow 5s ease-in-out infinite; transition: opacity 0.6s; }
+      #ldr .l-glow { position: absolute; left: 50%; top: 50%; width: min(80vw, 80vh); aspect-ratio: 1; translate: -50% -50%; border-radius: 50%; pointer-events: none; background: radial-gradient(closest-side, rgba(240, 72, 42, 0.16), rgba(150, 40, 20, 0.1) 55%, transparent 74%); filter: blur(12px); animation: lglow 5s ease-in-out infinite; transition: opacity 0.6s; }
       #ldr.is-form .l-glow, #ldr.is-open .l-glow { opacity: 0.45; }
       @keyframes lglow { 50% { transform: scale(1.07); opacity: 0.8; } }
       #ldr canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; pointer-events: none; }
@@ -53,7 +53,7 @@
       #ldr .l-bar { position: absolute; left: -105px; top: -19px; width: 210px; height: 38px; transition: opacity 0.25s; }
       #ldr .l-bar i { position: absolute; inset: 0; display: block; }
       #ldr .l-bar .t { background: rgba(255, 255, 255, 0.12); }
-      #ldr .l-bar .f { background: linear-gradient(90deg, #d9846f, #b14a3b); box-shadow: 0 0 18px rgba(177, 74, 59, 0.45); transform-origin: left; transform: scaleX(0); }
+      #ldr .l-bar .f { background: linear-gradient(90deg, #ff8a3d, #f0482a); box-shadow: 0 0 18px rgba(240, 72, 42, 0.45); transform-origin: left; transform: scaleX(0); }
       #ldr.is-form .l-bar, #ldr.is-open .l-bar { opacity: 0; transition-delay: 0.1s; }
       #ldr .l-bird { position: absolute; left: -100px; top: -118px; width: 200px; height: 200px; object-fit: contain; max-width: none; opacity: 0; transform: translate3d(0, 55%, 0); will-change: transform, opacity; }
       /* the bird rises from below over the same 1.5 s, on the same curve, as the dots forming the letters: they land together */
@@ -63,7 +63,7 @@
       #ldr.is-form .l-digits, #ldr.is-open .l-digits { opacity: 0; }
       #ldr .col { display: block; height: 1em; width: 0.7em; overflow: hidden; }
       #ldr .st { display: block; transform: translate3d(0, 0, 0); transition: transform 0.55s cubic-bezier(0.3, 1, 0.3, 1); will-change: transform; }
-      #ldr .st i { display: block; height: 1em; line-height: 1; font-style: normal; text-align: center; background: linear-gradient(90deg, #f2efea, #d9846f 55%, #b14a3b); background-size: 300% 100%; background-position: var(--gx, 0%) 0; -webkit-background-clip: text; background-clip: text; color: transparent; }
+      #ldr .st i { display: block; height: 1em; line-height: 1; font-style: normal; text-align: center; background: linear-gradient(90deg, #f2efea, #ff8a3d 55%, #f0482a); background-size: 300% 100%; background-position: var(--gx, 0%) 0; -webkit-background-clip: text; background-clip: text; color: transparent; }
       #ldr .col:nth-child(2) i { --gx: 50%; }
       #ldr .col:nth-child(3) i { --gx: 100%; }
       #ldr .l-credit { position: absolute; right: calc(var(--u) * 4.5); bottom: calc(var(--u) * 2.2); z-index: 2; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; opacity: 0.55; transition: opacity 0.4s; }
@@ -84,13 +84,13 @@
       <canvas id="ldr-c"></canvas>
       <canvas id="ldr-t"></canvas>
       <div class="l-top">
-        <span class="brand"><img src="/brand/firefly-crimson.png" alt="" /> FireFly</span>
+        <span class="brand"><img src="/brand/firefly-mark.png" alt="" /> FireFly</span>
         <span>Student AI club · SRM</span>
         <span>Associated with AMIEE</span>
       </div>
       <div class="l-stage">
         <div class="l-bar"><i class="t"></i><i class="f" id="l-fill"></i></div>
-        <img class="l-bird" id="l-bird" src="/brand/firefly-crimson.png" alt="" />
+        <img class="l-bird" id="l-bird" src="/brand/firefly-mark.png" alt="" />
       </div>
       <div class="l-digits" id="l-digits"></div>
       <div class="l-credit">Website made by <b>M Muthu Kumaran</b></div>
@@ -153,7 +153,7 @@
             'float cy=cos(ry),sy=sin(ry);q=vec3(cy*q.x+sy*q.z,q.y,-sy*q.x+cy*q.z);float cx=cos(rx),sx=sin(rx);q=vec3(q.x,cx*q.y-sx*q.z,sx*q.y+cx*q.z);' +
             'float dz=uCam-q.z;gl_PointSize=uPix*uSize*mix(2.4+1.6*uK,3.4,f)*(4.2/dz);gl_Position=vec4(q.x*2.414/uAsp,q.y*2.414,0.,dz);}';
           var FS = 'precision mediump float;uniform float uBurst,uAlpha;varying float vH;varying float vF;void main(){float d=length(gl_PointCoord-.5);if(d>.5)discard;' +
-            'vec3 a=vec3(.42,.16,.13),b=vec3(.85,.45,.38),c=vec3(.96,.94,.92);float t=clamp(vH*1.6+.5,0.,1.);vec3 col=t<.5?mix(a,b,t*2.):mix(b,c,(t-.5)*2.);' +
+            'vec3 a=vec3(.55,.12,.06),b=vec3(1.,.48,.18),c=vec3(.96,.94,.92);float t=clamp(vH*1.6+.5,0.,1.);vec3 col=t<.5?mix(a,b,t*2.):mix(b,c,(t-.5)*2.);' +
             'col=mix(col,vec3(.97,.96,.95),vF);' +
             'gl_FragColor=vec4(col,uAlpha*(1.-d*2.)*(1.-uBurst));}';
           var mk = function (type, src) { var s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s); return s; };

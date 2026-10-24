@@ -10,7 +10,7 @@ export const Arrow = () => (
 
 export function Logo({ className = '', title }) {
   const base = import.meta.env.BASE_URL || '/';
-  const src = `${base.replace(/\/$/, '')}/brand/firefly-crimson.png`;
+  const src = `${base.replace(/\/$/, '')}/brand/firefly-mark.png`;
   return <img className={`logo ${className}`.trim()} src={src} alt={title || ''} aria-hidden={title ? undefined : 'true'} draggable="false" decoding="async" />;
 }
 

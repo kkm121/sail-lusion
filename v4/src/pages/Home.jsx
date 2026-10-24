@@ -52,22 +52,25 @@ export default function Home() {
       {/* 1. the poster: the wordmark stacked, the crimson bird crossing it */}
       <section className="v4-hero">
         <div className="v4-hero-in">
-          <h1 className="v4-mark hero-b" aria-label="FireFly">
-            <span>Fire</span>
-            <span>Fly</span>
-          </h1>
-          <img className="v4-bird" src={u('/brand/firefly-crimson.png')} alt="" aria-hidden="true" />
-          <div className="v4-hero-foot hero-d">
-            <p>Student AI club at SRM · Associated with AMIEE</p>
-            <div className="v4-cta">
+          <div className="v4-hero-top">
+            <h1 className="v4-mark hero-b" aria-label="FireFly">
+              <span className="v4-fire">Fire</span><span className="v4-fly">Fly</span>
+            </h1>
+            <p className="v4-tag hero-b">
+              <span className="v4-fire">Fire</span> ideas into impact.
+            </p>
+            <p className="v4-lede hero-d">A technology and research community at SRM, associated with AMIEE — for builders, researchers and curious minds.</p>
+            <div className="v4-cta hero-d">
               <Link className="btn btn-primary v4-btn" to="/join" viewTransition>
-                Join FireFly
+                Join FireFly <Chevron />
               </Link>
-              <Link className="v4-link" to="/discover" viewTransition>
-                Discover <Chevron />
+              <Link className="btn btn-ghost v4-btn" to="/discover" viewTransition>
+                Explore <Chevron />
               </Link>
             </div>
           </div>
+          <img className="v4-bird" src={u('/brand/firefly-mark.png')} alt="" aria-hidden="true" />
+          <p className="v4-row hero-d">SRM · AMIEE · Students · Research · Impact</p>
         </div>
       </section>
 
@@ -142,7 +145,7 @@ export default function Home() {
       {/* 7. discover */}
       <section className="v4-sec">
         <Link className="v4-discover" to="/discover" viewTransition>
-          <img src={u('/brand/firefly-crimson.png')} alt="" aria-hidden="true" />
+          <img src={u('/brand/firefly-mark.png')} alt="" aria-hidden="true" />
           <div>
             <p className="v4-kicker">Discover</p>
             <h2 className="v4-h v4-left">Step inside FireFly.</h2>
