@@ -10,6 +10,9 @@ import { scroll } from '../lib/motion';
 // Files only this site has (posters, the crimson mark, the AMIEE logo) are served under its own base path.
 const u = (p) => `${(import.meta.env.BASE_URL || '/').replace(/\/$/, '')}${p}`;
 
+const Arrow = () => (
+  <svg className="v4-arrow" viewBox="0 0 20 20" aria-hidden="true"><path d="M3.5 10h12M11 5l5 5-5 5" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>
+);
 const Chevron = () => (
   <svg className="chev" viewBox="0 0 12 12" aria-hidden="true">
     <path d="M4.5 2.5 8 6l-3.5 3.5" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
@@ -54,23 +57,21 @@ export default function Home() {
         <div className="v4-hero-in">
           <div className="v4-hero-top">
             <h1 className="v4-mark hero-b" aria-label="FireFly">
-              <span className="v4-fire">Fire</span><span className="v4-fly">Fly</span>
+              <span>Fire</span><span className="v4-fly">Fly</span>
             </h1>
-            <p className="v4-tag hero-b">
-              <span className="v4-fire">Fire</span> ideas into impact.
-            </p>
+            <p className="v4-tag hero-b">Ideas into impact.</p>
             <p className="v4-lede hero-d">A technology and research community at SRM, associated with AMIEE — for builders, researchers and curious minds.</p>
             <div className="v4-cta hero-d">
               <Link className="btn btn-primary v4-btn" to="/join" viewTransition>
-                Join FireFly <Chevron />
+                Join FireFly <Arrow />
               </Link>
               <Link className="btn btn-ghost v4-btn" to="/discover" viewTransition>
-                Explore <Chevron />
+                Explore <Arrow />
               </Link>
             </div>
+            <p className="v4-row hero-d">SRM · AMIEE · Students · Research · Impact</p>
           </div>
           <img className="v4-bird" src={u('/brand/firefly-mark.png')} alt="" aria-hidden="true" />
-          <p className="v4-row hero-d">SRM · AMIEE · Students · Research · Impact</p>
         </div>
       </section>
 

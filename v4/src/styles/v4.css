@@ -204,3 +204,25 @@ img, video, canvas { max-width: 100%; }
 @media (max-width: 899px) { .v4-hero::before { inset: 20% -30% 0 -10%; } }
 html.lite .v4-hero::before, html.calm .v4-hero::before { animation: none; }
 .v4-why li::before { color: var(--ember-1); }
+
+/* hero, matched to the team's mockup: black sky, white Fire / grey Fly, solid brick buttons, quiet bird */
+.v4-hero::before { inset: 0 -10% 0 40%; background: radial-gradient(38% 46% at 66% 52%, rgba(200, 70, 40, 0.13), transparent 70%); animation: none; }
+.v4-hero-in { max-width: 1320px; align-content: center; gap: clamp(28px, 5vh, 56px); }
+.v4-hero-top { max-width: 720px; gap: 0; }
+.v4-mark { font-weight: 600; font-size: clamp(72px, 12.5vw, 220px); letter-spacing: -0.035em; line-height: 0.9; color: #fff; }
+.v4-mark .v4-fly { color: #a9a9ad; background: none; }
+.v4-tag { margin-top: clamp(8px, 1.4vw, 18px); font-weight: 400; font-size: clamp(28px, 3.6vw, 52px); letter-spacing: -0.02em; color: #ececec; }
+.v4-lede { margin-top: clamp(14px, 2vw, 26px); max-width: 32em; font-size: clamp(16px, 1.45vw, 21px); color: rgba(236, 236, 236, 0.62); }
+.v4-hero .v4-cta { margin-top: clamp(22px, 3vw, 38px); gap: 18px; }
+.v4-hero .v4-btn { height: clamp(50px, 4.2vw, 62px); padding: 0 clamp(24px, 2.2vw, 34px); font-size: clamp(16px, 1.3vw, 19px); gap: 14px; }
+.v4-arrow { width: 18px; height: 18px; }
+.btn-primary, .btn-primary:hover { background: #b9452f; box-shadow: none; filter: none; }
+.btn-primary:hover { background: #c94f37; }
+.v4-hero .btn-ghost { border-color: rgba(255, 255, 255, 0.22); }
+.v4-row { margin-top: clamp(28px, 5vh, 52px); font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-weight: 400; font-size: 13px; letter-spacing: 0.32em; word-spacing: 0.4em; color: rgba(236, 236, 236, 0.42); }
+.v4-bird { right: 0; width: clamp(280px, 40vw, 620px); filter: saturate(0.82) brightness(0.92) drop-shadow(0 0 40px rgba(220, 80, 40, 0.18)); }
+@media (max-width: 899px) {
+  .v4-hero-in { align-content: space-between; }
+  .v4-row { letter-spacing: 0.18em; word-spacing: 0; font-size: 11px; }
+  .v4-bird { width: 78vw; right: -18vw; }
+}
