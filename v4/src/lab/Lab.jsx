@@ -155,10 +155,12 @@ export default function Lab() {
     let raf = 0;
     let elTop = 0;
     let elHeight = 0;
+    let stageH = window.innerHeight;
     const measureEl = () => {
       const box = el.getBoundingClientRect();
       elTop = box.top + window.scrollY;
       elHeight = box.height;
+      stageH = stage.current?.offsetHeight || window.innerHeight; // the stage's fixed (lvh) height, not the changing window height
     };
     measureEl();
     window.addEventListener('resize', measureEl, { passive: true });
@@ -182,7 +184,7 @@ export default function Lab() {
     let lastP = -1;
     const update = (dt = 1 / 60) => {
       const y = window.scrollY || 0;
-      const vh = window.innerHeight;
+      const vh = stageH;
       const vw = window.innerWidth;
       const rTop = elTop - y;
       const mobile = vw < 768;
