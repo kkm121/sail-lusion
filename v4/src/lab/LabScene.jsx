@@ -2,7 +2,7 @@ import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'rea
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Environment, PerformanceMonitor, Stars, useGLTF } from '@react-three/drei';
 import { Bloom, ChromaticAberration, EffectComposer, SMAA, Vignette } from '@react-three/postprocessing';
-import { BlendFunction } from 'postprocessing';
+import { BlendFunction, Effect, EffectAttribute } from 'postprocessing';
 import * as THREE from 'three';
 import { compileAsync } from './three-utils';
 import { ErrorBoundary } from './ErrorBoundary';
@@ -40,7 +40,25 @@ function FollowStars({ count, sp }) {
   );
 }
 
-function Rig({ progress, sp, bloomRef }) {
+// Radial motion blur, strongest at the edges of the screen and only while the camera is actually moving through the
+// corridor (like a long exposure): each pixel averages a few samples taken toward the centre.
+const BLUR_F = `uniform float uAmt;
+void mainImage(const in vec4 inputColor, const in vec2 uv, out vec4 outputColor){
+  if (uAmt < 0.0005) { outputColor = inputColor; return; }
+  vec2 d = (uv - 0.5) * uAmt;
+  vec4 acc = inputColor;
+  for (int i = 1; i < 8; i++) acc += texture2D(inputBuffer, uv - d * (float(i) / 7.0));
+  outputColor = acc / 8.0;
+}`;
+class RadialBlurEffect extends Effect {
+  constructor() {
+    super('RadialBlur', BLUR_F, { attributes: EffectAttribute.CONVOLUTION, uniforms: new Map([['uAmt', new THREE.Uniform(0)]]) });
+  }
+}
+
+function Rig({ progress, sp, bloomRef, blur }) {
+  const lastZ = useRef(null);
+  const speed = useRef(0);
   const smooth = useRef(0);
   const bg = useMemo(() => new THREE.Color(), []);
   useFrame((state, dt) => {
@@ -84,6 +102,15 @@ function Rig({ progress, sp, bloomRef }) {
     }
 
     const vK = seg(zc, CAGE_END + 8, CAGE_END - 14);
+    const cine = seg(p, 0.54, 0.6) * (1 - vK);
+    // motion blur follows the camera's speed through the Build corridor
+    if (blur) {
+      const z = cam.position.z;
+      if (lastZ.current !== null) speed.current += (Math.abs(z - lastZ.current) / Math.max(d, 1e-3) - speed.current) * (1 - Math.exp(-10 * d));
+      lastZ.current = z;
+      const inGrid = seg(p, START, START + 0.02) * (1 - seg(zc, CAGE_END + 20, CAGE_END));
+      blur.uniforms.get('uAmt').value = Math.min(speed.current * 0.0016, 0.07) * inGrid;
+    }
     const rK = seg(zc, ROOM_START + 4, ROOM_START - 12);
     const fK = seg(zc, ROOM_END + 2, ROOM_END - 6);
     bg.copy(BG.cage).lerp(BG.vortex, vK).lerp(BG.room, rK).lerp(BG.space, fK);
@@ -95,13 +122,12 @@ function Rig({ progress, sp, bloomRef }) {
       state.scene.fog.near = lerp(8, 800, vK);
     }
     if (bloomRef.current) bloomRef.current.intensity = 0.9 * lerp(1, 0.62, rK) * lerp(1, 0.85, fK);
-    // phase one is shot dark, like film: the Build corridor is exposed low so only edges and glints read
-    const cine = seg(p, 0.54, 0.6) * (1 - vK);
-    state.gl.toneMappingExposure = lerp(1.05, 0.72, cine);
-    if (bloomRef.current) bloomRef.current.intensity *= lerp(1, 1.35, cine);
+    // phase one is shot dark, like film: in the Build corridor the studio reflections (which light every metal face the
+    // same grey) drop right down, so the metal reads only where the dim lights and the glints catch it
+    if (bloomRef.current) bloomRef.current.intensity *= lerp(1, 1.5, cine);
     // around the Discover core: the original scene's lighting and bloom (city-like reflections at 0.7, bloom from 0.5)
-    state.scene.environmentIntensity = lerp(0.85, 0.7, vK * (1 - rK));
-    if (bloomRef.current?.luminanceMaterial) bloomRef.current.luminanceMaterial.threshold = lerp(0.86, 0.5, vK * (1 - rK));
+    state.scene.environmentIntensity = lerp(lerp(0.85, 0.1, cine), 0.7, vK * (1 - rK));
+    if (bloomRef.current?.luminanceMaterial) bloomRef.current.luminanceMaterial.threshold = lerp(lerp(0.86, 0.7, cine), 0.5, vK * (1 - rK));
   }, -1);
   return null;
 }
@@ -207,6 +233,7 @@ function Tunnel({ touch, sp, onGate, onWarm }) {
       if (loaded) {
         onGate?.();
         labState.warm = true;
+        window.__labWarming = true;
         step.current = 1;
       }
     } else if (step.current === 1) {
@@ -223,6 +250,7 @@ function Tunnel({ touch, sp, onGate, onWarm }) {
     const warm = step.current === 3 && frames.current++ < 14;
     if (step.current === 3 && !warm) {
       step.current = 4;
+      window.__labWarming = false;
       onWarm?.();
     }
     labState.warm = warm;
@@ -273,6 +301,7 @@ export default function LabScene({ progress, active = true, tier = 'full', onWar
   const startPost = useCallback(() => {}, []);
   labState.post = fx > 0 && postOn;
   const aberration = useMemo(() => new THREE.Vector2(0.0007, 0.0006), []);
+  const blur = useMemo(() => new RadialBlurEffect(), []);
   const [gated, setGated] = useState(false);
   const [warmed, setWarmed] = useState(false);
   const warmDone = useCallback(() => {
@@ -326,11 +355,12 @@ export default function LabScene({ progress, active = true, tier = 'full', onWar
       <Curtain sp={sp} />
       <Flash />
       <CompileGate onDone={openGate} />
-      <Rig progress={progress} sp={sp} bloomRef={bloomRef} />
+      <Rig progress={progress} sp={sp} bloomRef={bloomRef} blur={fx > 0 && postOn ? blur : null} />
 
       {fx > 0 && postOn && (
         <EffectComposer disableNormalPass multisampling={0}>
           <Bloom ref={bloomRef} luminanceThreshold={0.86} luminanceSmoothing={0.3} intensity={0.9} radius={0.65} mipmapBlur />
+          <primitive object={blur} />
           <ChromaticAberration offset={aberration} radialModulation modulationOffset={0.35} />
           <Vignette offset={0.22} darkness={0.72} />
         </EffectComposer>

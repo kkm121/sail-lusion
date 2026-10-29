@@ -4,7 +4,7 @@ const base = process.env.BASE || 'http://127.0.0.1:4190';
 const mode = process.argv[2] || 'desktop';
 const ps = (process.argv[3] || '0.02,0.2,0.4,0.5,0.6,0.66,0.72,0.8,0.87,0.93,0.985').split(',').map(Number);
 const prefix = process.argv[4] || 'lab';
-const browser = await puppeteer.launch({ executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe', headless: 'new', userDataDir: 'C:/Users/muthu/AppData/Local/Temp/pp-tools', args: ['--no-sandbox', '--no-first-run', '--ignore-gpu-blocklist', '--enable-precise-memory-info'] });
+const browser = await puppeteer.launch({ executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe', headless: 'new', args: ['--no-sandbox', '--no-first-run', '--ignore-gpu-blocklist', '--enable-precise-memory-info'] });
 const page = await browser.newPage();
 const errors = [];
 page.on('pageerror', (e) => errors.push(e.message.slice(0, 200)));
@@ -16,7 +16,8 @@ if (mode === 'mobile') {
 await page.evaluateOnNewDocument(() => { try { sessionStorage.setItem('ff3-seen', '1'); } catch (e) {} });
 await page.goto(base + (process.env.ROUTE || '/'), { waitUntil: 'networkidle2' });
 if (process.env.V2) await new Promise((r) => setTimeout(r, 11000));
-else await page.waitForFunction('window.__ffReady === true', { timeout: 30000 });
+else await new Promise((r) => setTimeout(r, 4000));
+await page.waitForSelector('#lab', { timeout: 30000 });
 const info = await page.evaluate(() => {
   const s = document.getElementById('lab');
   const r = s.getBoundingClientRect();

@@ -18,11 +18,11 @@
 .sl-lab-canvas canvas { display: block; width: 100% !important; height: 100% !important; }
 
 /* the lens halo: a wide, soft, rainbow-edged ring about 1.4 screen-heights across (red outside, blue inside) */
-.sl-lab-ring { position: absolute; left: 50%; top: 50%; width: 128vh; height: 128vh; pointer-events: none; opacity: 0; transform: translate(-50%, -50%); }
+.sl-lab-ring { position: absolute; left: 50%; top: 50%; width: 146vh; height: 146vh; pointer-events: none; opacity: 0; transform: translate(-50%, -50%); will-change: opacity, transform; }
 .sl-lab-ring i { position: absolute; inset: 0; border-radius: 50%; mix-blend-mode: screen; }
-.sl-lab-ring .r1 { background: radial-gradient(closest-side, transparent 74%, rgba(255, 170, 90, 0.05) 84%, rgba(255, 120, 80, 0.11) 91%, rgba(255, 90, 70, 0.04) 96%, transparent 100%); filter: blur(18px); }
-.sl-lab-ring .r2 { background: radial-gradient(closest-side, transparent 68%, rgba(170, 255, 200, 0.04) 80%, rgba(190, 255, 210, 0.08) 87%, transparent 94%); filter: blur(18px); }
-.sl-lab-ring .r3 { background: radial-gradient(closest-side, transparent 58%, rgba(70, 110, 220, 0.05) 70%, rgba(110, 150, 255, 0.2) 82%, rgba(150, 180, 255, 0.1) 88%, transparent 94%); filter: blur(20px); }
+.sl-lab-ring .r1 { background: radial-gradient(closest-side, transparent 79%, rgba(40, 60, 200, 0.07) 81.5%, rgba(40, 110, 255, 0.18) 84%, rgba(40, 200, 220, 0.2) 86.5%, rgba(80, 230, 120, 0.18) 89%, rgba(200, 230, 60, 0.17) 91%, rgba(255, 190, 50, 0.17) 93%, rgba(255, 110, 40, 0.15) 95%, rgba(230, 40, 50, 0.08) 97%, transparent 99.5%); }
+.sl-lab-ring .r2 { background: radial-gradient(closest-side, transparent 52%, rgba(30, 50, 140, 0.03) 66%, rgba(40, 70, 190, 0.07) 78%, rgba(40, 70, 190, 0.04) 86%, transparent 92%); }
+.sl-lab-ring .r3 { display: none; }
 
 .sl-lab-giant { position: absolute; left: 50%; top: 52%; z-index: 3; font-size: 62vw; line-height: 0.8; letter-spacing: -0.05em; font-weight: 500; color: #fff; opacity: 0; pointer-events: none; transform: translate(-50%, -50%); white-space: nowrap; }
 /* the caption: big, plain, wide-set capitals in three centred lines, over the robot */

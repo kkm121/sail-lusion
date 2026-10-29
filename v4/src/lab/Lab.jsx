@@ -265,6 +265,9 @@ export default function Lab() {
       }
 
       progress.current = rawP; // the 3D scene smooths this itself
+      // never show the warm-up's own frames (every chapter drawn at once), even if the safety timer revealed the canvas
+      const cv = stage.current?.querySelector('.sl-lab-canvas');
+      if (cv) cv.style.visibility = window.__labWarming ? 'hidden' : '';
       // far from the section and settled: nothing to do
       const isFar = rTop > vh * 1.5 || rTop + elHeight < -vh * 0.5;
       if (isFar && far && Math.abs(rawP - ps) < 1e-4) return;
@@ -342,7 +345,8 @@ export default function Lab() {
       // the lens halo: arrives with the caption and stays into the start of the tunnel
       const ringIn = seg(p, 0.31, 0.37) * (1 - seg(p, 0.62, 0.68));
       if (ring.current) {
-        ring.current.style.opacity = String(ringIn);
+        // kept at a trace of opacity (never 0) through phase one, so it is painted once early, not on the frame it appears
+        ring.current.style.opacity = String(Math.max(ringIn, p < 0.7 ? 0.002 : 0));
         ring.current.style.transform = `translate(-50%, -50%) scale(${lerp(0.94, 1.06, seg(p, 0.31, 0.66))})`;
       }
 
@@ -355,7 +359,7 @@ export default function Lab() {
       const out = seg(p, 0.518, 0.54);
       if (words.current) {
         const wo = wIn * (1 - out);
-        words.current.style.opacity = String(wo);
+        words.current.style.opacity = String(Math.max(wo, p < 0.56 ? 0.002 : 0));
         words.current.style.setProperty('--tone', String(lerp(0.45, 1, seg(p, 0.335, 0.38)) * (1 - 0.6 * seg(p, 0.5, 0.522))));
         const live = wo > 0.001;
         words.current.classList.toggle('live', live);

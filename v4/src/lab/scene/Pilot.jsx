@@ -98,9 +98,9 @@ export default function Pilot({ sp }) {
     <>
       {createPortal(
         <>
-          <pointLight ref={key} intensity={2.6} distance={0} decay={2} color="#ffffff" />
+          <pointLight ref={key} intensity={2.6} distance={9} decay={2} color="#ffffff" />
           <pointLight ref={rim} intensity={5.5} distance={9} decay={1.4} color="#a8c6ff" />
-          <pointLight ref={fill} intensity={0.5} distance={0} decay={2} color="#8a94a8" />
+          <pointLight ref={fill} intensity={0.5} distance={6} decay={2} color="#8a94a8" />
         </>,
         root
       )}
