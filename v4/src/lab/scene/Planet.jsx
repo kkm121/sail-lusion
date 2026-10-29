@@ -142,8 +142,8 @@ export default function Planet({ sp, hi = true }) {
   );
   useFrame((s, dt) => {
     const p = sp.current;
-    const fade = 1 - seg(p, 0.3, 0.4);
-    const drop = seg(p, 0.26, 0.4);
+    const fade = 1 - seg(p, 0.27, 0.335);
+    const drop = seg(p, 0.22, 0.34);
     fly.current = fade;
     if (group.current) group.current.visible = labState.warm || fade > 0.003;
     if (fade <= 0.003 && !labState.warm) return;

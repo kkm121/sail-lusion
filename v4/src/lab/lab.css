@@ -17,16 +17,18 @@
 .sl-lab-canvas.is-warm { opacity: 1; }
 .sl-lab-canvas canvas { display: block; width: 100% !important; height: 100% !important; }
 
-.sl-lab-ring { position: absolute; left: 50%; top: 50%; width: 120vmin; height: 120vmin; pointer-events: none; opacity: 0; transform: translate(-50%, -50%); }
-.sl-lab-ring i { position: absolute; inset: 0; border-radius: 50%; mix-blend-mode: screen; filter: blur(5px); }
-.sl-lab-ring .r1 { background: radial-gradient(closest-side, transparent 80%, rgba(255, 70, 90, 0.16) 86%, transparent 94%); transform: scale(1.012); }
-.sl-lab-ring .r2 { background: radial-gradient(closest-side, transparent 78%, rgba(70, 255, 190, 0.15) 85%, transparent 93%); }
-.sl-lab-ring .r3 { background: radial-gradient(closest-side, transparent 76%, rgba(80, 110, 255, 0.2) 83%, transparent 92%); transform: scale(0.988); }
+/* the lens halo: a wide, soft, rainbow-edged ring about 1.4 screen-heights across (red outside, blue inside) */
+.sl-lab-ring { position: absolute; left: 50%; top: 50%; width: 128vh; height: 128vh; pointer-events: none; opacity: 0; transform: translate(-50%, -50%); }
+.sl-lab-ring i { position: absolute; inset: 0; border-radius: 50%; mix-blend-mode: screen; }
+.sl-lab-ring .r1 { background: radial-gradient(closest-side, transparent 74%, rgba(255, 170, 90, 0.05) 84%, rgba(255, 120, 80, 0.11) 91%, rgba(255, 90, 70, 0.04) 96%, transparent 100%); filter: blur(18px); }
+.sl-lab-ring .r2 { background: radial-gradient(closest-side, transparent 68%, rgba(170, 255, 200, 0.04) 80%, rgba(190, 255, 210, 0.08) 87%, transparent 94%); filter: blur(18px); }
+.sl-lab-ring .r3 { background: radial-gradient(closest-side, transparent 58%, rgba(70, 110, 220, 0.05) 70%, rgba(110, 150, 255, 0.2) 82%, rgba(150, 180, 255, 0.1) 88%, transparent 94%); filter: blur(20px); }
 
 .sl-lab-giant { position: absolute; left: 50%; top: 52%; z-index: 3; font-size: 62vw; line-height: 0.8; letter-spacing: -0.05em; font-weight: 500; color: #fff; opacity: 0; pointer-events: none; transform: translate(-50%, -50%); white-space: nowrap; }
-.sl-lab-words { --ex: 0; --s: 1; position: absolute; inset: 0; z-index: 4; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: calc(var(--u) * 0.5); pointer-events: none; opacity: 0; color: #fff; }
-.sl-lab-words .line { display: flex; gap: calc(var(--u) * 2.4); white-space: nowrap; justify-content: center; font-size: calc(var(--u) * 3.1); line-height: 1.08; letter-spacing: 0; font-weight: 400; text-transform: uppercase; }
-.sl-lab-words .w { display: inline-block; transform: translate(calc(var(--cx, 0) * var(--ex) * 1px), calc(var(--cy, 0) * var(--ex) * 1px)) scale(var(--s)); }
+/* the caption: big, plain, wide-set capitals in three centred lines, over the robot */
+.sl-lab-words { --tone: 1; position: absolute; inset: 0; z-index: 4; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0; pointer-events: none; opacity: 0; color: rgb(calc(255 * var(--tone)) calc(255 * var(--tone)) calc(255 * var(--tone))); overflow: hidden; }
+.sl-lab-words .line { display: flex; gap: 0.36em; white-space: nowrap; justify-content: center; font-family: var(--f-sf, 'Inter Variable', 'Inter', sans-serif); font-size: min(5.9vw, 11vh); line-height: 1.22; letter-spacing: 0.012em; font-weight: 400; text-transform: uppercase; }
+.sl-lab-words .w { display: inline-block; transform-origin: 50% 50%; backface-visibility: hidden; }
 .sl-lab-flash { position: absolute; inset: 0; z-index: 5; pointer-events: none; opacity: 0; background: radial-gradient(circle at 50% 50%, #ffffff, #e6d9ff 40%, #9b7bff 78%, #3a24ff); }
 .sl-lab-hint { position: absolute; left: 50%; bottom: calc(var(--u) * 4); z-index: 6; opacity: 0; pointer-events: none; display: flex; flex-direction: column; align-items: center; gap: 14px; }
 .sl-lab-hint .hint { font-family: var(--f-mono); font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; opacity: 0.7; }
@@ -37,8 +39,8 @@
   .sl-lab-intro h2 { font-size: clamp(26px, 8vw, 36px); line-height: 1.08; }
   .sl-lab-intro .copy { position: static; width: 100%; margin-top: 12px; font-size: 13.5px; line-height: 1.45; padding-right: 0; }
   .sl-lab-intro .copy p + p { display: none; }
-  .sl-lab-words { padding: 0 16px; width: 100%; box-sizing: border-box; }
-  .sl-lab-words .line { font-size: clamp(12px, 4.4vw, 20px); gap: 1.8vw; flex-wrap: nowrap; justify-content: center; }
+  .sl-lab-words .line { font-size: 8.2vw; }
+  .sl-lab-ring { width: 150vw; height: 150vw; }
   .sl-lab-giant { font-size: clamp(48px, 24vw, 120px); opacity: 0.05; }
 }
 
@@ -97,8 +99,9 @@ html.calm .sl-split--char .ch, html.calm .sl-split--word .ch { transition: none;
 .sl-lab-device { backface-visibility: hidden; }
 
 /* layers only while something is on screen: hidden chapter letters and words used to keep dozens of layers alive */
-.sl-lab-words .w, .sl-lab-chaps .ch { will-change: auto; }
-.sl-lab-words.live .w, .sl-lab-chaps .chap.live .ch { will-change: transform; }
+.sl-lab-chaps .ch { will-change: auto; }
+.sl-lab-chaps .chap.live .ch { will-change: transform; }
+/* caption words get no will-change: they are re-rasterised as they grow, so the dive into the anchor stays sharp */
 /* phones: the chapters sit 128 px up, so their reading shade must reach down to the screen's edge (it stopped short
    and left a hard line across the planet) */
 @media (max-width: 767px) { .sl-lab-chaps::before { bottom: -128px; height: calc(128px + 62vw); } }

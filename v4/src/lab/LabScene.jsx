@@ -6,12 +6,13 @@ import { BlendFunction } from 'postprocessing';
 import * as THREE from 'three';
 import { compileAsync } from './three-utils';
 import { ErrorBoundary } from './ErrorBoundary';
-import Cage from './scene/Cage';
+import Grid from './scene/Grid';
 import Vortex, { BLOB_R, BLOB_Z } from './scene/Vortex';
 import Room from './scene/Room';
 import Finale from './scene/Finale';
 import Planet from './scene/Planet';
 import Navigator from './scene/Navigator';
+import Pilot from './scene/Pilot';
 import { ease, labState, lerp, seg } from './scene/shared';
 import { asset, HAVE, MEDIA } from './media';
 import { CAGE_END, ROOM_END, ROOM_START, START, Z0, ZTOT } from './journey';
@@ -23,10 +24,14 @@ const BG = {
   space: new THREE.Color('#030407'),
 };
 
-function FollowStars({ count }) {
+function FollowStars({ count, sp }) {
   const g = useRef();
   useFrame((s) => {
-    if (g.current) g.current.position.z = s.camera.position.z;
+    if (!g.current) return;
+    g.current.position.z = s.camera.position.z;
+    // phase one is pure black (no stars) from the robot close-up until the corridor hands over to the Discover core
+    const p = sp.current;
+    g.current.visible = labState.warm || p < 0.29 || s.camera.position.z < CAGE_END + 10;
   });
   return (
     <group ref={g}>
@@ -86,10 +91,14 @@ function Rig({ progress, sp, bloomRef }) {
     // Fog gives the golden corridor depth and is pushed far away everywhere else.
     if (state.scene.fog) {
       state.scene.fog.color.copy(bg);
-      state.scene.fog.far = lerp(95, 900, vK);
-      state.scene.fog.near = lerp(14, 800, vK);
+      state.scene.fog.far = lerp(62, 900, vK);
+      state.scene.fog.near = lerp(8, 800, vK);
     }
     if (bloomRef.current) bloomRef.current.intensity = 0.9 * lerp(1, 0.62, rK) * lerp(1, 0.85, fK);
+    // phase one is shot dark, like film: the Build corridor is exposed low so only edges and glints read
+    const cine = seg(p, 0.54, 0.6) * (1 - vK);
+    state.gl.toneMappingExposure = lerp(1.05, 0.72, cine);
+    if (bloomRef.current) bloomRef.current.intensity *= lerp(1, 1.35, cine);
     // around the Discover core: the original scene's lighting and bloom (city-like reflections at 0.7, bloom from 0.5)
     state.scene.environmentIntensity = lerp(0.85, 0.7, vK * (1 - rK));
     if (bloomRef.current?.luminanceMaterial) bloomRef.current.luminanceMaterial.threshold = lerp(0.86, 0.5, vK * (1 - rK));
@@ -106,7 +115,8 @@ function Curtain({ sp }) {
   useFrame(() => {
     const p = sp.current;
     // Black while the words clear, then the tunnel fades up out of it.
-    const a = seg(p, 0.47, 0.54) * (1 - seg(p, 0.585, 0.66));
+    // (phase one: no curtain any more, the caption dive and the corridor's build happen in the open dark)
+    const a = 0 * seg(p, 0.47, 0.54);
     mat.uniforms.uA.value = a * 0.9;
     if (mesh.current) mesh.current.visible = labState.warm || a > 0.002;
   });
@@ -230,7 +240,7 @@ function Tunnel({ touch, sp, onGate, onWarm }) {
     <>
       <group ref={cage} visible={false}>
         <Suspense fallback={null}>
-          <Cage touch={touch} />
+          <Grid touch={touch} sp={sp} />
           <Loaded name="cage" />
         </Suspense>
       </group>
@@ -295,12 +305,19 @@ export default function LabScene({ progress, active = true, tier = 'full', onWar
         </ErrorBoundary>
       )}
 
-      <FollowStars count={tier !== 'full' ? 700 : touch ? 1200 : 2600} />
+      <FollowStars sp={sp} count={tier !== 'full' ? 700 : touch ? 1200 : 2600} />
       {safe && <Loaded name="nav" />}
       {HAVE.navigator && !safe && (
         <ErrorBoundary fallback={<Loaded name="nav" />}>
           <Suspense fallback={null}>
             <Navigator sp={sp} />
+          </Suspense>
+        </ErrorBoundary>
+      )}
+      {HAVE.navigator && !safe && (
+        <ErrorBoundary fallback={null}>
+          <Suspense fallback={null}>
+            <Pilot sp={sp} />
           </Suspense>
         </ErrorBoundary>
       )}
@@ -315,7 +332,7 @@ export default function LabScene({ progress, active = true, tier = 'full', onWar
         <EffectComposer disableNormalPass multisampling={0}>
           <Bloom ref={bloomRef} luminanceThreshold={0.86} luminanceSmoothing={0.3} intensity={0.9} radius={0.65} mipmapBlur />
           <ChromaticAberration offset={aberration} radialModulation modulationOffset={0.35} />
-          <Vignette offset={0.3} darkness={0.5} />
+          <Vignette offset={0.22} darkness={0.72} />
         </EffectComposer>
       )}
     </Canvas>

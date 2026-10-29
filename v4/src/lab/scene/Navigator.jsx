@@ -26,37 +26,40 @@ void main(){
 }`;
 const SPARK_F = `varying float vA; void main(){ float d = length(gl_PointCoord - .5) * 2.; float a = pow(max(1. - d, 0.), 2.) * vA; gl_FragColor = vec4(vec3(.62, 1., .93) * 1.6, a); }`;
 
+// The finished look shared by every copy of the robot: glossy white ceramic shell, satin silver joints, a dark visor.
+export function dressRobot(scene) {
+  const m = skeletonClone(scene);
+  m.updateMatrixWorld(true);
+  const box = new THREE.Box3().setFromObject(m);
+  const size = box.getSize(new THREE.Vector3());
+  m.userData.fit = { k: 1 / Math.max(size.y, 0.001), c: box.getCenter(new THREE.Vector3()) };
+  const crease = THREE.MathUtils.degToRad(46);
+  m.traverse((o) => {
+    if (!o.isMesh) return;
+    o.frustumCulled = false;
+    if (o.geometry) {
+      try {
+        o.geometry = toCreasedNormals(o.geometry, crease);
+      } catch {
+        o.geometry.computeVertexNormals();
+      }
+    }
+    const name = (o.material?.name || '').toLowerCase();
+    // Finished look: glossy white ceramic shell, satin silver joints, a dark glass visor with glowing eyes.
+    if (name.includes('main')) o.material = new THREE.MeshPhysicalMaterial({ color: C('#e4e7ec'), roughness: 0.36, metalness: 0, clearcoat: 1, clearcoatRoughness: 0.06, sheen: 0.3, sheenColor: C('#ffffff'), envMapIntensity: 1.3 });
+    else if (name.includes('grey') || name.includes('gray')) o.material = new THREE.MeshPhysicalMaterial({ color: C('#dfe3ea'), roughness: 0.28, metalness: 0.75, clearcoat: 0.6, clearcoatRoughness: 0.1, envMapIntensity: 1.4 });
+    else if (name.includes('black')) o.material = new THREE.MeshPhysicalMaterial({ color: C('#0c1117'), roughness: 0.06, metalness: 0.2, clearcoat: 1, clearcoatRoughness: 0.02, emissive: C('#ff5a1f'), emissiveIntensity: 0.04, envMapIntensity: 1.8 });
+    else if (o.material) o.material = new THREE.MeshPhysicalMaterial({ color: C('#16191e'), roughness: 0.12, metalness: 0.3, clearcoat: 1, clearcoatRoughness: 0.04, emissive: C('#ff5a1f'), emissiveIntensity: 0.22, envMapIntensity: 1.6 });
+  });
+  return m;
+}
+
 export default function Navigator({ sp }) {
   const group = useRef();
   const body = useRef();
   const holder = useRef();
   const { scene, animations } = useGLTF(MEDIA.navigator);
-  const model = useMemo(() => {
-    const m = skeletonClone(scene);
-    m.updateMatrixWorld(true);
-    const box = new THREE.Box3().setFromObject(m);
-    const size = box.getSize(new THREE.Vector3());
-    m.userData.fit = { k: 1 / Math.max(size.y, 0.001), c: box.getCenter(new THREE.Vector3()) };
-    const crease = THREE.MathUtils.degToRad(46);
-    m.traverse((o) => {
-      if (!o.isMesh) return;
-      o.frustumCulled = false;
-      if (o.geometry) {
-        try {
-          o.geometry = toCreasedNormals(o.geometry, crease);
-        } catch {
-          o.geometry.computeVertexNormals();
-        }
-      }
-      const name = (o.material?.name || '').toLowerCase();
-      // Finished look: glossy white ceramic shell, satin silver joints, a dark glass visor with glowing eyes.
-      if (name.includes('main')) o.material = new THREE.MeshPhysicalMaterial({ color: C('#fbfcff'), roughness: 0.32, metalness: 0, clearcoat: 1, clearcoatRoughness: 0.06, sheen: 0.3, sheenColor: C('#ffffff'), envMapIntensity: 1.3 });
-      else if (name.includes('grey') || name.includes('gray')) o.material = new THREE.MeshPhysicalMaterial({ color: C('#dfe3ea'), roughness: 0.28, metalness: 0.75, clearcoat: 0.6, clearcoatRoughness: 0.1, envMapIntensity: 1.4 });
-      else if (name.includes('black')) o.material = new THREE.MeshPhysicalMaterial({ color: C('#0c1117'), roughness: 0.06, metalness: 0.2, clearcoat: 1, clearcoatRoughness: 0.02, emissive: C('#ff5a1f'), emissiveIntensity: 0.18, envMapIntensity: 1.8 });
-      else if (o.material) o.material = new THREE.MeshPhysicalMaterial({ color: o.material.color || C('#ffffff'), roughness: 0.3, clearcoat: 0.8, clearcoatRoughness: 0.08, emissive: o.material.color || C('#ff5a1f'), emissiveIntensity: 0.35, envMapIntensity: 1.3 });
-    });
-    return m;
-  }, [scene]);
+  const model = useMemo(() => dressRobot(scene), [scene]);
   const { actions } = useAnimations(animations, holder);
 
   const spark = useMemo(() => {

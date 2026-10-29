@@ -37,7 +37,9 @@ const seg = (p, a, b) => Math.min(1, Math.max(0, (p - a) / (b - a)));
 const ease = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
 const lerp = (a, b, t) => a + (b - a) * t;
 
-const LINES = [['COME', 'ABOARD'], ['FOLLOW', 'THE', 'SIGNAL'], ['ASK', "WHAT'S", 'NEXT']];
+// The caption the camera flies through. The anchor word sits at the centre of the screen and the camera dives into it.
+const LINES = [['STEP', 'INTO', 'FIREFLY'], ['AND', 'LET', 'YOUR'], ['IDEAS', 'TAKE', 'FLIGHT']];
+const ANCHOR = 'LET';
 
 export default function Lab() {
   const section = useRef(null);
@@ -53,7 +55,10 @@ export default function Lab() {
   // safety net: show it after 10 s even if the warm-up never reported in (a slow phone, a failed file)
   useEffect(() => {
     if (!go || warmed) return undefined;
-    const id = window.setTimeout(() => setWarmed(true), 10000);
+    // never in the middle of the warm-up's own frames (every chapter is drawn then)
+    let id = 0;
+    const tick = () => (labState.warm ? (id = window.setTimeout(tick, 250)) : setWarmed(true));
+    id = window.setTimeout(tick, 10000);
     return () => clearTimeout(id);
   }, [go, warmed]);
   const ring = useRef(null);
@@ -122,26 +127,48 @@ export default function Lab() {
     };
   }, [tier]);
 
+  // Measures every word once (and on resize): where it sits in the caption, its offset from the anchor word, and where it
+  // would sit if its line were justified across the whole screen (the spread). The frame loop only writes transforms.
+  const wordGeo = useRef([]);
   useLayoutEffect(() => {
     const root = words.current;
     if (!root) return undefined;
     const measure = () => {
-      const r = root.getBoundingClientRect();
-      const cx = r.left + r.width / 2;
-      const cy = r.top + r.height / 2;
-      root.querySelectorAll('.w').forEach((w, i) => {
-        const prev = w.style.transform;
-        w.style.transform = 'none';
-        const wr = w.getBoundingClientRect();
-        w.style.transform = prev;
-        // Offset of each word from the middle of the block. Words move outward along it, so spacing grows with the scale.
-        let ox = wr.left + wr.width / 2 - cx;
-        const oy = wr.top + wr.height / 2 - cy;
-        const min = r.width * 0.07;
-        if (Math.abs(ox) < min) ox = (ox === 0 ? (i % 2 ? 1 : -1) : Math.sign(ox)) * min;
-        w.style.setProperty('--cx', ox.toFixed(1));
-        w.style.setProperty('--cy', (Math.abs(oy) < 4 ? (i % 2 ? 1 : -1) * 6 : oy).toFixed(1));
+      const els = [...root.querySelectorAll('.w')];
+      els.forEach((w) => (w.style.transform = 'none'));
+      const sr = root.getBoundingClientRect();
+      const boxes = els.map((w) => w.getBoundingClientRect());
+      const ai = els.findIndex((w) => w.dataset.anchor === '1');
+      const A = boxes[ai];
+      const ax = A.left + A.width / 2;
+      const ay = A.top + A.height / 2;
+      const wide = sr.width * 0.87;
+      const geo = els.map((w, i) => {
+        const r = boxes[i];
+        return { el: w, line: Number(w.dataset.line), nx: r.left + r.width / 2 - sr.left, ny: r.top + r.height / 2 - sr.top, ox: r.left + r.width / 2 - ax, oy: r.top + r.height / 2 - ay, w: r.width, jx: 0, anchor: i === ai };
       });
+      // justified positions, relative to the screen centre; the anchor's line is shifted so the anchor stays centred
+      for (let li = 0; li < LINES.length; li++) {
+        const row = geo.filter((g) => g.line === li);
+        const sum = row.reduce((t, g) => t + g.w, 0);
+        const gap = row.length > 1 ? (wide - sum) / (row.length - 1) : 0;
+        let x = -wide / 2;
+        row.forEach((g) => {
+          g.jx = x + g.w / 2;
+          x += g.w + gap;
+        });
+        const an = row.find((g) => g.anchor);
+        if (an) {
+          const shift = an.jx;
+          row.forEach((g) => (g.jx -= shift));
+        }
+      }
+      geo.cx = sr.width / 2;
+      geo.cy = sr.height / 2;
+      geo.ax = ax - sr.left;
+      geo.ay = ay - sr.top;
+      wordGeo.current = geo;
+      root.dataset.sig = '';
     };
     measure();
     document.fonts?.ready.then(measure);
@@ -312,21 +339,44 @@ export default function Lab() {
         }
       }
 
-      const ringIn = seg(p, 0.3, 0.4) * (1 - seg(p, 0.5, 0.56));
+      // the lens halo: arrives with the caption and stays into the start of the tunnel
+      const ringIn = seg(p, 0.31, 0.37) * (1 - seg(p, 0.62, 0.68));
       if (ring.current) {
         ring.current.style.opacity = String(ringIn);
-        ring.current.style.transform = `translate(-50%, -50%) scale(${lerp(0.72, 1.04, seg(p, 0.3, 0.62))})`;
+        ring.current.style.transform = `translate(-50%, -50%) scale(${lerp(0.94, 1.06, seg(p, 0.31, 0.66))})`;
       }
 
-      // Words fade in small around Nav, then fly outward past the camera while growing huge.
-      const wIn = seg(p, 0.34, 0.4);
-      const sp = seg(p, 0.43, 0.6);
+      // The caption: fades in (grey to white), the words spread to the edges of the screen, then the camera dives into
+      // the anchor word, which greys out and is gone; the other words fly past the edges.
+      const wIn = seg(p, 0.33, 0.365);
+      const X = ease(seg(p, 0.415, 0.475));
+      const zk = seg(p, 0.465, 0.535);
+      const S = (1 + X * 0.1) * Math.exp(Math.log(26) * zk * zk * (0.6 + 0.4 * zk));
+      const out = seg(p, 0.518, 0.54);
       if (words.current) {
-        words.current.style.setProperty('--ex', (Math.pow(sp, 1.15) * 11).toFixed(4));
-        words.current.style.setProperty('--s', (1 + Math.pow(sp, 2.7) * 16).toFixed(4));
-        const wo = wIn * (1 - seg(p, 0.53, 0.565));
+        const wo = wIn * (1 - out);
         words.current.style.opacity = String(wo);
-        words.current.classList.toggle('live', wo > 0.001); // its words get their own layers only while shown
+        words.current.style.setProperty('--tone', String(lerp(0.45, 1, seg(p, 0.335, 0.38)) * (1 - 0.6 * seg(p, 0.5, 0.522))));
+        const live = wo > 0.001;
+        words.current.classList.toggle('live', live);
+        const geo = wordGeo.current;
+        const sig = live ? X.toFixed(4) + '|' + S.toFixed(4) : 'off';
+        if (geo.length && words.current.dataset.sig !== sig) {
+          words.current.dataset.sig = sig;
+          // the anchor slides to the exact centre as the spread begins
+          const dx0 = (geo.cx - geo.ax) * X;
+          const dy0 = (geo.cy - geo.ay) * X;
+          for (const g of geo) {
+            const ox = lerp(g.ox, g.jx, X) * S;
+            const oy = g.oy * S * (1 + 0.08 * X);
+            const tx = geo.ax + dx0 + ox - g.nx;
+            const ty = geo.ay + dy0 + oy - g.ny;
+            // words far outside the screen are skipped by the browser
+            const offscreen = Math.abs(geo.ax + dx0 + ox - geo.cx) - (g.w * S) / 2 > geo.cx * 1.1 || Math.abs(geo.ay + dy0 + oy - geo.cy) > geo.cy * 1.1 + 60 * S;
+            g.el.style.visibility = offscreen ? 'hidden' : 'visible';
+            if (!offscreen) g.el.style.transform = `translate3d(${tx.toFixed(1)}px, ${ty.toFixed(1)}px, 0) scale(${S.toFixed(4)})`;
+          }
+        }
       }
       if (giant.current) {
         giant.current.style.opacity = '0';
@@ -511,11 +561,11 @@ export default function Lab() {
         <div className="sl-lab-giant" ref={giant} aria-hidden="true">
           FLY
         </div>
-        <div className="sl-lab-words" ref={words} aria-label="Come aboard. Follow the signal. Ask what is next.">
+        <div className="sl-lab-words" ref={words} aria-label="Step into FireFly and let your ideas take flight.">
           {LINES.map((line, li) => (
             <div className="line" key={li} aria-hidden="true">
               {line.map((w) => (
-                <span className="w" key={w}>
+                <span className="w" key={w} data-line={li} data-anchor={w === ANCHOR ? '1' : undefined}>
                   {w}
                 </span>
               ))}
