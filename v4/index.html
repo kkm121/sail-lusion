@@ -196,6 +196,11 @@
         // the word the lights will form: drawn once in the solid typeface, then sampled for target positions
         var word = { fs: 100, cx: 0, base: 0, ready: false, fonts: false };
         function layoutWord() {
+          // a window with no size yet (a background tab, a hidden panel): wait until it has one
+          if (W < 2 || H < 2) {
+            W = innerWidth; H = innerHeight;
+            if (W < 2 || H < 2) { window.addEventListener('resize', function once() { window.removeEventListener('resize', once); layoutWord(); }); return; }
+          }
           var tctx = tv.getContext('2d');
           tv.width = Math.round(W * pix);
           tv.height = Math.round(H * pix);

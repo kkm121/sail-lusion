@@ -87,7 +87,7 @@ const TUNNEL_VERT = `
 
 const TUNNEL_FRAG = `
   uniform sampler2D u_greebleArmTexture;uniform sampler2D u_greebleBaseTexture;uniform sampler2D u_greebleNormalTexture;
-  uniform vec3 u_color1;uniform vec3 u_color2;uniform float u_feedback;uniform float u_lightZ;uniform float u_bodyGain;uniform float u_glowGain;uniform vec3 u_outBloomFromToStrength;uniform float u_contrast;uniform float u_specGain;
+  uniform vec3 u_color1;uniform vec3 u_color2;uniform float u_feedback;uniform float u_lightZ;uniform float u_bodyGain;uniform float u_glowGain;uniform vec3 u_outBloomFromToStrength;uniform float u_contrast;uniform float u_specGain;uniform float u_glowSharp;uniform float u_depthFade;
   varying vec3 v_worldPosition;varying vec4 v_worldTangent;varying vec3 v_worldNormal;varying vec4 v_rands;
   varying float v_ao;varying float v_opacity;varying float v_emission;varying float v_depth;varying vec2 v_uv;
   void main(){
@@ -109,12 +109,14 @@ const TUNNEL_FRAG = `
     // contrast: faces turned away from the far light fall into shadow (flat half-Lambert reads as cardboard)
     diffuse=pow(diffuse,u_contrast);
     diffuse*=(0.5+u_feedback*fm);
-    vec3 col=baseColor*vec3(ao*0.75*diffuse)*u_bodyGain+emissiveColor*v_emission*u_glowGain;
+    vec3 col=baseColor*vec3(ao*0.75*diffuse)*u_bodyGain+emissiveColor*pow(v_emission,u_glowSharp)*u_glowGain;
     // glossy metal: a sharp highlight from the bright core at the far end, tinted by the stage's colours
     vec3 V=normalize(cameraPosition-v_worldPosition);vec3 L=normalize(lightPos-v_worldPosition);
     float spec=pow(max(dot(N,normalize(L+V)),0.),48.)*(1.-arm.g*0.6);
     col+=spec*u_specGain*ao*(0.6+mix(u_color1,u_color2,v_rands.x));
     col*=v_opacity;
+    // the far end sinks into the dark, so the near rings read clearly instead of one dense tangle
+    col*=mix(1.,exp(-max(v_depth-8.,0.)*0.03),u_depthFade);
     float endBloom=clamp((v_depth-u_outBloomFromToStrength.x)/(u_outBloomFromToStrength.y-u_outBloomFromToStrength.x),0.,1.)*u_outBloomFromToStrength.z;
     col+=endBloom*(0.35+col*0.65);
     if(v_opacity<0.002)discard;
@@ -163,6 +165,8 @@ function GenuineTunnelMesh({ isHd, baseGeom, structGeom, textures, uniformsRef }
         u_innerClearRadius: { value: 0 },
         u_feedback: { value: 0.0 },
         u_contrast: { value: 1 },
+        u_glowSharp: { value: 1 },
+        u_depthFade: { value: 0 },
         u_specGain: { value: 0 },
         u_outBloomFromToStrength: { value: new THREE.Vector3(20, 70, 0) },
         u_bodyGain: { value: 0.42 },
@@ -295,6 +299,7 @@ export default function LusionBuildMatrix({ sp }) {
     const dt = Math.min(delta, 0.05);
     pulseTimeRef.current.pulse += dt * seg(R, 0.02, 0.12) * fit(twist, 0, 0.25, 1, 0.5) * 1.5;
     pulseTimeRef.current.linear += dt * fit(twist, 0, 0.25, 1.5, 1) * 0.6;
+    if (tunnelGroupRef.current) tunnelGroupRef.current.rotation.z += dt * 0.14 * twist;
     const f = pulseTimeRef.current.pulse;
     const pStep = Math.floor(f);
     const g = f - pStep;
@@ -334,6 +339,10 @@ export default function LusionBuildMatrix({ sp }) {
       u.u_bodyGain.value = (0.42 + 0.68 * lit) * (1 - 0.5 * tw);
       u.u_contrast.value = 1 + 1.6 * tw;
       u.u_specGain.value = 1.4 * tw;
+      // fewer, sharper glints in the crystal tunnel (a travelling band rather than every pad lit)
+      u.u_glowSharp.value = 1 + 3 * tw;
+      u.u_glowGain.value *= 1 - 0.25 * tw;
+      u.u_depthFade.value = tw;
       u.u_feedback.value = 0.25 * lit;
       u.u_glowGain.value = 2.6 + 1.2 * lit;
     });
