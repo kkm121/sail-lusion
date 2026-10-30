@@ -1,0 +1,364 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <link rel="icon" type="image/png" href="/brand/favicon.png" />
+    <link rel="apple-touch-icon" href="/brand/icon-192.png" />
+    <meta name="theme-color" content="#0d0d0e" />
+    <link rel="preload" href="/brand/firefly-mark.png" as="image" />
+    <!-- the voyage's heavy files start downloading at once (Home only, not on phones in Lite or data saver), so a first visit is ready as early as a repeat one -->
+    <script>
+      (function () {
+        var p = location.pathname.replace(/\/$/, '');
+        var c = navigator.connection || {};
+        if (!/\/discover$/.test(p) || c.saveData || /(^|-)(2g|3g)$/.test(c.effectiveType || '')) return;
+        var lite = /[?&]lite/.test(location.search) || (matchMedia('(hover: none) and (pointer: coarse)').matches && innerWidth < 1024);
+        var files = ['/env/studio.hdr', '/models/navigator.glb', '/env/metal-color.jpg', '/env/metal-normal.jpg', '/env/metal-rough.jpg', '/env/earth-data-1024.jpg', lite ? '/env/earth-day-1024.jpg' : '/env/earth-day-2048.jpg'];
+        files.forEach(function (f) { var l = document.createElement('link'); l.rel = 'preload'; l.as = /\.jpg$/.test(f) ? 'image' : 'fetch'; l.crossOrigin = 'anonymous'; l.href = f; document.head.appendChild(l); });
+      })();
+    </script>
+    <meta name="description" content="FireFly is a student-run AI club at SRM, associated with AMIEE. We learn, build and share intelligent systems together." />
+    <meta property="og:title" content="FireFly · Student AI Club" />
+    <meta property="og:description" content="Small lights, built together. A student-run AI club at SRM, associated with AMIEE." />
+    <meta property="og:image" content="/brand/icon-512.png" />
+    <meta name="author" content="M Muthu Kumaran" />
+    <title>FireFly · Student AI Club</title>
+    <style>
+      @font-face { font-family: 'FF Word'; src: url(data:font/woff2;base64,d09GMgABAAAAAAUMAAwAAAAACIQAAAS/AAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGigGYAB4EQgKijCITAE2AiQDRAskAAQgBXwHIButBlGUT84OAD8SslPMOxvJyqU2qSO0GsabWro4Bv9Pc73nvsxSJh8KhGQR5KoiSkCUZflVIUN61by80lFZML7JMtDBqP7dESjfFd2BBfD/f1fT2aXFHdv4Fo4ST+TPTNd1Uy9NAwooDui6nq9IeHKACcUBUNrblJwUDCpNzbKO3bsgAiIAwHAYhkiSQoSEiDzyEM7aqi4JsM02EujT5tF4GqsjzVDQvzU+w1Uasiq4//8z3E0fXgorbu9xRQJkDJRFCRB2TE3mk297x1Z0ZxqzmMtiVsVBQ20+vnk3fcHO224h8sFPySdDLjkkcER4AtIIxeUBohAAlYGyoINgrYDwlmh0jItGQHydkp02RoHNEd2alfOjmmlni8CXyhOgizWq5R4uGvmEd6M1henKYdLm10SSNr1Z5Le8egWRcmpuUveEm1++ZGOGmntTwWdlOpfkgRctdOjxdReG/RvPPKzKxWcCpNnhW968kTcaA51oKLIVnH5J68QNNcMxOUR1RlY/3ug6G0doRr+pxXIYmvAu0hOe4ZuPadNxv+UoG4/oufEwTrYKNW2QcNMb79lq1Pyc4pFymPlazwa5easah25HFqLhUcfGbI3TjIDFC1Urpixandj18GWw+d4+/6LPiAcHpDFYz6A7dOjdq1Bf5jD5LQ+uVGj0Y7NPX4Yj5AnH+6fUx2V1YpFYb2p45I3wRq9EGcAOhyMVEUBqIq0ILSU3++Z6y3PQYhMCSwfY4AiT8xo7XIjnVkkenFLR3EaSyG0pQ2G0nNoR20QLzXkA1UjjoeJm2pnN/aud+R2bk09Q5T0IE+lGyHIi/yf3fWbv/yzWSRc3j4VkmijNKYwhSEF0LJF4aQ6RUWwRNsZVMRBWQY7lAP9NNQNCmtJBBu2nWU++KBehqFyYL3ncebKCoLmibXs0a3EvZNikgrZfpRmBksFwqAefg6M9QwzwXG7wPw1l3V70jjh+eWJsIlio5bR7nhF7CXS3/ZTJdMpu32Uy7QIdb/g3W3eR20jw7PyMe/DvG81a4v3UsfaBfm0kpaK6qiITbPWuqV4HX9fnLjibfLP4JqjSse0eqjZpEZ9/4fCtw+mlX+G3jekNwwnP8pY4BvhQd2cwJvXSgf5INDQ4CEshoThzVK83W5EQDC0rQJSg7qepHpCrUQZItJtmhfqqEr+Uk8+6+fpaJfWDLTea/nnxILzcN+E+ML9JFvtwtJWYi6Ht/SRQBwvmnw+sYYKkSIsVFQJfVSGy0N/ZTYhSJ+FvI+dKVV3xtLVMdmp2delxCNxPwpEMjfXSeZy9rvxbJNo9vW/oRrrr7iTx2iQwqBH7/dGm1GWCs5fav6S2pWVxbYr1OoUKFrAu4sN9XVv3H+vZ1NPLr/bIgS7cNlwekW2391dhI9Ay/mPQfm/YsBEBBu3mzilozGtbkJ4UfAP44GasAPiqG2soFje2XfYbSGIACL6SvqDrDIGSUxDEXsj6bY21hiy2SbSwZTSzWbS1FTRRHWqqMKVsOy2Vpb72MMma0cy2088m0dCm09uKU8y+0B8BhWhPQGNsH6ce7GiO5TIobZbVRi5ptaMkxbmk3PoMYQGLmcRgpjGDZcxlEostk1Qs+uoFA4ixeJfGAAA=) format('woff2'); font-weight: 300; font-display: block; }
+      html.is-loading { overflow: hidden; }
+      /* the opening screen is v2's, restyled only where the new typeface needs it */
+      #ldr { --u: min(1vw, 15.6px); position: fixed; inset: 0; z-index: 9999; display: none; color: #fff; overflow: hidden; pointer-events: all; font-family: 'Inter', system-ui, sans-serif; }
+      #ldr.is-open { pointer-events: none; }
+      #ldr .l-half { position: absolute; inset: 0; background: radial-gradient(1px 1px at 12% 18%, rgba(255,255,255,.55), transparent), radial-gradient(1px 1px at 72% 12%, rgba(255,255,255,.4), transparent), radial-gradient(1.4px 1.4px at 38% 68%, rgba(255,240,230,.45), transparent), radial-gradient(1px 1px at 88% 58%, rgba(255,255,255,.35), transparent), radial-gradient(1px 1px at 22% 86%, rgba(255,255,255,.4), transparent), radial-gradient(60% 50% at 80% 90%, rgba(120,36,28,.28) 0%, transparent 70%), #0d0d0e; background-size: 340px 300px, 410px 360px, 290px 330px, 380px 420px, 450px 310px, 100% 100%, auto; background-attachment: fixed; transition: transform 1.05s cubic-bezier(0.7, 0, 0.2, 1); will-change: transform; }
+      #ldr .a { clip-path: polygon(0 0, 66.4% 0, 34.4% 100%, 0 100%); }
+      #ldr .b { clip-path: polygon(66% 0, 100% 0, 100% 100%, 34% 100%); }
+      #ldr.is-open .a { transform: translate3d(-105%, 0, 0); }
+      #ldr.is-open .b { transform: translate3d(105%, 0, 0); }
+      #ldr .l-glow { position: absolute; left: 50%; top: 50%; width: min(80vw, 80vh); aspect-ratio: 1; translate: -50% -50%; border-radius: 50%; pointer-events: none; background: radial-gradient(closest-side, rgba(240, 72, 42, 0.16), rgba(150, 40, 20, 0.1) 55%, transparent 74%); filter: blur(12px); animation: lglow 5s ease-in-out infinite; transition: opacity 0.6s; }
+      #ldr.is-form .l-glow, #ldr.is-open .l-glow { opacity: 0.45; }
+      @keyframes lglow { 50% { transform: scale(1.07); opacity: 0.8; } }
+      #ldr canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; pointer-events: none; }
+      #ldr #ldr-c { z-index: 1; transition: opacity 0.9s ease 0.2s; }
+      #ldr.is-open #ldr-c { opacity: 0; }
+      #ldr #ldr-t { z-index: 3; opacity: 0; transition: opacity 0.7s ease; }
+      #ldr.is-word #ldr-t { opacity: 1; }
+      #ldr.is-open #ldr-t { opacity: 0; transition: opacity 0.5s ease 0.05s; }
+      #ldr .l-top { position: absolute; left: calc(var(--u) * 4.5); right: calc(var(--u) * 4.5); top: calc(var(--u) * 3.6); display: flex; justify-content: space-between; align-items: center; font-size: 11px; font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase; opacity: 0.7; transition: opacity 0.5s; z-index: 2; }
+      #ldr .l-top .brand { display: inline-flex; align-items: center; gap: 10px; font-family: 'FF Word', 'Sora', sans-serif; font-weight: 300; font-size: 20px; letter-spacing: 0; text-transform: none; opacity: 1; }
+      #ldr .l-top .brand img { width: 20px; height: 20px; object-fit: contain; max-width: none; }
+      #ldr.is-form .l-top, #ldr.is-open .l-top { opacity: 0; }
+      #ldr .l-stage { position: absolute; left: 50%; top: 50%; width: 0; height: 0; z-index: 2; transition: opacity 0.5s 0.15s; }
+      #ldr.is-open .l-stage { opacity: 0; }
+      #ldr .l-bar { position: absolute; left: -105px; top: -19px; width: 210px; height: 38px; transition: opacity 0.25s; }
+      #ldr .l-bar i { position: absolute; inset: 0; display: block; }
+      #ldr .l-bar .t { background: rgba(255, 255, 255, 0.12); }
+      #ldr .l-bar .f { background: linear-gradient(90deg, #ff8a3d, #f0482a); box-shadow: 0 0 18px rgba(240, 72, 42, 0.45); transform-origin: left; transform: scaleX(0); }
+      #ldr.is-form .l-bar, #ldr.is-open .l-bar { opacity: 0; transition-delay: 0.1s; }
+      #ldr .l-bird { position: absolute; left: -100px; top: -118px; width: 200px; height: 200px; object-fit: contain; max-width: none; opacity: 0; transform: translate3d(0, 55%, 0); will-change: transform, opacity; }
+      /* the bird rises from below over the same 1.5 s, on the same curve, as the dots forming the letters: they land together */
+      #ldr.is-form .l-bird, #ldr.is-word .l-bird { opacity: 1; transform: none; transition: transform 1.5s cubic-bezier(0.45, 0, 0.55, 1), opacity 1.2s ease 0.1s; }
+      #ldr.is-open .l-bird { opacity: 0; transform: translate3d(0, -40px, 0) scale(1.1); transition: transform 1s cubic-bezier(0.7, 0, 0.2, 1), opacity 0.5s ease 0.05s; }
+      #ldr .l-digits { position: absolute; left: calc(var(--u) * 0.2); bottom: calc(var(--u) * 0.4); display: flex; z-index: 2; font-family: 'FF Word', 'Sora', sans-serif; font-weight: 300; font-size: calc(var(--u) * 6.7); line-height: 1; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; transition: opacity 0.35s; }
+      #ldr.is-form .l-digits, #ldr.is-open .l-digits { opacity: 0; }
+      #ldr .col { display: block; height: 1em; width: 0.7em; overflow: hidden; }
+      #ldr .st { display: block; transform: translate3d(0, 0, 0); transition: transform 0.55s cubic-bezier(0.3, 1, 0.3, 1); will-change: transform; }
+      #ldr .st i { display: block; height: 1em; line-height: 1; font-style: normal; text-align: center; background: linear-gradient(90deg, #f2efea, #ff8a3d 55%, #f0482a); background-size: 300% 100%; background-position: var(--gx, 0%) 0; -webkit-background-clip: text; background-clip: text; color: transparent; }
+      #ldr .col:nth-child(2) i { --gx: 50%; }
+      #ldr .col:nth-child(3) i { --gx: 100%; }
+      #ldr .l-credit { position: absolute; right: calc(var(--u) * 4.5); bottom: calc(var(--u) * 2.2); z-index: 2; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; opacity: 0.55; transition: opacity 0.4s; }
+      #ldr .l-credit b { font-weight: 700; background: linear-gradient(90deg, #b8892b, #f5c84b, #b8892b); -webkit-background-clip: text; background-clip: text; color: transparent; }
+      #ldr.is-form .l-credit, #ldr.is-open .l-credit { opacity: 0; }
+      @media (max-width: 760px) {
+        #ldr { --u: 3.1vw; }
+        #ldr .l-digits { font-size: 24vw; }
+        #ldr .l-top span:nth-child(3) { display: none; }
+        #ldr .l-credit { right: auto; left: calc(var(--u) * 4.5); bottom: auto; top: calc(var(--u) * 3.6 + 34px); font-size: 10px; }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="ldr" class="is-load" aria-hidden="true">
+      <i class="l-half a"></i><i class="l-half b"></i>
+      <div class="l-glow"></div>
+      <canvas id="ldr-c"></canvas>
+      <canvas id="ldr-t"></canvas>
+      <div class="l-top">
+        <span class="brand"><img src="/brand/firefly-mark.png" alt="" /> FireFly</span>
+        <span>Student AI club · SRM</span>
+        <span>Associated with AMIEE</span>
+      </div>
+      <div class="l-stage">
+        <div class="l-bar"><i class="t"></i><i class="f" id="l-fill"></i></div>
+        <img class="l-bird" id="l-bird" src="/brand/firefly-mark.png" alt="" />
+      </div>
+      <div class="l-digits" id="l-digits"></div>
+      <div class="l-credit">Website made by <b>M Muthu Kumaran</b></div>
+    </div>
+    <script>
+      /* The opening screen: v2's, kept faithfully (split screen, a sphere of lights that grows with the real load, a rolling
+         counter, a bar). Its ending is new: when the count reaches 100 the lights fly together and form the word FireFly
+         in a real, solid typeface, the bird appears above it, and the screen splits open. Plain script, raw WebGL, no
+         libraries; it never waits for 3D and gives up after ten seconds. Weak devices get fewer lights and half the frame rate. */
+      (function () {
+        var root = document.documentElement;
+        var el = document.getElementById('ldr');
+        var cv = document.getElementById('ldr-c');
+        var tv = document.getElementById('ldr-t');
+        var fill = document.getElementById('l-fill');
+        var dg = document.getElementById('l-digits');
+        var bird = document.getElementById('l-bird');
+        root.classList.add('is-loading');
+        el.style.display = 'block';
+        var nav = navigator;
+        var weak = (nav.deviceMemory || 4) <= 2 || (nav.hardwareConcurrency || 4) <= 2;
+        var conn = nav.connection || {};
+        var thin = conn.saveData || /(^|-)(2g|3g)$/.test(conn.effectiveType || '');
+        var seen = false;
+        try { seen = sessionStorage.getItem('ff3-seen') === '1'; } catch (e) {}
+        var MIN = seen ? 1.3 : 2.5;
+        var st = { p: 0, shown: 0, t0: 0, phase: 'load', f0: 0, done: false, n: 0, burst: 0, form: 0 };
+
+        // rolling digits: three columns, each a tall stack that slides to the right digit
+        function col(len) {
+          var s = '';
+          for (var i = 0; i < len; i++) s += '<i>' + (i % 10) + '</i>';
+          return '<span class="col"><span class="st">' + s + '</span></span>';
+        }
+        dg.innerHTML = col(2) + col(11) + col(101);
+        var stacks = dg.querySelectorAll('.st');
+        var lastV = -1;
+        function setDigits(v) {
+          if (v === lastV) return;
+          lastV = v;
+          stacks[0].style.transform = 'translate3d(0,' + -Math.floor(v / 100) + 'em,0)';
+          stacks[1].style.transform = 'translate3d(0,' + -Math.floor(v / 10) + 'em,0)';
+          stacks[2].style.transform = 'translate3d(0,' + -v + 'em,0)';
+        }
+
+        var gl = null, prog, U = {}, count = 0, pix = 1, tbuf = null, targets = null;
+        var mouse = [0, 0], mouseS = [0, 0], uK = 0, alpha = 0, base = 0, rotY = 0, W = 1, H = 1;
+        try {
+          if (!thin) gl = cv.getContext('webgl', { alpha: true, antialias: false, premultipliedAlpha: false });
+        } catch (e) { gl = null; }
+        if (gl) {
+          var VS = 'precision mediump float;attribute vec3 position;attribute vec3 aT;uniform float uTime,uK,uBurst,uPix,uSize,uRY,uRX,uAsp,uCam,uForm;uniform vec2 uMouse;varying float vH;varying float vF;' +
+            'vec3 hash(vec3 p){p=vec3(dot(p,vec3(127.1,311.7,74.7)),dot(p,vec3(269.5,183.3,246.1)),dot(p,vec3(113.5,271.9,124.6)));return fract(sin(p)*43758.5453)*2.-1.;}' +
+            'float noise(vec3 p){vec3 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);float r=0.;for(int x=0;x<2;x++)for(int y=0;y<2;y++)for(int z=0;z<2;z++){vec3 o=vec3(float(x),float(y),float(z));r+=dot(hash(i+o),f-o)*(1.-abs(f.x-o.x))*(1.-abs(f.y-o.y))*(1.-abs(f.z-o.z));}return r;}' +
+            'void main(){vec3 p=position;float d=noise(p*1.7+uTime*.35);vH=d;p*=(.55+.45*uK)+d*(.18+.62*uK);' +
+            'vec3 w=vec3(uMouse*2.4,0.);p+=normalize(p-w*.3+1e-4)*smoothstep(1.8,0.,distance(p,w))*.35;p*=1.+uBurst*3.2;' +
+            // the lights leave the sphere and settle on the letters, each along a slight arc so they sweep rather than slide
+            'float f=uForm*uForm*(3.-2.*uForm);vec3 q=mix(p,aT,f);q.z+=sin(f*3.14159)*1.1*(1.+d);vF=f;' +
+            'float ry=uRY*(1.-f),rx=uRX*(1.-f);' +
+            'float cy=cos(ry),sy=sin(ry);q=vec3(cy*q.x+sy*q.z,q.y,-sy*q.x+cy*q.z);float cx=cos(rx),sx=sin(rx);q=vec3(q.x,cx*q.y-sx*q.z,sx*q.y+cx*q.z);' +
+            'float dz=uCam-q.z;gl_PointSize=uPix*uSize*mix(2.4+1.6*uK,3.4,f)*(4.2/dz);gl_Position=vec4(q.x*2.414/uAsp,q.y*2.414,0.,dz);}';
+          var FS = 'precision mediump float;uniform float uBurst,uAlpha;varying float vH;varying float vF;void main(){float d=length(gl_PointCoord-.5);if(d>.5)discard;' +
+            'vec3 a=vec3(.55,.12,.06),b=vec3(1.,.48,.18),c=vec3(.96,.94,.92);float t=clamp(vH*1.6+.5,0.,1.);vec3 col=t<.5?mix(a,b,t*2.):mix(b,c,(t-.5)*2.);' +
+            'col=mix(col,vec3(.97,.96,.95),vF);' +
+            'gl_FragColor=vec4(col,uAlpha*(1.-d*2.)*(1.-uBurst));}';
+          var mk = function (type, src) { var s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s); return s; };
+          prog = gl.createProgram();
+          gl.attachShader(prog, mk(gl.VERTEX_SHADER, VS));
+          gl.attachShader(prog, mk(gl.FRAGMENT_SHADER, FS));
+          gl.linkProgram(prog);
+          if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) gl = null;
+        }
+        if (gl) {
+          gl.useProgram(prog);
+          count = weak ? 5500 : nav.maxTouchPoints > 0 ? 10000 : 18000;
+          var pos = new Float32Array(count * 3);
+          for (var i = 0; i < count; i++) {
+            var u = Math.random() * 6.2832, v = Math.acos(2 * Math.random() - 1), r = 0.82 + Math.random() * 0.18;
+            pos[i * 3] = Math.sin(v) * Math.cos(u) * r;
+            pos[i * 3 + 1] = Math.sin(v) * Math.sin(u) * r;
+            pos[i * 3 + 2] = Math.cos(v) * r;
+          }
+          gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
+          gl.bufferData(gl.ARRAY_BUFFER, pos, gl.STATIC_DRAW);
+          var loc = gl.getAttribLocation(prog, 'position');
+          gl.enableVertexAttribArray(loc);
+          gl.vertexAttribPointer(loc, 3, gl.FLOAT, false, 0, 0);
+          tbuf = gl.createBuffer();
+          targets = new Float32Array(count * 3);
+          gl.bindBuffer(gl.ARRAY_BUFFER, tbuf);
+          gl.bufferData(gl.ARRAY_BUFFER, targets, gl.DYNAMIC_DRAW);
+          var tloc = gl.getAttribLocation(prog, 'aT');
+          gl.enableVertexAttribArray(tloc);
+          gl.vertexAttribPointer(tloc, 3, gl.FLOAT, false, 0, 0);
+          ['uTime', 'uK', 'uBurst', 'uPix', 'uSize', 'uRY', 'uRX', 'uAsp', 'uCam', 'uMouse', 'uAlpha', 'uForm'].forEach(function (n) { U[n] = gl.getUniformLocation(prog, n); });
+          gl.enable(gl.BLEND);
+          gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
+          base = weak ? 0.8 : 0.7;
+          alpha = base;
+          window.addEventListener('pointermove', function (e) { mouse[0] = (e.clientX / innerWidth) * 2 - 1; mouse[1] = -(e.clientY / innerHeight) * 2 + 1; }, { passive: true });
+        }
+
+        // the word the lights will form: drawn once in the solid typeface, then sampled for target positions
+        var word = { fs: 100, cx: 0, base: 0, ready: false, fonts: false };
+        function layoutWord() {
+          var tctx = tv.getContext('2d');
+          tv.width = Math.round(W * pix);
+          tv.height = Math.round(H * pix);
+          tctx.setTransform(pix, 0, 0, pix, 0, 0);
+          tctx.clearRect(0, 0, W, H);
+          var L1 = 'Fire', L2 = 'Fly';
+          var fs = Math.min(W * 0.34, H * 0.3, 280);
+          tctx.font = '300 ' + fs + 'px "FF Word", "Sora", sans-serif';
+          var wd = tctx.measureText(L1).width;
+          if (wd > W * 0.78) { fs *= (W * 0.78) / wd; }
+          tctx.font = '300 ' + fs + 'px "FF Word", "Sora", sans-serif';
+          wd = tctx.measureText(L1).width;
+          tctx.textAlign = 'left';
+          tctx.textBaseline = 'alphabetic';
+          var lh = fs * 0.98, cap = fs * 0.72;
+          word.fs = fs;
+          word.x = W / 2 - wd / 2;
+          word.b1 = H / 2 - (lh + cap) / 2 + cap;
+          word.b2 = word.b1 + lh;
+          // the bird sits across the lower right of "Fly", as on the poster
+          var bs = Math.round(fs * 1.25);
+          bird.style.width = bird.style.height = bs + 'px';
+          bird.style.left = (word.x + wd * 0.48 - W / 2) + 'px';
+          bird.style.top = (word.b2 - fs * 0.62 - H / 2) + 'px';
+          tctx.fillStyle = '#f3f1ee';
+          tctx.fillText(L1, word.x, word.b1);
+          tctx.fillText(L2, word.x, word.b2);
+          // sample the filled pixels from a small unshadowed copy
+          var s = document.createElement('canvas');
+          var sw = Math.round(W / 3), sh = Math.round(H / 3);
+          s.width = sw; s.height = sh;
+          var c2 = s.getContext('2d', { willReadFrequently: true });
+          c2.font = '300 ' + fs / 3 + 'px "FF Word", "Sora", sans-serif';
+          c2.textAlign = 'left'; c2.textBaseline = 'alphabetic';
+          c2.fillStyle = '#000';
+          c2.fillText(L1, word.x / 3, word.b1 / 3);
+          c2.fillText(L2, word.x / 3, word.b2 / 3);
+          var d = c2.getImageData(0, 0, sw, sh).data;
+          var pts = [];
+          for (var y = 0; y < sh; y++) for (var x = 0; x < sw; x++) if (d[(y * sw + x) * 4 + 3] > 128) pts.push(x, y);
+          if (gl && pts.length > 20) {
+            var camz = W / H < 1 ? 5.6 : 3.9;
+            var n = pts.length / 2;
+            for (var k = 0; k < count; k++) {
+              var j = (Math.random() * n) | 0;
+              var px = (pts[j * 2] + Math.random()) * 3, py = (pts[j * 2 + 1] + Math.random()) * 3;
+              targets[k * 3] = ((px / W) * 2 - 1) * (W / H) * camz / 2.414;
+              targets[k * 3 + 1] = (1 - (py / H) * 2) * camz / 2.414;
+              targets[k * 3 + 2] = 0;
+            }
+            gl.bindBuffer(gl.ARRAY_BUFFER, tbuf);
+            gl.bufferData(gl.ARRAY_BUFFER, targets, gl.DYNAMIC_DRAW);
+            word.ready = true;
+          } else word.ready = true;
+        }
+        function size() {
+          W = innerWidth; H = innerHeight;
+          pix = weak ? 1 : Math.min(devicePixelRatio || 1, 2);
+          cv.width = Math.round(W * pix);
+          cv.height = Math.round(H * pix);
+          if (gl) gl.viewport(0, 0, cv.width, cv.height);
+          if (word.fonts) layoutWord();
+        }
+        size();
+        addEventListener('resize', size);
+        var fontsOk = (document.fonts && document.fonts.load) ? document.fonts.load('300 40px "FF Word"', 'FireFly') : Promise.resolve();
+        var go = function () { if (!word.fonts) { word.fonts = true; layoutWord(); } };
+        fontsOk.then(go, go);
+        setTimeout(go, 1500);
+
+        function release() {
+          if (window.__ffReady) return;
+          root.classList.remove('is-loading');
+          try { sessionStorage.setItem('ff3-seen', '1'); } catch (e) {}
+          window.__ffReady = true;
+          window.dispatchEvent(new Event('ff:ready'));
+        }
+        function finish() {
+          if (st.done) return;
+          st.done = true;
+          release();
+          if (el.parentNode) el.parentNode.removeChild(el);
+        }
+        function setPhase(p, cls) {
+          st.phase = p;
+          el.className = cls || 'is-' + p;
+          window.__ldPhase = p;
+          window.dispatchEvent(new CustomEvent('ff:phase', { detail: p }));
+          if (p === 'word') setTimeout(function () { window.__ldSettled = true; window.dispatchEvent(new Event('ff:settled')); }, 1300);
+        }
+        // the page may ask the screen to stay on the word while it warms up (the voyage's shaders compile then,
+        // when a stalled frame is invisible); it opens when that is done, or after nine seconds regardless
+        var heavyReady = function () { return !window.__labWarm || window.__labWarmReady; };
+        var ease = function (x) { return x < 0 ? 0 : x > 1 ? 1 : x * x * (3 - 2 * x); };
+
+        function frame(now) {
+          if (st.done) return;
+          requestAnimationFrame(frame);
+          if (weak && (st.n++ & 1)) return;
+          if (!st.t0) st.t0 = now;
+          var t = (now - st.t0) / 1000;
+          var real = Math.max(st.p, Math.min(62, t * 30));
+          if (st.p < 100 && t > MIN) real = Math.max(real, Math.min(97, st.p + (t - MIN) * 7));
+          var anim = Math.min(100, (t / MIN) * 100);
+          var target = Math.min(real, anim);
+          st.shown += (target - st.shown) * 0.08;
+          if (st.p >= 100 && st.shown > 99.2) st.shown = 100;
+          var v = Math.min(100, Math.round(st.shown));
+          setDigits(v);
+          fill.style.transform = 'scaleX(' + (st.shown / 100).toFixed(4) + ')';
+
+          var phase = st.phase;
+          if (phase === 'form' || phase === 'word') st.form = ease((now - st.f0) / 1500);
+          if (phase === 'open') st.form = 1;
+          if (gl) {
+            uK += ((phase === 'form' || phase === 'word' || phase === 'open' ? 0.9 : st.shown / 100) - uK) * 0.08;
+            var aT = phase === 'word' ? base * 0.1 : phase === 'open' ? 0 : phase === 'form' ? Math.min(1, base * 1.4) : base;
+            alpha += (aT - alpha) * 0.1;
+            st.burst += ((phase === 'open' ? 1 : 0) - st.burst) * 0.07;
+            mouseS[0] += (mouse[0] - mouseS[0]) * 0.08;
+            mouseS[1] += (mouse[1] - mouseS[1]) * 0.08;
+            rotY += 0.0035 + uK * 0.004;
+            gl.clearColor(0, 0, 0, 0);
+            gl.clear(gl.COLOR_BUFFER_BIT);
+            gl.uniform1f(U.uTime, t);
+            gl.uniform1f(U.uK, uK);
+            gl.uniform1f(U.uBurst, st.burst);
+            gl.uniform1f(U.uPix, pix);
+            gl.uniform1f(U.uSize, weak ? 1.7 : 1.4);
+            gl.uniform1f(U.uRY, rotY);
+            gl.uniform1f(U.uRX, Math.sin(t * 0.3) * 0.2);
+            gl.uniform1f(U.uAsp, W / H);
+            gl.uniform1f(U.uCam, W / H < 1 ? 5.6 : 3.9);
+            gl.uniform2f(U.uMouse, mouseS[0], mouseS[1]);
+            gl.uniform1f(U.uAlpha, alpha);
+            gl.uniform1f(U.uForm, st.form);
+            gl.drawArrays(gl.POINTS, 0, count);
+          }
+
+          // ready? the lights fly together and form the word, the real letters take over, then the screen splits open
+          if (phase === 'load' && st.p >= 100 && st.shown >= 100 && t >= MIN && word.ready) {
+            setPhase('form');
+            st.f0 = now;
+          } else if (phase === 'form' && now - st.f0 > 1650) {
+            setPhase('word', 'is-form is-word');
+          } else if (phase === 'word' && now - st.f0 > 3000 && (heavyReady() || now - st.f0 > 9000)) {
+            setPhase('open', 'is-open is-word');
+            release();
+            setTimeout(finish, 1400);
+          }
+        }
+        requestAnimationFrame(frame);
+
+        window.__ld = {
+          set: function (p) { if (p > st.p) st.p = p; },
+          done: function () { st.p = 100; },
+        };
+        // never hang: after twenty seconds (the voyage's warm-up included), open the page regardless
+        setTimeout(function () { MIN = 0; st.p = 100; word.ready = true; }, 20000);
+      })();
+    </script>
+
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>

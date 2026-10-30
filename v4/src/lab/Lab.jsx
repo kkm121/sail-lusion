@@ -12,7 +12,7 @@ import './lab.css';
 const LabScene = lazy(() => import('./LabScene'));
 
 // full: everything, as in v2. lite: one pixel per pixel, no post-processing, fewer stars. static: no 3D at all (a still sky).
-function labTier() {
+export function labTier() {
   if (reduced()) return 'static';
   const nav = navigator;
   const conn = nav.connection || {};

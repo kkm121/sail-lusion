@@ -35,7 +35,7 @@ const blitCam = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
 // quarter size) and next frame each bar is lit by the glow that was around it
 function copyFeedback(renderer) {
   const rt = renderer.getRenderTarget();
-  if (!rt) return;
+  if (!rt || labState.lowFx) return;
   const w = Math.max(1, Math.floor(rt.width * 0.25));
   const h = Math.max(1, Math.floor(rt.height * 0.25));
   if (feedback.width !== w || feedback.height !== h) feedback.setSize(w, h);
@@ -48,6 +48,10 @@ function copyFeedback(renderer) {
   renderer.autoClear = auto;
 }
 
+// stage colours made once, not every frame
+const STAGE1 = COLOR_1.map((c) => new THREE.Color(c));
+const STAGE2 = COLOR_2.map((c) => new THREE.Color(c));
+const OB = new THREE.Vector3();
 const STAGE0 = [new THREE.Color('#00b5a6'), new THREE.Color('#8c8c8c')];
 
 const COLOR_DISCOVER_1 = ['#00e5ff', '#00ff88', '#ff00aa', '#ffd700'];
@@ -352,8 +356,8 @@ export default function LusionBuildMatrix({ sp }) {
     // colour stages, snapping as theirs do; stage 0 is our teal and grey
     const T = COLOR_1.length * seg(R, 0.2, 1);
     const st = Math.min(COLOR_1.length - 1, Math.floor(T) + (T - Math.floor(T) > 0.5 ? 1 : 0));
-    const c1A = st === 0 ? STAGE0[0] : new THREE.Color(COLOR_1[st]);
-    const c2A = st === 0 ? STAGE0[1] : new THREE.Color(COLOR_2[st]);
+    const c1A = st === 0 ? STAGE0[0] : STAGE1[st];
+    const c2A = st === 0 ? STAGE0[1] : STAGE2[st];
     curColorRef.current.copy(c2A);
     // the haze each stage sits in (their background layer): none in Build, then dark red, green and violet
     const haze = TUNNEL_HAZE[st];
@@ -362,7 +366,7 @@ export default function LusionBuildMatrix({ sp }) {
     labState.tunnelHazeK = THREE.MathUtils.smoothstep(R, 0.28, 0.4) * (1 - seg(zc, ROOM_END + 8, ROOM_END));
 
     // their far-end glow, and the lens breathing (a dolly-zoom wobble) once the stages start
-    const ob = new THREE.Vector3(fit(R, 0.75, 0.85, 20, 60), 70, 0);
+    const ob = OB.set(fit(R, 0.75, 0.85, 20, 60), 70, 0);
     ob.z = R < 0.75 ? fit(R, 0.65, 0.75, 0, 0.2) : fit(R, 0.75, 0.85, 0.2, 0.15);
     // their end glow also feeds the bloom pass (alpha), so it reads as a blown-out pink-white core; stronger here
     // and it swells into a blown-out pink-white core toward the end, just before the white flash
@@ -387,7 +391,7 @@ export default function LusionBuildMatrix({ sp }) {
       u.u_contrast.value = 1 + 0.8 * tw;
       u.u_specGain.value = 0;
       // the real feedback where the frame is drawn off-screen (with post-processing); the core approximation elsewhere
-      const fbOn = !!state.gl.getRenderTarget() || labState.post;
+      const fbOn = (!!state.gl.getRenderTarget() || labState.post) && !labState.lowFx;
       u.u_fbGain.value = fbOn ? lit * (1 + 0.8 * tw) : 0;
       u.u_coreLight.value = fbOn ? 0 : 0.38 * tw;
       // the green stage's metal is deep green too, not grey

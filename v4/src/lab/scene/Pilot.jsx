@@ -76,6 +76,7 @@ export default function Pilot({ sp }) {
     const swayX = Math.sin(t * 0.32) * 0.12 * (1 - away) + (p > START ? Math.sin(t * 0.21) * 0.3 : 0);
     const swayY = Math.sin(t * 0.47) * 0.08 + (p > START ? Math.cos(t * 0.17) * 0.2 : 0);
     g.position.set(swayX, yOff + swayY, zc - dist);
+    if (actions.Idle) actions.Idle.paused = dist > 14 || !!labState.lowFx;
     if (smooth.current < 0) smooth.current = p;
     smooth.current += (p - smooth.current) * (1 - Math.exp(-6 * Math.min(dt, 0.05)));
     const q = smooth.current;

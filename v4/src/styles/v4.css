@@ -226,3 +226,7 @@ html.lite .v4-hero::before, html.calm .v4-hero::before { animation: none; }
   .v4-row { letter-spacing: 0.18em; word-spacing: 0; font-size: 11px; }
   .v4-bird { width: 78vw; right: -18vw; }
 }
+
+/* credit for Lusion's scenes on Discover */
+.lusion-credit { margin: 0; padding: 22px var(--pad) 0; text-align: center; font-size: 14px; color: var(--muted); }
+.lusion-credit a { color: var(--ink); text-decoration: underline; text-underline-offset: 3px; }

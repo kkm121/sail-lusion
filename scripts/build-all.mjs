@@ -10,6 +10,7 @@ const v1Dir = path.join(rootDir, 'v1');
 const v3Dir = path.join(rootDir, 'v3');
 const v3p2Dir = path.join(rootDir, 'v3p2');
 const v4Dir = path.join(rootDir, 'v4');
+const v4prevDir = path.join(rootDir, 'v4prev');
 
 console.log('[build-all] Cleaning root dist directory...');
 fs.rmSync(distDir, { recursive: true, force: true });
@@ -65,12 +66,12 @@ execSync('npx vite build --base=/v3p2/ --outDir=../dist/v3p2', {
   env: { ...process.env, SITE_BASE: '/v3p2/', OUT_DIR: '../dist/v3p2' }
 });
 
-// 5. Version 4 also available directly at /v4/
+// 5. The previous main site (v4, with the earlier voyage) at /v4/: phones and lighter devices are sent there for Discover
 console.log('\n========================================');
-console.log('[build-all] 5/5: Building Version 4 (v4) at /v4/...');
+console.log('[build-all] 5/5: Building the previous main site (v4prev) at /v4/...');
 console.log('========================================');
 execSync('npx vite build --base=/v4/ --outDir=../dist/v4', {
-  cwd: v4Dir,
+  cwd: v4prevDir,
   stdio: 'inherit',
   env: { ...process.env, SITE_BASE: '/v4/', OUT_DIR: '../dist/v4' }
 });

@@ -8,7 +8,8 @@
     "v1",
     "v3",
     "v3p2",
-    "v4"
+    "v4",
+    "v4prev"
   ],
   "scripts": {
     "dev": "vite",

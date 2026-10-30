@@ -38,7 +38,7 @@ function FollowStars({ count, sp }) {
     g.current.position.z = s.camera.position.z;
     // phase one is pure black (no stars) from the robot close-up until the corridor hands over to the Discover core
     const p = sp.current;
-    g.current.visible = labState.warm || p < 0.29 || s.camera.position.z < CAGE_END + 10;
+    g.current.visible = !labState.lowStars && (labState.warm || p < 0.29 || s.camera.position.z < CAGE_END + 10);
   });
   return (
     <group ref={g}>
@@ -124,7 +124,7 @@ function Rig({ progress, sp, bloomRef, blur }) {
       lastZ.current = z;
       const inGrid = seg(p, START, START + 0.02) * (1 - seg(zc, LUSION_TUNNEL ? ROOM_END + 2 : CAGE_END + 20, LUSION_TUNNEL ? ROOM_END - 2 : CAGE_END)) * (1 - (labState.blobK || 0));
       // the crystal stage always carries some blur (their tunnel is always on the move), more while scrolling
-      blur.uniforms.get('uAmt').value = Math.min(speed.current * 0.0016 + 0.028 * (labState.tunnelTwist || 0), 0.08) * inGrid;
+      blur.uniforms.get('uAmt').value = (labState.lowFx ? 0 : 1) * Math.min(speed.current * 0.0016 + 0.028 * (labState.tunnelTwist || 0), 0.08) * inGrid;
     }
     const rK = LUSION_TUNNEL ? 0 : seg(zc, ROOM_START + 4, ROOM_START - 12);
     const fK = LUSION_TUNNEL ? seg(zc, CONNECT_END - 8, CONNECT_END - 14) : seg(zc, ROOM_END + 2, ROOM_END - 6);
@@ -147,6 +147,31 @@ function Rig({ progress, sp, bloomRef, blur }) {
     state.scene.environmentIntensity = lerp(lerp(0.85, 0.1, cine), 0.7, vK * (1 - rK));
     if (bloomRef.current?.luminanceMaterial) bloomRef.current.luminanceMaterial.threshold = lerp(lerp(lerp(0.86, 0.7, cine), 0.5, vK * (1 - rK)), lerp(0.5, 0.3, labState.tunnelEnd || 0), labState.tunnelTwist || 0);
   }, -1);
+  return null;
+}
+
+// Keeps the voyage smooth on mid-range laptops: when frames run slow for a moment, it first lowers the resolution, then
+// drops the costliest effects (motion blur, the feedback lighting). It never steps back up within a visit, so it can't
+// flicker between levels.
+function AdaptiveQuality({ dpr }) {
+  const setDpr = useThree((s) => s.setDpr);
+  const ema = useRef(16.7);
+  const slow = useRef(0);
+  const level = useRef(0);
+  useFrame((_, dt) => {
+    if (labState.warm || !labState.active) return;
+    const ms = Math.min(dt * 1000, 100);
+    ema.current += (ms - ema.current) * 0.1;
+    slow.current = ema.current > 22 ? slow.current + dt : 0;
+    if (slow.current > 1.2 && level.current < 3) {
+      level.current++;
+      slow.current = 0;
+      ema.current = 16.7;
+      if (level.current === 1) setDpr(dpr * 0.7);
+      else if (level.current === 2) labState.lowFx = true;
+      else labState.lowStars = true;
+    }
+  });
   return null;
 }
 
@@ -381,6 +406,7 @@ export default function LabScene({ progress, active = true, tier = 'full', onWar
       <Flash />
       <CompileGate onDone={openGate} />
       <Rig progress={progress} sp={sp} bloomRef={bloomRef} blur={fx > 0 && postOn ? blur : null} />
+      <AdaptiveQuality dpr={dpr} />
 
       {fx > 0 && postOn && (
         <EffectComposer disableNormalPass multisampling={0}>
