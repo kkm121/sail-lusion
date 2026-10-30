@@ -142,10 +142,10 @@ function Rig({ progress, sp, bloomRef, blur }) {
     if (bloomRef.current) bloomRef.current.intensity = 0.9 * lerp(1, 0.62, rK) * lerp(1, 0.85, fK);
     // phase one is shot dark, like film: in the Build corridor the studio reflections (which light every metal face the
     // same grey) drop right down, so the metal reads only where the dim lights and the glints catch it
-    if (bloomRef.current) bloomRef.current.intensity *= lerp(1, 1.5, cine) * lerp(1, 1.5, labState.tunnelTwist || 0) * (1 + 2.2 * (labState.tunnelEnd || 0));
+    if (bloomRef.current) bloomRef.current.intensity *= lerp(1, 1.5, cine) * lerp(1, 1.3, labState.tunnelLit || 0) * lerp(1, 1.5, labState.tunnelTwist || 0) * (1 + 3.5 * (labState.tunnelEnd || 0));
     // around the Discover core: the original scene's lighting and bloom (city-like reflections at 0.7, bloom from 0.5)
     state.scene.environmentIntensity = lerp(lerp(0.85, 0.1, cine), 0.7, vK * (1 - rK));
-    if (bloomRef.current?.luminanceMaterial) bloomRef.current.luminanceMaterial.threshold = lerp(lerp(lerp(0.86, 0.7, cine), 0.5, vK * (1 - rK)), lerp(0.55, 0.3, labState.tunnelEnd || 0), labState.tunnelTwist || 0);
+    if (bloomRef.current?.luminanceMaterial) bloomRef.current.luminanceMaterial.threshold = lerp(lerp(lerp(0.86, 0.7, cine), 0.5, vK * (1 - rK)), lerp(0.5, 0.3, labState.tunnelEnd || 0), labState.tunnelTwist || 0);
   }, -1);
   return null;
 }

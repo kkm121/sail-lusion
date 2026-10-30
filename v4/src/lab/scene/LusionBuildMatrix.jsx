@@ -24,7 +24,7 @@ import { labState, seg } from './shared';
 
 const COLOR_1 = ['#0d2b27', '#ba0000', '#00b5a6', '#0099ff'];
 const COLOR_2 = ['#8c8c8c', '#008e6b', '#7e7f05', '#ff0000'];
-const TUNNEL_HAZE = [new THREE.Color('#000000'), new THREE.Color('#1c0605'), new THREE.Color('#06200f'), new THREE.Color('#14020a')];
+const TUNNEL_HAZE = [new THREE.Color('#000000'), new THREE.Color('#1c0605'), new THREE.Color('#0a2e12'), new THREE.Color('#14020a')];
 const feedback = new THREE.WebGLRenderTarget(1, 1, { depthBuffer: false });
 feedback.texture.wrapS = feedback.texture.wrapT = THREE.MirroredRepeatWrapping;
 const blitMat = new THREE.ShaderMaterial({ uniforms: { t: { value: null } }, vertexShader: 'varying vec2 u; void main(){ u = uv; gl_Position = vec4(position.xy, 0., 1.); }', fragmentShader: 'uniform sampler2D t; varying vec2 u; void main(){ gl_FragColor = texture2D(t, u); }', depthTest: false, depthWrite: false });
@@ -110,7 +110,7 @@ const TUNNEL_VERT = `
 
 const TUNNEL_FRAG = `
   uniform sampler2D u_greebleArmTexture;uniform sampler2D u_greebleBaseTexture;uniform sampler2D u_greebleNormalTexture;
-  uniform vec3 u_color1;uniform vec3 u_color2;uniform float u_feedback;uniform float u_lightZ;uniform float u_bodyGain;uniform float u_glowGain;uniform vec3 u_outBloomFromToStrength;uniform float u_contrast;uniform float u_specGain;uniform float u_glowSharp;uniform float u_depthFade;uniform float u_coreLight;uniform vec2 u_res;uniform float u_sat;uniform sampler2D u_feedbackTexture;uniform float u_fbGain;
+  uniform vec3 u_color1;uniform vec3 u_color2;uniform float u_feedback;uniform float u_lightZ;uniform float u_bodyGain;uniform float u_glowGain;uniform vec3 u_outBloomFromToStrength;uniform float u_contrast;uniform float u_specGain;uniform float u_glowSharp;uniform float u_depthFade;uniform float u_coreLight;uniform vec2 u_res;uniform float u_sat;uniform float u_magenta;uniform sampler2D u_feedbackTexture;uniform float u_fbGain;
   varying vec3 v_worldPosition;varying vec4 v_worldTangent;varying vec3 v_worldNormal;varying vec4 v_rands;
   varying float v_ao;varying float v_opacity;varying float v_emission;varying float v_depth;varying vec2 v_uv;
   void main(){
@@ -130,7 +130,7 @@ const TUNNEL_FRAG = `
     vec3 tint=mix(u_color1,u_color2,v_rands.x);
     // the crystal stage keeps the metal's colour deep (pink, red, cyan) instead of washing it toward white
     // magenta between their red and blue, as the bars read in their footage
-    vec3 deep=0.06+mix(tint,vec3(1.,0.15,0.6),0.35)*1.6;
+    vec3 deep=0.06+mix(tint,vec3(1.,0.15,0.6),0.35*u_magenta)*1.6;
     vec3 baseColor=mix(0.5+tint*1.2,deep,u_sat);
     vec3 emissiveColor=mix(u_color1,u_color2,v_rands.y)*3.5;
     // contrast: faces turned away from the far light fall into shadow (flat half-Lambert reads as cardboard)
@@ -152,7 +152,8 @@ const TUNNEL_FRAG = `
     float endBloom=clamp((v_depth-u_outBloomFromToStrength.x)/(u_outBloomFromToStrength.y-u_outBloomFromToStrength.x),0.,1.)*u_outBloomFromToStrength.z;
     col+=endBloom*(0.35+col*0.65);
     if(v_opacity<0.002)discard;
-    gl_FragColor=vec4(col,1.0);
+    // capped, so the bloom pass never overflows (an overflow turns the whole frame black)
+    gl_FragColor=vec4(min(col,vec3(12.)),1.0);
   }
 `;
 
@@ -200,6 +201,7 @@ function GenuineTunnelMesh({ isHd, baseGeom, structGeom, textures, uniformsRef }
         u_glowSharp: { value: 1 },
         u_coreLight: { value: 0 },
         u_sat: { value: 0 },
+        u_magenta: { value: 1 },
         u_feedbackTexture: { value: feedback.texture },
         u_fbGain: { value: 0 },
         u_res: { value: new THREE.Vector2(1, 1) },
@@ -318,6 +320,7 @@ export default function LusionBuildMatrix({ sp }) {
     // Create 0.68-1 (blue-red stage, bent into the crystal lattice); the corridor hands over to a white flash at the end.
     const R = zc > CAGE_END ? 0.3 * seg(zc, Z0, CAGE_END) : zc > ROOM_START ? 0.3 + 0.38 * seg(zc, CAGE_END, ROOM_START) : 0.68 + 0.32 * seg(zc, ROOM_START, ROOM_END);
     labState.tunnelR = R;
+    labState.tunnelLit = THREE.MathUtils.smoothstep(R, 0.3, 0.5) * (1 - (labState.blobK || 0)) * (1 - seg(zc, ROOM_END + 6, ROOM_END - 2));
     const end = THREE.MathUtils.smoothstep(R, 0.9, 1);
     labState.tunnelEnd = end * (1 - seg(zc, ROOM_END + 6, ROOM_END - 2));
     if (labState.aberration) labState.aberration.set(0.0007 + 0.0022 * THREE.MathUtils.smoothstep(R, 0.3, 0.8), 0.0006 + 0.0016 * THREE.MathUtils.smoothstep(R, 0.3, 0.8));
@@ -380,22 +383,23 @@ export default function LusionBuildMatrix({ sp }) {
       // the dark Build look gives way to their brightly lit coloured stages
       const lit = THREE.MathUtils.smoothstep(R, 0.3, 0.5);
       const tw = THREE.MathUtils.smoothstep(R, 0.66, 0.8);
-      u.u_bodyGain.value = (0.42 + 0.68 * lit) * (1 - 0.55 * tw);
+      u.u_bodyGain.value = (0.42 + 0.68 * lit) * (1 - 0.35 * tw) + 0.25 * tw;
       u.u_contrast.value = 1 + 0.8 * tw;
       u.u_specGain.value = 0;
       // the real feedback where the frame is drawn off-screen (with post-processing); the core approximation elsewhere
       const fbOn = !!state.gl.getRenderTarget() || labState.post;
       u.u_fbGain.value = fbOn ? lit * (1 + 0.8 * tw) : 0;
       u.u_coreLight.value = fbOn ? 0 : 0.38 * tw;
-      u.u_sat.value = tw;
+      // the green stage's metal is deep green too, not grey
+      u.u_magenta.value = tw;
+      u.u_sat.value = Math.max(tw, 0.75 * (st === 2 ? lit : 0));
       state.gl.getDrawingBufferSize(u.u_res.value);
-      // fewer, sharper glints in the crystal tunnel (a travelling band rather than every pad lit)
       u.u_glowSharp.value = 1;
-      u.u_glowGain.value *= 1 + 0.5 * tw + 2.2 * end;
-      u.u_fbGain.value *= 1 + 1.5 * end;
       u.u_depthFade.value = 0;
       u.u_feedback.value = 0.25 * lit;
-      u.u_glowGain.value = 2.6 + 1.2 * lit;
+      // the coloured stages are vividly lit: brighter glints, and the glow lights the metal around it more strongly
+      u.u_glowGain.value = (2.6 + 1.2 * lit) * (1 + 0.2 * tw + 4 * end);
+      u.u_fbGain.value *= 1 + 1.5 * end;
     });
   });
 
