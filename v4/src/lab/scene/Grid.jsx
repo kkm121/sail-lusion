@@ -7,6 +7,7 @@ import { seeded } from '../three-utils';
 import { CAGE_END, Z0 } from '../journey';
 import { asset } from '../media';
 import { labState, seg } from './shared';
+import LusionBuildMatrix from './LusionBuildMatrix';
 
 // Chapter I, Build: a dark machine lattice that assembles itself out of the black. One even cubic lattice of thin metal
 // bars; the camera flies down its middle column. Machinery (Blender-made parts with baked occlusion) and teal-white glints
@@ -348,7 +349,7 @@ function RideLights({ build }) {
   );
 }
 
-export default function Grid({ touch, sp }) {
+function OwnGrid({ touch, sp }) {
   const bars = useMemo(() => lattice(seeded(3)), []);
   const beams = useMemo(() => breakUp(bars, seeded(4)), [bars]);
   // brushed steel (ambientCG, CC0): real colour, normal and roughness maps, with reflections of its own (the scene's
@@ -396,3 +397,9 @@ export default function Grid({ touch, sp }) {
 }
 
 useGLTF.preload(KIT);
+
+// The Build corridor: Lusion's own corridor (used with their permission), or ?corridor=own for our recreation.
+export default function Grid(props) {
+  const own = typeof location !== 'undefined' && new URLSearchParams(location.search).get('corridor') === 'own';
+  return own ? <OwnGrid {...props} /> : <LusionBuildMatrix {...props} />;
+}

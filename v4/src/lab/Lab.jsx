@@ -81,7 +81,7 @@ export default function Lab() {
     }
     let idle = 0;
     const start = () => {
-      Object.assign(labState, { env: false, cage: false, earth: false, nav: false, warm: false, dive: false });
+      Object.assign(labState, { env: false, cage: false, matrix: false, earth: false, nav: false, warm: false, dive: false });
       setWarmed(false);
       setGo(true);
     };

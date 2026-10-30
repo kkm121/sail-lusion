@@ -98,7 +98,7 @@ function Rig({ progress, sp, bloomRef, blur }) {
     }
     // a wide lens in the Build corridor (the far opening shrinks to a small square while the near frames sweep past the
     // edges), back to the normal lens before the Discover core
-    const fov = lerp(46, 62, ease(seg(p, START - 0.012, START + 0.03)) * (1 - seg(zc, CAGE_END + 34, CAGE_END + 4)));
+    const fov = lerp(46, 46, ease(seg(p, START - 0.012, START + 0.03)) * (1 - seg(zc, CAGE_END + 34, CAGE_END + 4)));
     if (Math.abs(cam.fov - fov) > 0.01) {
       cam.fov = fov;
       cam.updateProjectionMatrix();
@@ -231,7 +231,7 @@ function Tunnel({ touch, sp, onGate, onWarm }) {
     const zc = state.camera.position.z;
     const groups = [cage, vortex, room, finale];
     if (!t0.current) t0.current = performance.now();
-    const loaded = (labState.env && labState.cage && labState.earth && (labState.nav || !HAVE.navigator)) || performance.now() - t0.current > 8000;
+    const loaded = (labState.env && labState.cage && labState.matrix && labState.earth && (labState.nav || !HAVE.navigator)) || performance.now() - t0.current > 8000;
     if (step.current === 0) {
       if (loaded) {
         onGate?.();
