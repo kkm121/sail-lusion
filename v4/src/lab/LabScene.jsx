@@ -96,8 +96,11 @@ function Rig({ progress, sp, bloomRef, blur }) {
         cam.position.z = lerp(near, ROOM_START, Math.pow((u - 0.72) / 0.28, 1.6));
       }
     }
-    if (cam.fov !== 46) {
-      cam.fov = 46;
+    // a wide lens in the Build corridor (the far opening shrinks to a small square while the near frames sweep past the
+    // edges), back to the normal lens before the Discover core
+    const fov = lerp(46, 62, ease(seg(p, START - 0.012, START + 0.03)) * (1 - seg(zc, CAGE_END + 34, CAGE_END + 4)));
+    if (Math.abs(cam.fov - fov) > 0.01) {
+      cam.fov = fov;
       cam.updateProjectionMatrix();
     }
 
@@ -115,11 +118,11 @@ function Rig({ progress, sp, bloomRef, blur }) {
     const fK = seg(zc, ROOM_END + 2, ROOM_END - 6);
     bg.copy(BG.cage).lerp(BG.vortex, vK).lerp(BG.room, rK).lerp(BG.space, fK);
     state.scene.background.copy(bg);
-    // Fog gives the golden corridor depth and is pushed far away everywhere else.
+    // Fog: the Build corridor fades to black a few cells ahead, as in the reference; pushed far away everywhere else.
     if (state.scene.fog) {
       state.scene.fog.color.copy(bg);
-      state.scene.fog.far = lerp(62, 900, vK);
-      state.scene.fog.near = lerp(8, 800, vK);
+      state.scene.fog.far = lerp(40, 900, vK);
+      state.scene.fog.near = lerp(5, 800, vK);
     }
     if (bloomRef.current) bloomRef.current.intensity = 0.9 * lerp(1, 0.62, rK) * lerp(1, 0.85, fK);
     // phase one is shot dark, like film: in the Build corridor the studio reflections (which light every metal face the

@@ -19,7 +19,7 @@ const NX = 3; // columns out from the middle on each side
 const NY = 2; // rows out from the middle, up and down
 const Z_A = Z0 + 3;
 const Z_B = CAGE_END + 6;
-const T = 0.26; // bar thickness (about 7% of a cell, as in the reference)
+const T = 0.14; // bar thickness: thin lattice bars, which only look heavy as they pass close to the camera
 const KIT = asset('/models/greeble.glb');
 
 // the build: 0 before, 1 once everything is in place
@@ -53,7 +53,9 @@ const JY = Array.from({ length: 2 * NY + 2 }, (_, i) => -A - NY * C + i * C);
 function lattice(rnd) {
   const bars = [];
   const ringOf = (x, y) => Math.max(Math.abs(x) - A, Math.abs(y) - A, 0) / C;
-  const keep = (x, y) => rnd() < 0.94 - ringOf(x, y) * 0.07;
+  // bars lying across the middle column's own walls are sparse, so the column reads as open; its four corner rails stay
+  const onWall = (x, y) => (Math.abs(x) < A - 0.01 && Math.abs(Math.abs(y) - A) < 0.01) || (Math.abs(y) < A - 0.01 && Math.abs(Math.abs(x) - A) < 0.01);
+  const keep = (x, y) => rnd() < (onWall(x, y) ? 0.3 : 0.94 - ringOf(x, y) * 0.07);
   for (let z = Z_A; z > Z_B; z -= C) {
     for (const y of JY)
       for (let i = 0; i < JX.length - 1; i++) {
@@ -75,7 +77,8 @@ function lattice(rnd) {
 function breakUp(bars, rnd) {
   const out = [];
   for (const b of bars) {
-    const n = rnd() < 0.62 ? 1 : rnd() < 0.75 ? 2 : 3;
+    // frames away from the middle column are whole; round the column, where the machinery sits, some are broken
+    const n = b.ring > 0.01 || rnd() < 0.6 ? 1 : rnd() < 0.75 ? 2 : 3;
     const cuts = Array.from({ length: n - 1 }, () => 0.15 + rnd() * 0.7).sort();
     const edges = [0, ...cuts, 1];
     for (let i = 0; i < n; i++) {
@@ -84,9 +87,9 @@ function breakUp(bars, rnd) {
       const gap = 0.02 + rnd() * 0.06;
       if (i > 0) a += gap / 2;
       if (i < n - 1) c -= gap / 2;
-      if (i === n - 1 && rnd() < 0.08) c -= 0.1 + rnd() * 0.3;
+      if (b.ring < 0.01 && i === n - 1 && rnd() < 0.08) c -= 0.1 + rnd() * 0.3;
       if (c - a < 0.05) continue;
-      out.push({ ...b, t: [a, c], off: [(rnd() - 0.5) * 0.03, (rnd() - 0.5) * 0.03], th: 0.85 + rnd() * 0.35 });
+      out.push({ ...b, t: [a, c], off: b.ring > 0.01 ? [0, 0] : [(rnd() - 0.5) * 0.03, (rnd() - 0.5) * 0.03], th: b.ring > 0.01 ? 1 : 0.85 + rnd() * 0.35 });
     }
   }
   return out;
@@ -202,7 +205,7 @@ function Parts({ touch, mat }) {
   const kit = useMemo(() => Object.values(nodes).filter((o) => o.isMesh).sort((a, b) => a.name.localeCompare(b.name)).map((o) => o.geometry.clone()), [nodes]);
   const parts = useMemo(() => {
     const rnd = seeded(9);
-    const n = touch ? 1000 : 2600;
+    const n = touch ? 800 : 2000;
     return Array.from({ length: n }, () => {
       const [x, y] = nearCorner(rnd, 2.4);
       const s = 0.08 + Math.pow(rnd(), 2.6) * 0.55;
@@ -236,7 +239,7 @@ function Slivers({ touch, mat }) {
   const mesh = useRef();
   const items = useMemo(() => {
     const rnd = seeded(41);
-    const n = touch ? 380 : 1000;
+    const n = touch ? 140 : 340;
     const lx = A + NX * C;
     const ly = A + NY * C;
     const out = [];
@@ -284,9 +287,9 @@ function Lights({ touch, u }) {
     const rnd = seeded(23);
     // teal, pale teal, white, a deeper sea green; a rare warm one
     const cols = [[1.2, 5.6, 4.2], [3.2, 6.4, 5.4], [6.0, 6.6, 6.4], [0.6, 4.0, 2.8], [6.4, 4.2, 2.0]];
-    const n = touch ? 520 : 1500;
+    const n = touch ? 900 : 2800;
     return Array.from({ length: n }, () => {
-      const [x, y] = nearCorner(rnd, 1.6);
+      const [x, y] = nearCorner(rnd, 1.15);
       const s = (0.014 + Math.pow(rnd(), 3.4) * 0.075) * (touch ? 1.7 : 1);
       const c = cols[rnd() < 0.03 ? 4 : rnd() < 0.42 ? 0 : rnd() < 0.5 ? 1 : rnd() < 0.6 ? 2 : 3];
       return { p: [x, y, Z_A - rnd() * (Z_A - Z_B)], s: [s * (1 + rnd() * 2.5), s * (1 + rnd() * 1.5), s * (1 + rnd() * 3)], c, d: 0.36 + rnd() * 0.42 };
@@ -357,7 +360,8 @@ export default function Grid({ touch, sp }) {
       t.anisotropy = 8;
     });
     tex.map.colorSpace = THREE.SRGBColorSpace;
-    return buildMaterial({ ...tex, color: '#6b7178', metalness: 1, roughness: 0.42, normalScale: new THREE.Vector2(0.6, 0.6), envMapIntensity: touch ? 0.28 : 0.55 }, 'beam');
+    // dark polished steel: almost black body, and the faces carry sharp streaks of reflected light (no grey colour map)
+    return buildMaterial({ normalMap: tex.normalMap, roughnessMap: tex.roughnessMap, color: '#2a2e33', metalness: 1, roughness: 0.2, normalScale: new THREE.Vector2(0.25, 0.25), envMapIntensity: touch ? 0.6 : 1.15 }, 'beam');
     // useTexture hands back a new object each render; the textures inside stay the same
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tex.map, tex.normalMap, tex.roughnessMap, touch]);

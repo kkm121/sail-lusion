@@ -71,10 +71,10 @@ export default function Pilot({ sp }) {
     const away = seg(p, 0.395, 0.55);
     // portrait screens frame the close-up from further back, so the robot is the same share of the width
     const fit = THREE.MathUtils.clamp(cam.aspect / 1.5, 0.52, 1);
-    const dist = lerp(3.7 / fit, 46, Math.pow(away, 2.3)) - 18 * seg(p, START, START + 0.05);
+    const dist = lerp(3.7 / fit, 46, Math.pow(away, 2.3)) - 33 * ease(seg(p, START - 0.01, START + 0.04)); // closes in to lead the way, about three cells ahead
     const yOff = lerp(-1.05 / Math.sqrt(fit), -0.05, ease(seg(p, 0.39, 0.5)));
-    const swayX = Math.sin(t * 0.32) * 0.12 * (1 - away) + (p > START ? Math.sin(t * 0.21) * 1.2 : 0);
-    const swayY = Math.sin(t * 0.47) * 0.08 + (p > START ? Math.cos(t * 0.17) * 0.6 : 0);
+    const swayX = Math.sin(t * 0.32) * 0.12 * (1 - away) + (p > START ? Math.sin(t * 0.21) * 0.3 : 0);
+    const swayY = Math.sin(t * 0.47) * 0.08 + (p > START ? Math.cos(t * 0.17) * 0.2 : 0);
     g.position.set(swayX, yOff + swayY, zc - dist);
     if (smooth.current < 0) smooth.current = p;
     smooth.current += (p - smooth.current) * (1 - Math.exp(-6 * Math.min(dt, 0.05)));
