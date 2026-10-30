@@ -7,6 +7,10 @@ export const LAT_STEP = 2.5;
 export const ROOM_START = CAGE_END - LAT_RINGS * LAT_STEP;
 export const ROOM_END = ROOM_START - 62;
 export const CONNECT_END = -283;
+// with Lusion's corridor, our white blob interlude sits in the middle of Discover: the corridor fades, the camera circles
+// the blob and dives through it, and comes out in the corridor again
+export const BLOB_A = -126;
+export const BLOB_B = -176;
 
 const pAt = (z) => START + (1 - START) * ((Z0 - z) / ZTOT);
 

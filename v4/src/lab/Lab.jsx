@@ -1,7 +1,7 @@
 import { lazy, Suspense, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import SplitLine from './SplitLine';
-import { CHAPTERS, ROOM_END, pAtZ } from './journey';
+import { CHAPTERS, CONNECT_END, ROOM_END, pAtZ } from './journey';
 import { labState } from './labstate';
 import { ErrorBoundary } from './ErrorBoundary';
 import { onFrame, reduced } from '../lib/motion';
@@ -66,6 +66,7 @@ export default function Lab() {
   const giant = useRef(null);
   const hint = useRef(null);
   const fade = useRef(null);
+  const card = useRef(null);
   const chapEls = useRef([]);
   const railEls = useRef([]);
   const nextEl = useRef(null);
@@ -385,6 +386,12 @@ export default function Lab() {
       if (giant.current) {
         giant.current.style.opacity = '0';
       }
+      if (card.current) {
+        const k = Math.min(seg(p, pAtZ(CONNECT_END + 7), pAtZ(CONNECT_END + 1)), 1 - seg(p, pAtZ(CONNECT_END - 5), pAtZ(CONNECT_END - 10)));
+        const e2 = ease(Math.max(k, 0));
+        card.current.style.opacity = String(e2 > 0.001 ? 1 : 0);
+        card.current.style.setProperty('--k', e2.toFixed(4));
+      }
       if (fade.current) {
         // white-out as the crystal tunnel ends (Lusion's hand-over into the next scene)
         const f = Math.min(seg(p, pAtZ(ROOM_END + 10), pAtZ(ROOM_END - 1)), 1 - seg(p, pAtZ(ROOM_END - 1), pAtZ(ROOM_END - 12)));
@@ -578,6 +585,7 @@ export default function Lab() {
           ))}
         </div>
         <div className="sl-lab-flash" ref={fade} aria-hidden="true" />
+        <div className="sl-lab-card" ref={card} aria-hidden="true" />
         <div className="sl-lab-chaps" aria-hidden="true">
           {CHAPTERS.map((c, i) => (
             <div className="chap" key={c.num} ref={(el) => (chapEls.current[i] = el)} style={{ '--cc': c.color }}>

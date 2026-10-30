@@ -17,7 +17,7 @@ import Navigator from './scene/Navigator';
 import Pilot from './scene/Pilot';
 import { ease, labState, lerp, seg } from './scene/shared';
 import { asset, HAVE, MEDIA } from './media';
-import { CAGE_END, CONNECT_END, ROOM_END, ROOM_START, START, Z0, ZTOT } from './journey';
+import { BLOB_A, BLOB_B, CAGE_END, CONNECT_END, ROOM_END, ROOM_START, START, Z0, ZTOT } from './journey';
 
 // Lusion's corridor (with permission) carries Build, Discover and Create; ?corridor=own brings back our own scenes
 const LUSION_TUNNEL = typeof location === 'undefined' || new URLSearchParams(location.search).get('corridor') !== 'own';
@@ -86,26 +86,30 @@ function Rig({ progress, sp, bloomRef, blur }) {
     cam.position.set(px * 0.35 + (inTunnel ? Math.sin(zc * 0.04) * 0.2 : 0), py * 0.24 + (inTunnel ? Math.cos(zc * 0.035) * 0.16 : 0), z);
     cam.rotation.set(py * 0.035, -px * 0.045, roll);
     // Discover: approach the core, circle it a full 360 degrees, then dive straight through it into the Create room.
-    labState.dive = !LUSION_TUNNEL && (zc <= ROOM_START || (zc < CAGE_END && seg(zc, CAGE_END, ROOM_START) >= 0.72));
-    if (!LUSION_TUNNEL && zc < CAGE_END && zc > ROOM_START) {
-      const u = seg(zc, CAGE_END, ROOM_START);
+    const OA = LUSION_TUNNEL ? BLOB_A : CAGE_END;
+    const OB = LUSION_TUNNEL ? BLOB_B : ROOM_START;
+    labState.dive = zc <= OB || (zc < OA && seg(zc, OA, OB) >= 0.72);
+    // the corridor returns under the white flash, while the camera is passing through the blob
+    labState.blobK = LUSION_TUNNEL ? seg(zc, OA + 6, OA) * (1 - seg(zc, OB + 10, OB + 6)) : 0;
+    if (zc < OA && zc > OB) {
+      const u = seg(zc, OA, OB);
       // portrait screens orbit further out so the core fits the frame
       const R = BLOB_R * THREE.MathUtils.clamp(1.25 / cam.aspect, 1, 1.9);
       const near = BLOB_Z + R;
       if (u < 0.14) {
-        cam.position.z = lerp(CAGE_END, near, ease(u / 0.14));
+        cam.position.z = lerp(OA, near, ease(u / 0.14));
       } else if (u < 0.72) {
         const a = ease((u - 0.14) / 0.58) * Math.PI * 2;
         cam.position.set(Math.sin(a) * R + px * 0.3, Math.sin(a) * 1.6 + py * 0.25, BLOB_Z + Math.cos(a) * R);
         cam.lookAt(0, 0, BLOB_Z);
         cam.rotation.z += Math.sin(a) * 0.08;
       } else {
-        cam.position.z = lerp(near, ROOM_START, Math.pow((u - 0.72) / 0.28, 1.6));
+        cam.position.z = lerp(near, OB, Math.pow((u - 0.72) / 0.28, 1.6));
       }
     }
     // a wide lens in the Build corridor (the far opening shrinks to a small square while the near frames sweep past the
     // edges), back to the normal lens before the Discover core
-    const fov = 46 + (LUSION_TUNNEL && zc < Z0 && zc > CONNECT_END - 10 ? labState.fovOffset || 0 : 0);
+    const fov = 46 + (LUSION_TUNNEL && zc < Z0 && zc > CONNECT_END - 15 ? (labState.fovOffset || 0) * (1 - (labState.blobK || 0)) : 0);
     if (Math.abs(cam.fov - fov) > 0.01) {
       cam.fov = fov;
       cam.updateProjectionMatrix();
@@ -122,11 +126,11 @@ function Rig({ progress, sp, bloomRef, blur }) {
       blur.uniforms.get('uAmt').value = Math.min(speed.current * 0.0016, 0.07) * inGrid;
     }
     const rK = LUSION_TUNNEL ? 0 : seg(zc, ROOM_START + 4, ROOM_START - 12);
-    const fK = LUSION_TUNNEL ? seg(zc, CONNECT_END - 7, CONNECT_END - 10) : seg(zc, ROOM_END + 2, ROOM_END - 6);
+    const fK = LUSION_TUNNEL ? seg(zc, CONNECT_END - 8, CONNECT_END - 14) : seg(zc, ROOM_END + 2, ROOM_END - 6);
     bg.copy(BG.cage).lerp(BG.vortex, vK).lerp(BG.room, rK).lerp(BG.space, fK);
     if (LUSION_TUNNEL && labState.tunnelHaze) bg.lerp(labState.tunnelHaze, labState.tunnelHazeK || 0);
     // the blue room's openings look out onto white light
-    if (LUSION_TUNNEL) bg.lerp(ROOM_LIGHT, seg(zc, ROOM_END + 2, ROOM_END - 3) * (1 - seg(zc, CONNECT_END - 7, CONNECT_END - 10)));
+    if (LUSION_TUNNEL) bg.lerp(ROOM_LIGHT, seg(zc, ROOM_END + 2, ROOM_END - 3) * (1 - seg(zc, CONNECT_END - 4, CONNECT_END - 10)));
     state.scene.background.copy(bg);
     // Fog: the Build corridor fades to black a few cells ahead, as in the reference; pushed far away everywhere else.
     if (state.scene.fog) {
@@ -174,10 +178,11 @@ function Flash() {
   useFrame((s) => {
     const z = s.camera.position.z;
     // only while diving through the core; the back half of the orbit crosses the same depth
-    const a = (labState.dive ? seg(z, BLOB_Z + 3, BLOB_Z - 2) : 0) * (1 - seg(z, ROOM_START + 14, ROOM_START + 2));
+    const out = LUSION_TUNNEL ? BLOB_B : ROOM_START;
+    const a = (labState.dive && z < BLOB_Z + 4 && z > out - 1 ? seg(z, BLOB_Z + 3, BLOB_Z - 2) : 0) * (1 - seg(z, out + 14, out + 2));
     mat.uniforms.uA.value = a * 0.92;
     // white as the camera passes through the pearl, turning to the violet of the Create room
-    const fk = seg(z, BLOB_Z - 4, ROOM_START + 6);
+    const fk = LUSION_TUNNEL ? 0 : seg(z, BLOB_Z - 4, ROOM_START + 6);
     mat.uniforms.uC.value.setRGB(lerp(0.55, 0.45, fk), lerp(1, 0.38, fk), lerp(0.9, 1, fk));
     if (mesh.current) mesh.current.visible = labState.warm || a > 0.002;
   });
@@ -273,9 +278,9 @@ function Tunnel({ touch, sp, onGate, onWarm }) {
     }
     const p = sp.current;
     if (cage.current) cage.current.visible = warm || (p > 0.545 && zc <= Z0 + 4 && zc > (LUSION_TUNNEL ? ROOM_END - 4 : CAGE_END - 6));
-    if (vortex.current) vortex.current.visible = warm || (zc <= CAGE_END + 42 && zc > ROOM_START - 8);
-    if (room.current) room.current.visible = warm || (LUSION_TUNNEL ? zc <= ROOM_END + 2 && zc > CONNECT_END - 11 : zc <= ROOM_START + 14 && zc > ROOM_END - 18);
-    if (finale.current) finale.current.visible = warm || zc <= (LUSION_TUNNEL ? CONNECT_END - 7 : ROOM_END + 36);
+    if (vortex.current) vortex.current.visible = warm || (LUSION_TUNNEL ? zc <= BLOB_A + 8 && zc > BLOB_B - 4 : zc <= CAGE_END + 42 && zc > ROOM_START - 8);
+    if (room.current) room.current.visible = warm || (LUSION_TUNNEL ? zc <= ROOM_END + 2 && zc > CONNECT_END - 16 : zc <= ROOM_START + 14 && zc > ROOM_END - 18);
+    if (finale.current) finale.current.visible = warm || zc <= (LUSION_TUNNEL ? CONNECT_END - 9 : ROOM_END + 36);
   });
   return (
     <>
@@ -286,7 +291,7 @@ function Tunnel({ touch, sp, onGate, onWarm }) {
         </Suspense>
       </group>
       <group ref={vortex} visible={false}>
-        {!LUSION_TUNNEL && <Vortex touch={touch} />}
+        <Vortex touch={touch} />
       </group>
       <group ref={room} visible={false}>
         {LUSION_TUNNEL ? <WhiteRoom /> : <Room touch={touch} />}

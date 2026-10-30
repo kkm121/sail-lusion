@@ -105,3 +105,8 @@ html.calm .sl-split--char .ch, html.calm .sl-split--word .ch { transition: none;
 /* phones: the chapters sit 128 px up, so their reading shade must reach down to the screen's edge (it stopped short
    and left a hard line across the planet) */
 @media (max-width: 767px) { .sl-lab-chaps::before { bottom: -128px; height: calc(128px + 62vw); } }
+
+/* the framed card the blue room closes into before the glass breaks (a dark border, with a hairline rim) */
+.sl-lab-card { --k: 0; position: absolute; inset: 0; z-index: 3; pointer-events: none; opacity: 0;
+  box-shadow: inset 0 0 0 calc(var(--k) * 7vmin) #05060a, inset 0 0 0 calc(var(--k) * 7vmin + 1px) rgba(255, 255, 255, 0.18);
+  border-radius: calc(var(--k) * 18px); }

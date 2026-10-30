@@ -45,7 +45,7 @@ export default function Vortex({ touch }) {
     const g = group.current;
     if (!g) return;
     const z = s.camera.position.z;
-    const fade = seg(z, CAGE_END + 30, CAGE_END + 4) * (1 - seg(z, ROOM_START + 18, ROOM_START + 6));
+    const fade = labState.blobK !== undefined && new URLSearchParams(location.search).get('corridor') !== 'own' ? labState.blobK : seg(z, CAGE_END + 30, CAGE_END + 4) * (1 - seg(z, ROOM_START + 18, ROOM_START + 6));
     g.visible = labState.warm || fade > 0.001;
     // lights fade instead of hiding (see the note in Cage.jsx); intensities are the original scene's
     const lk = labState.warm ? 1 : fade;

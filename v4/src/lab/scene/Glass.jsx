@@ -23,7 +23,7 @@ uniform sampler2D u_backgroundTexture;uniform vec2 u_resolution;varying vec3 v_v
 void main(){vec3 fdx=dFdx(v_viewPosition);vec3 fdy=dFdy(v_viewPosition);vec3 viewNormal=normalize(cross(fdx,fdy));float alpha=abs(1.-viewNormal.z);vec2 uv=gl_FragCoord.xy/u_resolution.xy;vec3 bgColor=texture2D(u_backgroundTexture,uv).rgb;vec2 refl=reflect(normalize(v_viewPosition),viewNormal).xy;vec2 uvOffset=refl.xy*0.2*vec2(u_resolution.x/u_resolution.y,1.);vec3 color=texture2D(u_backgroundTexture,uv+uvOffset).rgb;color+=clamp(abs(mod((alpha)*8.+vec3(0.0,4.0,2.0),6.0)-3.0)-1.0,0.0,1.0)*(1.-alpha)*(1.-bgColor);gl_FragColor=vec4(color,alpha);}`;
 
 // the shatter plays over the first stretch of Record
-export const glassAt = (zc) => seg(zc, CONNECT_END + 1, CONNECT_END - 9);
+export const glassAt = (zc) => seg(zc, CONNECT_END, CONNECT_END - 11);
 
 function dataTexture(data, w, h) {
   const t = new THREE.DataTexture(data, w, h, THREE.RGBAFormat, THREE.FloatType);
