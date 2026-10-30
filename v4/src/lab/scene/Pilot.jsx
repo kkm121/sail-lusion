@@ -3,7 +3,7 @@ import { createPortal, useFrame, useThree } from '@react-three/fiber';
 import { useAnimations, useGLTF } from '@react-three/drei';
 import * as THREE from 'three';
 import { MEDIA } from '../media';
-import { CAGE_END, START } from '../journey';
+import { ROOM_END, START } from '../journey';
 import { dressRobot } from './Navigator';
 import { ease, labState, lerp, seg } from './shared';
 
@@ -59,7 +59,7 @@ export default function Pilot({ sp }) {
     const warm = labState.warm;
     // gone by the time the corridor turns into the Discover core
     const zc = cam.position.z;
-    const life = p < START ? 1 : 1 - seg(zc, CAGE_END + 46, CAGE_END + 22);
+    const life = p < START ? 1 : 1 - seg(zc, ROOM_END + 10, ROOM_END);
     g.visible = warm || life > 0.002;
     const lk = warm ? 1 : life;
     if (key.current) key.current.intensity = 95 * lk * (1 - 0.55 * seg(p, 0.5, 0.58));

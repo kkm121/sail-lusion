@@ -1,7 +1,7 @@
 import { lazy, Suspense, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import SplitLine from './SplitLine';
-import { CHAPTERS, ROOM_START, pAtZ } from './journey';
+import { CHAPTERS, ROOM_END, pAtZ } from './journey';
 import { labState } from './labstate';
 import { ErrorBoundary } from './ErrorBoundary';
 import { onFrame, reduced } from '../lib/motion';
@@ -386,7 +386,8 @@ export default function Lab() {
         giant.current.style.opacity = '0';
       }
       if (fade.current) {
-        const f = Math.min(seg(p, pAtZ(ROOM_START + 14), pAtZ(ROOM_START - 2)), 1 - seg(p, pAtZ(ROOM_START - 2), pAtZ(ROOM_START - 20)));
+        // white-out as the crystal tunnel ends (Lusion's hand-over into the next scene)
+        const f = Math.min(seg(p, pAtZ(ROOM_END + 10), pAtZ(ROOM_END - 1)), 1 - seg(p, pAtZ(ROOM_END - 1), pAtZ(ROOM_END - 12)));
         fade.current.style.opacity = String(Math.max(f, 0) * 0.92);
       }
 

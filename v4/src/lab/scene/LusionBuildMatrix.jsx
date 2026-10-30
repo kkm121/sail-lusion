@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { parseLusionBuf, loadLusionBuf } from './lusionBufLoader';
-import { CAGE_END, ROOM_START, Z0 } from '../journey';
+import { CAGE_END, ROOM_END, ROOM_START, Z0 } from '../journey';
 import { labState, seg } from './shared';
 
 // =============================================================================
@@ -24,6 +24,8 @@ import { labState, seg } from './shared';
 
 const COLOR_1 = ['#0d2b27', '#ba0000', '#00b5a6', '#0099ff'];
 const COLOR_2 = ['#8c8c8c', '#008e6b', '#7e7f05', '#ff0000'];
+const TUNNEL_HAZE = [new THREE.Color('#000000'), new THREE.Color('#1c0605'), new THREE.Color('#06200f'), new THREE.Color('#1a0820')];
+const STAGE0 = [new THREE.Color('#00b5a6'), new THREE.Color('#8c8c8c')];
 
 const COLOR_DISCOVER_1 = ['#00e5ff', '#00ff88', '#ff00aa', '#ffd700'];
 const COLOR_DISCOVER_2 = ['#008e6b', '#00b5a6', '#7928ca', '#ff5a1f'];
@@ -38,7 +40,7 @@ const GRID_SIZE = 20.0;
 const TUNNEL_VERT = `
   attribute float ao;attribute float areaRatio;attribute float cluster;attribute float height;attribute vec3 center;
   attribute vec3 instancePos;attribute vec3 instanceGridIds;attribute vec3 instanceAxis;attribute vec4 tangent;
-  uniform float u_time;uniform float u_showRatio;uniform float u_offsetZ;
+  uniform float u_time;uniform float u_showRatio;uniform float u_offsetZ;uniform float u_blackTunnelTransformRatio;
   varying vec3 v_worldPosition;varying vec4 v_worldTangent;varying vec3 v_worldNormal;varying float v_ao;varying float v_opacity;
   varying float v_emission;varying vec2 v_uv;varying vec4 v_rands;varying float v_depth;
   #define PI 3.14159265359
@@ -47,6 +49,7 @@ const TUNNEL_VERT = `
   float linearStep(float e0,float e1,float x){return clamp((x-e0)/(e1-e0),0.0,1.0);}
   vec4 hash44(vec4 p4){p4=fract(p4*vec4(.1031,.1030,.0973,.1099));p4+=dot(p4,p4.wzxy+33.33);return fract((p4.xxyz+p4.yzzw)*p4.zywx);}
   vec3 inverseTransformDirection(in vec3 dir,in mat4 matrix){return normalize((vec4(dir,0.0)*matrix).xyz);}
+  vec3 goalBlackTunnelTransform(vec3 pos){float t=u_blackTunnelTransformRatio*6.2831853;float zWeight=pos.z*0.025;float angle=t*zWeight*zWeight*sign(zWeight);float sa=sin(angle);float ca=cos(angle);mat2 m2=mat2(ca,-sa,sa,ca);pos.xy=m2*pos.xy;pos.z+=t*1.;pos=pos.xzy;float rad=20.;pos/=rad;vec3 a=pos;vec2 pq=vec2(-1.,.5)*t;float ada=dot(a,a);vec4 b=vec4(2.*a,ada-1.)/(1.+ada);vec4 pq_cs=vec4(cos(pq),sin(pq)).xzyw;vec2 np1=vec2(-1.,1.);vec4 c=(b.xxyy*np1.yxyy*pq_cs+b.zzww*np1.yyxy*pq_cs.yxwz).xzyw;pos=c.xyz/(1.-c.w);pos=pos.xzy;return pos*rad;}
   void main(){
     vec3 pos=position;vec3 nor=normal;vec3 tang=tangent.xyz;
     #ifdef IS_HD
@@ -67,7 +70,7 @@ const TUNNEL_VERT = `
     pos.xy*=showRatio*showRatio;pos.z*=showRatio;
     #endif
     q=quaternion(instanceAxis,PI*0.5);pos=qrotate(q,pos)*float(GRID_SIZE)+instancePos;nor=qrotate(q,nor);tang=qrotate(q,tang);
-    pos.z+=mod(u_offsetZ,float(GRID_SIZE));v_depth=-pos.z;
+    pos.z+=mod(u_offsetZ,float(GRID_SIZE));v_depth=-pos.z;pos=goalBlackTunnelTransform(pos);
     #ifdef IS_HD
     v_ao=ao;v_emission=areaRatio<0.25?sin(pos.z*0.25-u_time)*0.5+0.5:0.;
     #else
@@ -84,7 +87,7 @@ const TUNNEL_VERT = `
 
 const TUNNEL_FRAG = `
   uniform sampler2D u_greebleArmTexture;uniform sampler2D u_greebleBaseTexture;uniform sampler2D u_greebleNormalTexture;
-  uniform vec3 u_color1;uniform vec3 u_color2;uniform float u_feedback;uniform float u_lightZ;uniform float u_bodyGain;uniform float u_glowGain;
+  uniform vec3 u_color1;uniform vec3 u_color2;uniform float u_feedback;uniform float u_lightZ;uniform float u_bodyGain;uniform float u_glowGain;uniform vec3 u_outBloomFromToStrength;
   varying vec3 v_worldPosition;varying vec4 v_worldTangent;varying vec3 v_worldNormal;varying vec4 v_rands;
   varying float v_ao;varying float v_opacity;varying float v_emission;varying float v_depth;varying vec2 v_uv;
   void main(){
@@ -106,6 +109,8 @@ const TUNNEL_FRAG = `
     diffuse*=(0.5+u_feedback*fm);
     vec3 col=baseColor*vec3(ao*0.75*diffuse)*u_bodyGain+emissiveColor*v_emission*u_glowGain;
     col*=v_opacity;
+    float endBloom=clamp((v_depth-u_outBloomFromToStrength.x)/(u_outBloomFromToStrength.y-u_outBloomFromToStrength.x),0.,1.)*u_outBloomFromToStrength.z;
+    col+=endBloom*(0.35+col*0.65);
     if(v_opacity<0.002)discard;
     gl_FragColor=vec4(col,1.0);
   }
@@ -151,6 +156,7 @@ function GenuineTunnelMesh({ isHd, baseGeom, structGeom, textures, uniformsRef }
         u_blackTunnelTransformRatio: { value: 0 },
         u_innerClearRadius: { value: 0 },
         u_feedback: { value: 0.0 },
+        u_outBloomFromToStrength: { value: new THREE.Vector3(20, 70, 0) },
         u_bodyGain: { value: 0.42 },
         u_glowGain: { value: 2.6 },
         u_lightZ: { value: -100 },
@@ -259,62 +265,65 @@ export default function LusionBuildMatrix({ sp }) {
     }
 
     const zc = state.camera.position.z;
-    const inBuild = zc <= Z0 + 4 && zc > CAGE_END;
-
-    const progressBuild = THREE.MathUtils.clamp((Z0 - zc) / (Z0 - CAGE_END), 0, 1);
-    const exitBuild = THREE.MathUtils.smoothstep(zc, CAGE_END, CAGE_END + 12.0);
-
-    // Opening conduit entry ratio & smooth exit handover at CAGE_END
-    const openProg = THREE.MathUtils.clamp(progressBuild / 0.15, 0, 1);
-    // the corridor assembles out of its parts' centres as you scroll into it (the Build beat), then hands over at the end
-    const build = sp ? Math.min(1, Math.max(0, (sp.current - 0.546) / (0.672 - 0.546))) : openProg;
-    const showRatio = Math.pow(build, 1.3) * exitBuild;
-
-    // Tunnel mesh follows camera along Z so the 110-unit buffer spans Chapter I Build!
+    // R: Lusion's "black tunnel ratio". Build runs it 0-0.3 (dark teal), Discover 0.3-0.68 (red then green stages) and
+    // Create 0.68-1 (blue-red stage, bent into the crystal lattice); the corridor hands over to a white flash at the end.
+    const R = zc > CAGE_END ? 0.3 * seg(zc, Z0, CAGE_END) : zc > ROOM_START ? 0.3 + 0.38 * seg(zc, CAGE_END, ROOM_START) : 0.68 + 0.32 * seg(zc, ROOM_START, ROOM_END);
+    labState.tunnelR = R;
+    const live = zc <= Z0 + 4 && zc > ROOM_END - 2;
+    const build = sp ? seg(sp.current, 0.546, 0.672) : 1;
+    const showRatio = Math.pow(build, 1.3) * (1 - seg(zc, ROOM_END + 6, ROOM_END - 2));
     if (tunnelGroupRef.current) {
       tunnelGroupRef.current.position.z = zc;
       // also drawn during the hidden warm-up, so its shaders and buffers are ready before it first appears
-      tunnelGroupRef.current.visible = labState.warm || (inBuild && showRatio > 0.001);
+      tunnelGroupRef.current.visible = labState.warm || (live && showRatio > 0.001);
     }
+    if (labState.warm) return;
 
-    // High-precision stepped pulse scroll motion synchronized with scroll
+    const sineIn = (t) => 1 - Math.cos((t * Math.PI) / 2);
+    const fit = (v, a0, a1, b0, b1) => b0 + (b1 - b0) * seg(v, a0, a1);
+    const twist = sineIn(seg(R, 0.6, 1));
+    // their pulse and drift, run by scroll
     const dt = Math.min(delta, 0.05);
-    const scrollFactor = progressBuild;
-    pulseTimeRef.current.pulse += dt * THREE.MathUtils.clamp((scrollFactor - 0.05) / 0.25, 0, 1) * 1.5;
-    pulseTimeRef.current.linear += dt * 0.85;
-
+    pulseTimeRef.current.pulse += dt * seg(R, 0.02, 0.12) * fit(twist, 0, 0.25, 1, 0.5) * 1.5;
+    pulseTimeRef.current.linear += dt * fit(twist, 0, 0.25, 1.5, 1) * 0.6;
     const f = pulseTimeRef.current.pulse;
     const pStep = Math.floor(f);
-    const gStep = f - pStep;
-    const cubicG = gStep < 0.5 ? 4 * gStep * gStep * gStep : 1 - Math.pow(-2 * gStep + 2, 3) / 2;
-    const offsetZ = (pStep + cubicG) * GRID_SIZE + pulseTimeRef.current.linear * GRID_SIZE + scrollFactor * GRID_SIZE * 10.0;
+    const g = f - pStep;
+    const offsetZ = (pStep + (g < 0.5 ? 4 * g * g * g : 1 - Math.pow(-2 * g + 2, 3) / 2)) * GRID_SIZE + pulseTimeRef.current.linear * GRID_SIZE + R * GRID_SIZE * 30;
 
-    // Cyber Matrix Palette: Brilliant Electric Cyan & Matrix Emerald Green
-    const colorIdx = 0;
-    const m = Math.floor(colorIdx);
-    const s = Math.min(m + 1, COLOR_1.length - 1);
-    const frac = colorIdx - m;
-    // teal and grey: their teal glints among grey-white ones, as in their corridor footage
-    const c1A = new THREE.Color('#00b5a6');
-    const c2A = new THREE.Color('#8c8c8c');
-
+    // colour stages, snapping as theirs do; stage 0 is our teal and grey
+    const T = COLOR_1.length * seg(R, 0.2, 1);
+    const st = Math.min(COLOR_1.length - 1, Math.floor(T) + (T - Math.floor(T) > 0.5 ? 1 : 0));
+    const c1A = st === 0 ? STAGE0[0] : new THREE.Color(COLOR_1[st]);
+    const c2A = st === 0 ? STAGE0[1] : new THREE.Color(COLOR_2[st]);
     curColorRef.current.copy(c2A);
+    // the haze each stage sits in (their background layer): none in Build, then dark red, green and violet
+    const haze = TUNNEL_HAZE[st];
+    labState.tunnelHaze = labState.tunnelHaze || new THREE.Color();
+    labState.tunnelHaze.lerp(haze, 1 - Math.exp(-4 * Math.min(delta, 0.05)));
+    labState.tunnelHazeK = THREE.MathUtils.smoothstep(R, 0.28, 0.4) * (1 - seg(zc, ROOM_END + 8, ROOM_END));
 
-    // Rectilinear corridor tunnel in Chapter I Build
-    const twistRatio = 0.0;
-    const innerClear = 0.0;
+    // their far-end glow, and the lens breathing (a dolly-zoom wobble) once the stages start
+    const ob = new THREE.Vector3(fit(R, 0.75, 0.85, 20, 60), 70, 0);
+    ob.z = R < 0.75 ? fit(R, 0.65, 0.75, 0, 0.2) : fit(R, 0.75, 0.85, 0.2, 0.15);
+    if (R > 0.9) ob.x = fit(R, 0.9, 1, 60, 30);
+    labState.fovOffset = Math.sin(R * 10 + state.clock.elapsedTime) * 7.5 * THREE.MathUtils.smoothstep(R, 0.3, 0.5);
 
-    // Apply uniforms to all tunnel shader materials
     uniformsRef.current.forEach((u) => {
       if (!u) return;
-      if (u.u_time) u.u_time.value = state.clock.elapsedTime;
-      if (u.u_lightZ) u.u_lightZ.value = zc - 100;
-      if (u.u_showRatio) u.u_showRatio.value = showRatio;
-      if (u.u_offsetZ) u.u_offsetZ.value = offsetZ;
-      if (u.u_color1) u.u_color1.value.copy(c1A);
-      if (u.u_color2) u.u_color2.value.copy(c2A);
-      if (u.u_blackTunnelTransformRatio) u.u_blackTunnelTransformRatio.value = twistRatio;
-      if (u.u_innerClearRadius) u.u_innerClearRadius.value = innerClear;
+      u.u_time.value = state.clock.elapsedTime;
+      u.u_lightZ.value = zc - 100;
+      u.u_showRatio.value = showRatio;
+      u.u_offsetZ.value = offsetZ;
+      u.u_color1.value.copy(c1A);
+      u.u_color2.value.copy(c2A);
+      u.u_blackTunnelTransformRatio.value = twist;
+      u.u_outBloomFromToStrength.value.copy(ob);
+      // the dark Build look gives way to their brightly lit coloured stages
+      const lit = THREE.MathUtils.smoothstep(R, 0.3, 0.5);
+      u.u_bodyGain.value = 0.42 + 0.68 * lit;
+      u.u_feedback.value = 0.25 * lit;
+      u.u_glowGain.value = 2.6 + 1.2 * lit;
     });
   });
 

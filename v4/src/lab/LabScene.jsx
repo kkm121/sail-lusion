@@ -17,6 +17,9 @@ import { ease, labState, lerp, seg } from './scene/shared';
 import { asset, HAVE, MEDIA } from './media';
 import { CAGE_END, ROOM_END, ROOM_START, START, Z0, ZTOT } from './journey';
 
+// Lusion's corridor (with permission) carries Build, Discover and Create; ?corridor=own brings back our own scenes
+const LUSION_TUNNEL = typeof location === 'undefined' || new URLSearchParams(location.search).get('corridor') !== 'own';
+
 const BG = {
   cage: new THREE.Color('#040302'),
   vortex: new THREE.Color('#0a0206'),
@@ -79,8 +82,8 @@ function Rig({ progress, sp, bloomRef, blur }) {
     cam.position.set(px * 0.35 + (inTunnel ? Math.sin(zc * 0.04) * 0.2 : 0), py * 0.24 + (inTunnel ? Math.cos(zc * 0.035) * 0.16 : 0), z);
     cam.rotation.set(py * 0.035, -px * 0.045, roll);
     // Discover: approach the core, circle it a full 360 degrees, then dive straight through it into the Create room.
-    labState.dive = zc <= ROOM_START || (zc < CAGE_END && seg(zc, CAGE_END, ROOM_START) >= 0.72);
-    if (zc < CAGE_END && zc > ROOM_START) {
+    labState.dive = !LUSION_TUNNEL && (zc <= ROOM_START || (zc < CAGE_END && seg(zc, CAGE_END, ROOM_START) >= 0.72));
+    if (!LUSION_TUNNEL && zc < CAGE_END && zc > ROOM_START) {
       const u = seg(zc, CAGE_END, ROOM_START);
       // portrait screens orbit further out so the core fits the frame
       const R = BLOB_R * THREE.MathUtils.clamp(1.25 / cam.aspect, 1, 1.9);
@@ -98,13 +101,13 @@ function Rig({ progress, sp, bloomRef, blur }) {
     }
     // a wide lens in the Build corridor (the far opening shrinks to a small square while the near frames sweep past the
     // edges), back to the normal lens before the Discover core
-    const fov = lerp(46, 46, ease(seg(p, START - 0.012, START + 0.03)) * (1 - seg(zc, CAGE_END + 34, CAGE_END + 4)));
+    const fov = 46 + (LUSION_TUNNEL && zc < Z0 && zc > ROOM_END - 4 ? labState.fovOffset || 0 : 0);
     if (Math.abs(cam.fov - fov) > 0.01) {
       cam.fov = fov;
       cam.updateProjectionMatrix();
     }
 
-    const vK = seg(zc, CAGE_END + 8, CAGE_END - 14);
+    const vK = LUSION_TUNNEL ? 0 : seg(zc, CAGE_END + 8, CAGE_END - 14);
     const cine = seg(p, 0.54, 0.6) * (1 - vK);
     // motion blur follows the camera's speed through the Build corridor
     if (blur) {
@@ -114,9 +117,10 @@ function Rig({ progress, sp, bloomRef, blur }) {
       const inGrid = seg(p, START, START + 0.02) * (1 - seg(zc, CAGE_END + 20, CAGE_END));
       blur.uniforms.get('uAmt').value = Math.min(speed.current * 0.0016, 0.07) * inGrid;
     }
-    const rK = seg(zc, ROOM_START + 4, ROOM_START - 12);
+    const rK = LUSION_TUNNEL ? 0 : seg(zc, ROOM_START + 4, ROOM_START - 12);
     const fK = seg(zc, ROOM_END + 2, ROOM_END - 6);
     bg.copy(BG.cage).lerp(BG.vortex, vK).lerp(BG.room, rK).lerp(BG.space, fK);
+    if (LUSION_TUNNEL && labState.tunnelHaze) bg.lerp(labState.tunnelHaze, labState.tunnelHazeK || 0);
     state.scene.background.copy(bg);
     // Fog: the Build corridor fades to black a few cells ahead, as in the reference; pushed far away everywhere else.
     if (state.scene.fog) {
@@ -262,7 +266,7 @@ function Tunnel({ touch, sp, onGate, onWarm }) {
       return;
     }
     const p = sp.current;
-    if (cage.current) cage.current.visible = warm || (p > 0.545 && zc <= Z0 + 4 && zc > CAGE_END - 6);
+    if (cage.current) cage.current.visible = warm || (p > 0.545 && zc <= Z0 + 4 && zc > (LUSION_TUNNEL ? ROOM_END - 4 : CAGE_END - 6));
     if (vortex.current) vortex.current.visible = warm || (zc <= CAGE_END + 42 && zc > ROOM_START - 8);
     if (room.current) room.current.visible = warm || (zc <= ROOM_START + 14 && zc > ROOM_END - 18);
     if (finale.current) finale.current.visible = warm || zc <= ROOM_END + 36;
@@ -276,10 +280,10 @@ function Tunnel({ touch, sp, onGate, onWarm }) {
         </Suspense>
       </group>
       <group ref={vortex} visible={false}>
-        <Vortex touch={touch} />
+        {!LUSION_TUNNEL && <Vortex touch={touch} />}
       </group>
       <group ref={room} visible={false}>
-        <Room touch={touch} />
+        {!LUSION_TUNNEL && <Room touch={touch} />}
       </group>
       <group ref={finale} visible={false}>
         <Finale touch={touch} />
