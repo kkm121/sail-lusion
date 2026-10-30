@@ -24,7 +24,30 @@ import { labState, seg } from './shared';
 
 const COLOR_1 = ['#0d2b27', '#ba0000', '#00b5a6', '#0099ff'];
 const COLOR_2 = ['#8c8c8c', '#008e6b', '#7e7f05', '#ff0000'];
-const TUNNEL_HAZE = [new THREE.Color('#000000'), new THREE.Color('#1c0605'), new THREE.Color('#06200f'), new THREE.Color('#1a0820')];
+const TUNNEL_HAZE = [new THREE.Color('#000000'), new THREE.Color('#1c0605'), new THREE.Color('#06200f'), new THREE.Color('#14020a')];
+const feedback = new THREE.WebGLRenderTarget(1, 1, { depthBuffer: false });
+feedback.texture.wrapS = feedback.texture.wrapT = THREE.MirroredRepeatWrapping;
+const blitMat = new THREE.ShaderMaterial({ uniforms: { t: { value: null } }, vertexShader: 'varying vec2 u; void main(){ u = uv; gl_Position = vec4(position.xy, 0., 1.); }', fragmentShader: 'uniform sampler2D t; varying vec2 u; void main(){ gl_FragColor = texture2D(t, u); }', depthTest: false, depthWrite: false });
+const blitScene = new THREE.Scene();
+blitScene.add(new THREE.Mesh(new THREE.PlaneGeometry(2, 2), blitMat));
+const blitCam = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+// Lusion's lighting reads the previous frame: after the detailed blocks are drawn, the frame so far is copied (at a
+// quarter size) and next frame each bar is lit by the glow that was around it
+function copyFeedback(renderer) {
+  const rt = renderer.getRenderTarget();
+  if (!rt) return;
+  const w = Math.max(1, Math.floor(rt.width * 0.25));
+  const h = Math.max(1, Math.floor(rt.height * 0.25));
+  if (feedback.width !== w || feedback.height !== h) feedback.setSize(w, h);
+  blitMat.uniforms.t.value = rt.texture;
+  const auto = renderer.autoClear;
+  renderer.autoClear = false;
+  renderer.setRenderTarget(feedback);
+  renderer.render(blitScene, blitCam);
+  renderer.setRenderTarget(rt);
+  renderer.autoClear = auto;
+}
+
 const STAGE0 = [new THREE.Color('#00b5a6'), new THREE.Color('#8c8c8c')];
 
 const COLOR_DISCOVER_1 = ['#00e5ff', '#00ff88', '#ff00aa', '#ffd700'];
@@ -87,7 +110,7 @@ const TUNNEL_VERT = `
 
 const TUNNEL_FRAG = `
   uniform sampler2D u_greebleArmTexture;uniform sampler2D u_greebleBaseTexture;uniform sampler2D u_greebleNormalTexture;
-  uniform vec3 u_color1;uniform vec3 u_color2;uniform float u_feedback;uniform float u_lightZ;uniform float u_bodyGain;uniform float u_glowGain;uniform vec3 u_outBloomFromToStrength;uniform float u_contrast;uniform float u_specGain;uniform float u_glowSharp;uniform float u_depthFade;
+  uniform vec3 u_color1;uniform vec3 u_color2;uniform float u_feedback;uniform float u_lightZ;uniform float u_bodyGain;uniform float u_glowGain;uniform vec3 u_outBloomFromToStrength;uniform float u_contrast;uniform float u_specGain;uniform float u_glowSharp;uniform float u_depthFade;uniform float u_coreLight;uniform vec2 u_res;uniform float u_sat;uniform sampler2D u_feedbackTexture;uniform float u_fbGain;
   varying vec3 v_worldPosition;varying vec4 v_worldTangent;varying vec3 v_worldNormal;varying vec4 v_rands;
   varying float v_ao;varying float v_opacity;varying float v_emission;varying float v_depth;varying vec2 v_uv;
   void main(){
@@ -104,11 +127,20 @@ const TUNNEL_FRAG = `
     #else
     float fm=2.0;
     #endif
-    vec3 baseColor=0.5+mix(u_color1,u_color2,v_rands.x)*1.2;
+    vec3 tint=mix(u_color1,u_color2,v_rands.x);
+    // the crystal stage keeps the metal's colour deep (pink, red, cyan) instead of washing it toward white
+    // magenta between their red and blue, as the bars read in their footage
+    vec3 deep=0.06+mix(tint,vec3(1.,0.15,0.6),0.35)*1.6;
+    vec3 baseColor=mix(0.5+tint*1.2,deep,u_sat);
     vec3 emissiveColor=mix(u_color1,u_color2,v_rands.y)*3.5;
     // contrast: faces turned away from the far light fall into shadow (flat half-Lambert reads as cardboard)
     diffuse=pow(diffuse,u_contrast);
-    diffuse*=(0.5+u_feedback*fm);
+    // their lighting reads back the previous frame (bright glow lights the bars beside it); approximated by the glow of
+    // the bright core at the centre of the screen, which lights the rings around it and fades toward the edges
+    vec2 suv=gl_FragCoord.xy/u_res-0.5;suv.x*=u_res.x/u_res.y;
+    float core=pow(clamp(1.-length(suv)*1.35,0.,1.),2.2);
+    float fb=texture2D(u_feedbackTexture,gl_FragCoord.xy/u_res+N.xy*0.02).r*u_fbGain;
+    diffuse*=(0.5+u_feedback*fm+fb*fm+u_coreLight*core*fm);
     vec3 col=baseColor*vec3(ao*0.75*diffuse)*u_bodyGain+emissiveColor*pow(v_emission,u_glowSharp)*u_glowGain;
     // glossy metal: a sharp highlight from the bright core at the far end, tinted by the stage's colours
     vec3 V=normalize(cameraPosition-v_worldPosition);vec3 L=normalize(lightPos-v_worldPosition);
@@ -166,6 +198,11 @@ function GenuineTunnelMesh({ isHd, baseGeom, structGeom, textures, uniformsRef }
         u_feedback: { value: 0.0 },
         u_contrast: { value: 1 },
         u_glowSharp: { value: 1 },
+        u_coreLight: { value: 0 },
+        u_sat: { value: 0 },
+        u_feedbackTexture: { value: feedback.texture },
+        u_fbGain: { value: 0 },
+        u_res: { value: new THREE.Vector2(1, 1) },
         u_depthFade: { value: 0 },
         u_specGain: { value: 0 },
         u_outBloomFromToStrength: { value: new THREE.Vector3(20, 70, 0) },
@@ -189,7 +226,7 @@ function GenuineTunnelMesh({ isHd, baseGeom, structGeom, textures, uniformsRef }
 
   if (!instancedGeom || !material) return null;
 
-  return <mesh ref={meshRef} geometry={instancedGeom} material={material} frustumCulled={false} />;
+  return <mesh ref={meshRef} geometry={instancedGeom} material={material} frustumCulled={false} renderOrder={isHd ? 2 : 1} onAfterRender={isHd ? copyFeedback : undefined} />;
 }
 
 
@@ -281,6 +318,10 @@ export default function LusionBuildMatrix({ sp }) {
     // Create 0.68-1 (blue-red stage, bent into the crystal lattice); the corridor hands over to a white flash at the end.
     const R = zc > CAGE_END ? 0.3 * seg(zc, Z0, CAGE_END) : zc > ROOM_START ? 0.3 + 0.38 * seg(zc, CAGE_END, ROOM_START) : 0.68 + 0.32 * seg(zc, ROOM_START, ROOM_END);
     labState.tunnelR = R;
+    const end = THREE.MathUtils.smoothstep(R, 0.9, 1);
+    labState.tunnelEnd = end * (1 - seg(zc, ROOM_END + 6, ROOM_END - 2));
+    if (labState.aberration) labState.aberration.set(0.0007 + 0.0022 * THREE.MathUtils.smoothstep(R, 0.3, 0.8), 0.0006 + 0.0016 * THREE.MathUtils.smoothstep(R, 0.3, 0.8));
+    labState.tunnelTwist = THREE.MathUtils.smoothstep(R, 0.66, 0.8) * (1 - seg(zc, ROOM_END + 6, ROOM_END - 2));
     const live = zc <= Z0 + 4 && zc > ROOM_END - 2;
     const build = sp ? seg(sp.current, 0.546, 0.672) : 1;
     // the corridor folds away for the blob interlude in the middle of Discover, and comes back after the dive
@@ -320,6 +361,9 @@ export default function LusionBuildMatrix({ sp }) {
     // their far-end glow, and the lens breathing (a dolly-zoom wobble) once the stages start
     const ob = new THREE.Vector3(fit(R, 0.75, 0.85, 20, 60), 70, 0);
     ob.z = R < 0.75 ? fit(R, 0.65, 0.75, 0, 0.2) : fit(R, 0.75, 0.85, 0.2, 0.15);
+    // their end glow also feeds the bloom pass (alpha), so it reads as a blown-out pink-white core; stronger here
+    // and it swells into a blown-out pink-white core toward the end, just before the white flash
+    ob.z *= 1 + 0.8 * THREE.MathUtils.smoothstep(R, 0.66, 0.8) + 5 * THREE.MathUtils.smoothstep(R, 0.86, 1);
     if (R > 0.9) ob.x = fit(R, 0.9, 1, 60, 30);
     labState.fovOffset = Math.sin(R * 10 + state.clock.elapsedTime) * 7.5 * THREE.MathUtils.smoothstep(R, 0.3, 0.5);
 
@@ -336,13 +380,20 @@ export default function LusionBuildMatrix({ sp }) {
       // the dark Build look gives way to their brightly lit coloured stages
       const lit = THREE.MathUtils.smoothstep(R, 0.3, 0.5);
       const tw = THREE.MathUtils.smoothstep(R, 0.66, 0.8);
-      u.u_bodyGain.value = (0.42 + 0.68 * lit) * (1 - 0.5 * tw);
-      u.u_contrast.value = 1 + 1.6 * tw;
-      u.u_specGain.value = 1.4 * tw;
+      u.u_bodyGain.value = (0.42 + 0.68 * lit) * (1 - 0.55 * tw);
+      u.u_contrast.value = 1 + 0.8 * tw;
+      u.u_specGain.value = 0;
+      // the real feedback where the frame is drawn off-screen (with post-processing); the core approximation elsewhere
+      const fbOn = !!state.gl.getRenderTarget() || labState.post;
+      u.u_fbGain.value = fbOn ? lit * (1 + 0.8 * tw) : 0;
+      u.u_coreLight.value = fbOn ? 0 : 0.38 * tw;
+      u.u_sat.value = tw;
+      state.gl.getDrawingBufferSize(u.u_res.value);
       // fewer, sharper glints in the crystal tunnel (a travelling band rather than every pad lit)
-      u.u_glowSharp.value = 1 + 3 * tw;
-      u.u_glowGain.value *= 1 - 0.25 * tw;
-      u.u_depthFade.value = tw;
+      u.u_glowSharp.value = 1;
+      u.u_glowGain.value *= 1 + 0.5 * tw + 2.2 * end;
+      u.u_fbGain.value *= 1 + 1.5 * end;
+      u.u_depthFade.value = 0;
       u.u_feedback.value = 0.25 * lit;
       u.u_glowGain.value = 2.6 + 1.2 * lit;
     });

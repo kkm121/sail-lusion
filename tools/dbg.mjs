@@ -1,0 +1,11 @@
+import puppeteer from 'puppeteer-core';
+const b = await puppeteer.launch({ executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe', headless: 'new', args: ['--no-sandbox', '--ignore-gpu-blocklist'] });
+const p = await b.newPage();
+await p.setViewport({ width: 1440, height: 900 });
+p.on('response', (r) => r.status() >= 400 && console.log(r.status(), r.url()));
+p.on('pageerror', (e) => console.log('err', e.message));
+p.on('console', (m) => m.type() === 'error' && console.log('console', m.text().slice(0, 200)));
+await p.goto(process.argv[2], { waitUntil: 'networkidle2' }); await new Promise((r) => setTimeout(r, 9000));
+console.log(await p.evaluate(() => JSON.stringify({ lab: !!document.getElementById('lab'), path: location.pathname, h: document.body.scrollHeight, txt: document.body.innerText.slice(0, 200) })));
+await p.screenshot({ path: 'shots/dbg.png' });
+await b.close();

@@ -27,7 +27,7 @@ console.log('voyage height', (info.h / info.vh).toFixed(1), 'screens');
 // let it mount and warm up
 await page.evaluate((v) => scrollTo(0, v), info.top);
 await page.waitForFunction(() => !!document.querySelector('.sl-lab-canvas canvas'), { timeout: 20000 }).catch(() => console.log('no canvas'));
-await new Promise((r) => setTimeout(r, 6000));
+await new Promise((r) => setTimeout(r, Number(process.env.WARM || 6000)));
 let i = 0;
 for (const p of ps) {
   const y = info.top + p * (info.h - info.vh);

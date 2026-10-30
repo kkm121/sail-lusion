@@ -122,8 +122,9 @@ function Rig({ progress, sp, bloomRef, blur }) {
       const z = cam.position.z;
       if (lastZ.current !== null) speed.current += (Math.abs(z - lastZ.current) / Math.max(d, 1e-3) - speed.current) * (1 - Math.exp(-10 * d));
       lastZ.current = z;
-      const inGrid = seg(p, START, START + 0.02) * (1 - seg(zc, CAGE_END + 20, CAGE_END));
-      blur.uniforms.get('uAmt').value = Math.min(speed.current * 0.0016, 0.07) * inGrid;
+      const inGrid = seg(p, START, START + 0.02) * (1 - seg(zc, LUSION_TUNNEL ? ROOM_END + 2 : CAGE_END + 20, LUSION_TUNNEL ? ROOM_END - 2 : CAGE_END)) * (1 - (labState.blobK || 0));
+      // the crystal stage always carries some blur (their tunnel is always on the move), more while scrolling
+      blur.uniforms.get('uAmt').value = Math.min(speed.current * 0.0016 + 0.028 * (labState.tunnelTwist || 0), 0.08) * inGrid;
     }
     const rK = LUSION_TUNNEL ? 0 : seg(zc, ROOM_START + 4, ROOM_START - 12);
     const fK = LUSION_TUNNEL ? seg(zc, CONNECT_END - 8, CONNECT_END - 14) : seg(zc, ROOM_END + 2, ROOM_END - 6);
@@ -141,10 +142,10 @@ function Rig({ progress, sp, bloomRef, blur }) {
     if (bloomRef.current) bloomRef.current.intensity = 0.9 * lerp(1, 0.62, rK) * lerp(1, 0.85, fK);
     // phase one is shot dark, like film: in the Build corridor the studio reflections (which light every metal face the
     // same grey) drop right down, so the metal reads only where the dim lights and the glints catch it
-    if (bloomRef.current) bloomRef.current.intensity *= lerp(1, 1.5, cine);
+    if (bloomRef.current) bloomRef.current.intensity *= lerp(1, 1.5, cine) * lerp(1, 1.5, labState.tunnelTwist || 0) * (1 + 2.2 * (labState.tunnelEnd || 0));
     // around the Discover core: the original scene's lighting and bloom (city-like reflections at 0.7, bloom from 0.5)
     state.scene.environmentIntensity = lerp(lerp(0.85, 0.1, cine), 0.7, vK * (1 - rK));
-    if (bloomRef.current?.luminanceMaterial) bloomRef.current.luminanceMaterial.threshold = lerp(lerp(0.86, 0.7, cine), 0.5, vK * (1 - rK));
+    if (bloomRef.current?.luminanceMaterial) bloomRef.current.luminanceMaterial.threshold = lerp(lerp(lerp(0.86, 0.7, cine), 0.5, vK * (1 - rK)), lerp(0.55, 0.3, labState.tunnelEnd || 0), labState.tunnelTwist || 0);
   }, -1);
   return null;
 }
@@ -319,6 +320,7 @@ export default function LabScene({ progress, active = true, tier = 'full', onWar
   const startPost = useCallback(() => {}, []);
   labState.post = fx > 0 && postOn;
   const aberration = useMemo(() => new THREE.Vector2(0.0007, 0.0006), []);
+  labState.aberration = aberration;
   const blur = useMemo(() => new RadialBlurEffect(), []);
   const [gated, setGated] = useState(false);
   const [warmed, setWarmed] = useState(false);

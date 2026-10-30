@@ -14,7 +14,8 @@ const browser = await puppeteer.launch({
 
 const page = await browser.newPage();
 await page.setViewport({ width: 1440, height: 900 });
-await page.goto('http://127.0.0.1:5180/', { waitUntil: 'domcontentloaded' });
+const PORT = process.env.TEST_PORT || process.env.PORT || '4600';
+await page.goto(`http://127.0.0.1:${PORT}/v2/`, { waitUntil: 'domcontentloaded' });
 
 for (let i = 0; i < 50; i++) {
   const hasLoader = await page.evaluate(() => !!document.querySelector('.sl-preloader'));
@@ -47,7 +48,7 @@ console.log('=== MOBILE TESTS ===');
 const mPage = await browser.newPage();
 await mPage.setUserAgent('Mozilla/5.0 (Linux; Android 13; SM-G981B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Mobile Safari/537.36');
 await mPage.setViewport({ width: 393, height: 852, deviceScaleFactor: 2, isMobile: true, hasTouch: true });
-await mPage.goto('http://127.0.0.1:5180/', { waitUntil: 'domcontentloaded' });
+await mPage.goto(`http://127.0.0.1:${PORT}/v2/`, { waitUntil: 'domcontentloaded' });
 
 for (let i = 0; i < 50; i++) {
   const hasLoader = await mPage.evaluate(() => !!document.querySelector('.sl-preloader'));
