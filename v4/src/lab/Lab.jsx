@@ -388,7 +388,7 @@ export default function Lab() {
       if (fade.current) {
         // white-out as the crystal tunnel ends (Lusion's hand-over into the next scene)
         const f = Math.min(seg(p, pAtZ(ROOM_END + 10), pAtZ(ROOM_END - 1)), 1 - seg(p, pAtZ(ROOM_END - 1), pAtZ(ROOM_END - 12)));
-        fade.current.style.opacity = String(Math.max(f, 0) * 0.92);
+        fade.current.style.opacity = String(Math.max(f, 0));
       }
 
       let active = -1;
