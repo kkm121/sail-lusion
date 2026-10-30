@@ -10,6 +10,7 @@ import Grid from './scene/Grid';
 import Vortex, { BLOB_R, BLOB_Z } from './scene/Vortex';
 import Room from './scene/Room';
 import WhiteRoom from './scene/WhiteRoom';
+import Glass from './scene/Glass';
 import Finale from './scene/Finale';
 import Planet from './scene/Planet';
 import Navigator from './scene/Navigator';
@@ -104,7 +105,7 @@ function Rig({ progress, sp, bloomRef, blur }) {
     }
     // a wide lens in the Build corridor (the far opening shrinks to a small square while the near frames sweep past the
     // edges), back to the normal lens before the Discover core
-    const fov = 46 + (LUSION_TUNNEL && zc < Z0 && zc > CONNECT_END ? labState.fovOffset || 0 : 0);
+    const fov = 46 + (LUSION_TUNNEL && zc < Z0 && zc > CONNECT_END - 10 ? labState.fovOffset || 0 : 0);
     if (Math.abs(cam.fov - fov) > 0.01) {
       cam.fov = fov;
       cam.updateProjectionMatrix();
@@ -121,11 +122,11 @@ function Rig({ progress, sp, bloomRef, blur }) {
       blur.uniforms.get('uAmt').value = Math.min(speed.current * 0.0016, 0.07) * inGrid;
     }
     const rK = LUSION_TUNNEL ? 0 : seg(zc, ROOM_START + 4, ROOM_START - 12);
-    const fK = LUSION_TUNNEL ? seg(zc, CONNECT_END + 2, CONNECT_END - 6) : seg(zc, ROOM_END + 2, ROOM_END - 6);
+    const fK = LUSION_TUNNEL ? seg(zc, CONNECT_END - 7, CONNECT_END - 10) : seg(zc, ROOM_END + 2, ROOM_END - 6);
     bg.copy(BG.cage).lerp(BG.vortex, vK).lerp(BG.room, rK).lerp(BG.space, fK);
     if (LUSION_TUNNEL && labState.tunnelHaze) bg.lerp(labState.tunnelHaze, labState.tunnelHazeK || 0);
     // the blue room's openings look out onto white light
-    if (LUSION_TUNNEL) bg.lerp(ROOM_LIGHT, seg(zc, ROOM_END + 2, ROOM_END - 3) * (1 - seg(zc, CONNECT_END + 3, CONNECT_END - 2)));
+    if (LUSION_TUNNEL) bg.lerp(ROOM_LIGHT, seg(zc, ROOM_END + 2, ROOM_END - 3) * (1 - seg(zc, CONNECT_END - 7, CONNECT_END - 10)));
     state.scene.background.copy(bg);
     // Fog: the Build corridor fades to black a few cells ahead, as in the reference; pushed far away everywhere else.
     if (state.scene.fog) {
@@ -273,8 +274,8 @@ function Tunnel({ touch, sp, onGate, onWarm }) {
     const p = sp.current;
     if (cage.current) cage.current.visible = warm || (p > 0.545 && zc <= Z0 + 4 && zc > (LUSION_TUNNEL ? ROOM_END - 4 : CAGE_END - 6));
     if (vortex.current) vortex.current.visible = warm || (zc <= CAGE_END + 42 && zc > ROOM_START - 8);
-    if (room.current) room.current.visible = warm || (LUSION_TUNNEL ? zc <= ROOM_END + 2 && zc > CONNECT_END - 4 : zc <= ROOM_START + 14 && zc > ROOM_END - 18);
-    if (finale.current) finale.current.visible = warm || zc <= (LUSION_TUNNEL ? CONNECT_END + 6 : ROOM_END + 36);
+    if (room.current) room.current.visible = warm || (LUSION_TUNNEL ? zc <= ROOM_END + 2 && zc > CONNECT_END - 11 : zc <= ROOM_START + 14 && zc > ROOM_END - 18);
+    if (finale.current) finale.current.visible = warm || zc <= (LUSION_TUNNEL ? CONNECT_END - 7 : ROOM_END + 36);
   });
   return (
     <>
@@ -364,6 +365,11 @@ export default function LabScene({ progress, active = true, tier = 'full', onWar
       )}
       <Planet sp={sp} hi={tier === 'full'} />
       <Tunnel touch={touch} sp={sp} onGate={startPost} onWarm={warmDone} />
+      {LUSION_TUNNEL && (
+        <ErrorBoundary fallback={null}>
+          <Glass />
+        </ErrorBoundary>
+      )}
       <Curtain sp={sp} />
       <Flash />
       <CompileGate onDone={openGate} />

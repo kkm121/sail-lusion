@@ -67,7 +67,8 @@ export default function WhiteRoom() {
     const cam = s.camera;
     const zc = cam.position.z;
     const r = roomRatioAt(zc);
-    const live = zc <= ROOM_END + 1 && zc > CONNECT_END - 2;
+    // stays behind the glass while it shatters at the start of Record
+    const live = zc <= ROOM_END + 1 && zc > CONNECT_END - 10;
     g.visible = labState.warm || live;
     labState.roomK = live ? 1 : 0;
     if (!g.visible) return;
